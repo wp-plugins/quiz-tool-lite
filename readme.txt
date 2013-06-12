@@ -12,7 +12,7 @@ A simple quiz tool aimed at individuals wanting to insert formative questions in
 
 == Description ==
 This tool was originally written as we wanted to disply an individual question on a page, along with feedback for formative assessment.
-It also has the following features
+It also has the following features 123
 
 == Installation ==
 
