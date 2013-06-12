@@ -1,10 +1,9 @@
 === Quiz Tool Lite ===
 Contributors: alexfurr, lcw102
-Donate link: http://www.cite.soton.ac.uk
 Tags: quiz, questions
 Requires at least: 3.0.1
 Tested up to: 3.5
-Stable tag: 1.1
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,17 +37,17 @@ Currently you can do single reponse and multiple response questions. You can als
 More question types will be written in future updates.
 
 = How do I use this tool? =
-To display a question:
-1. Create a question pot
-2. Create questions within the pot
+To display a question.
+1. Create a question pot.
+2. Create questions within the pot.
 3. Each question has its own shortcode which can be pasted into a post or page OR you can use the 'in editor' button to select a specific question if you are unsure how to use shortcodes.
 
-To deploy a quiz
-1. Create your question pots and questions
+To deploy a quiz.
+1. Create your question pots and questions.
 2. Create a new quiz and choose to display 'x' questions at random from pot 1 and (for example) 'x' questions at random from pot 2.
-3. Copy the quiz shortcode onto a page
+3. Copy the quiz shortcode onto a page.
 
-The quiz optino currently only saves the HIGHEST score and quizzes can be taken as often as possible. It will only save the score if a user is logged in.
+The quiz option currently only saves the HIGHEST score and quizzes can be taken as often as possible. It will only save the score if a user is logged in.
 A results screen shows the highest score achieved by each user.
 
 
