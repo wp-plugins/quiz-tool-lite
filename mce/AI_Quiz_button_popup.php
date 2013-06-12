@@ -1,0 +1,120 @@
+<?php
+include("../../../../wp-blog-header.php"); // Load up the wordpress stuff first. DOn't know how to get this path (in multisite) so had to do this.
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Quiz Question Select</title>
+<script type="text/javascript" src="tiny_mce_popup.js"></script>
+<script type="text/javascript" src="editor_plugin.js"></script>
+<style>
+#container {
+    margin:10px auto;
+	line-height:20px;
+	width: 800px;
+}
+
+#potsDiv {
+    float:left;
+    width:200px;
+}
+
+#questionsDiv {
+    float:left;
+    width:570px;
+	border-left:2px solid #ccc;	
+	padding-left:10px;
+	height : 400px; overflow : auto;	
+	
+}
+
+#footer {
+    clear:both;
+}
+
+
+html
+{
+	background:#fff; !important	
+}
+
+
+</style>
+</head>
+
+<body>
+<h1>Select your Question</h1>
+<?php
+
+define('AIQUIZ_PATH', plugin_dir_path(__FILE__)); # inc /
+define('AIQUIZ_DIR', plugin_dir_path(__FILE__)); # inc /
+define ('AI_Plugin_Path', plugin_basename(__FILE__));
+
+require_once AIQUIZ_PATH.'scripts/qry-functions.php'; # All the DB queries
+?>
+
+
+<?php
+echo '<div id="container">';
+
+echo '<div id="potsDiv">';
+
+echo '<h3>Question Pots</h3>';
+$potRS = getQuestionPots();
+
+	
+foreach ($potRS as $myPots)
+{		
+	
+	$potName =  utils::convertTextFromDB($myPots['potName']);
+	$potID = $myPots['potID'];		
+	echo '<a href="?potID='.$potID.'&view=questionList">'.$potName.'</a><br/>';
+}
+
+echo '</div>';
+echo '<div id="questionsDiv">';
+
+
+$potID = $_GET['potID'];
+if($potID)
+{
+	$potInfo = getPotInfo($potID);
+	$potName = utils::convertTextFromDB($potInfo['potName']);
+	echo '<h2>'.$potName.'</h2><br/>';
+	$questionRS = getQuestionsInPot($potID);
+	$questionCount = count($questionRS);
+	if($questionCount==0)
+	{
+		echo 'No questions found in this pot.';
+	}
+	else
+	{
+
+		foreach ($questionRS as $myQuestions)
+		{		
+			$question=  utils::convertTextFromDB($myQuestions['question']);
+			$questionID= $myQuestions['questionID'];		
+			
+			echo $question.'<br/>';
+			$thisShortcode = 'AI-Draw-Question id='.$questionID;
+			
+			echo '<br/><a href="javascript:insertAI_shortcode(\''.$thisShortcode.'\');">Insert this question</a>';
+			echo '<hr/>';
+		}
+	}
+}
+echo '</div>';
+	
+	
+
+echo '</div>';
+
+
+
+
+?>
+
+
+</body>
+</html>
