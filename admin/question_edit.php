@@ -93,14 +93,16 @@ function ilc_admin_tabs( $current = 'question', $potID, $questionID, $qType) {
     echo '</h3>';
 }
 
+?>
+<a href="admin.php?page=ai-quiz-question-list&potID=<?php echo $potID?>" class="backIcon">Return to <?php echo $potName?> questions</a>
+<?php
+
 if ( isset ( $_GET['tab'] ) ) ilc_admin_tabs($_GET['tab'], $potID, $questionID, $qType); else ilc_admin_tabs('question', $potID, $questionID, $qType);
 
 ?>
 
 
-<a href="admin.php?page=ai-quiz-question-list&potID=<?php echo $potID?>" class="backIcon">Return to <?php echo $potName?> questions</a>
 
-<hr/>
 <div id="questionEdit">
 
 

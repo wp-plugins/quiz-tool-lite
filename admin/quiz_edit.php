@@ -13,7 +13,7 @@ else
 }
 if($quizID){
 	$quizInfo = getQuizInfo($quizID);
-	$quizName = stripslashes($quizInfo['quizName']);
+	$quizName = utils::convertTextFromDB($quizInfo['quizName']);
 	$questionArray = $quizInfo['questionArray'];
 }
 else

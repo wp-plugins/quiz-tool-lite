@@ -106,15 +106,8 @@ function generateQuizQuestions($questionArray="")
 }
 
 
-function drawQuestion($questionID, $formative=false)
+function drawQuestion($questionID, $formative=false, $questionSettingArray=false)
 {
-	
-	if($formative==true)
-	{
-		$questionStr= '<div id="theExam">';
-		$questionStr.= '<div id="questionDiv">';
-	}
-	
 	// get the info about that question	
 	$questionInfo = getQuestionInfo($questionID);
 	$question = utils::convertTextFromDB($questionInfo['question']);
@@ -123,19 +116,29 @@ function drawQuestion($questionID, $formative=false)
 	$correctFeedback = wpautop($correctFeedback);	
 	$incorrectFeedback = utils::convertTextFromDB($questionInfo['incorrectFeedback']);
 	$incorrectFeedback = wpautop($incorrectFeedback);
+	$optionsRS = getResponseOptions($questionID);
 	
 	$qType = $questionInfo['qType'];
+	$refectionTextBoxID = 'refectiveTextBoxID'.$questionID;
+	
+	
+	$saveResponse=$questionSettingArray['saveResponse']; // Do we want to save this data or not?
+	
+	if($formative==true)
+	{
+		$questionStr= '<div id="theExam">';
+		$questionStr.= '<div id="questionDiv">';
+	}
 	
 	$questionStr.= $question;
 	
 	if($qType=="reflectionText")
 	{
-		$questionStr.= '<textarea rows="4" cols="80"></textarea>';
+		$questionStr.= '<textarea rows="4" style="width: 98%" id="'.$refectionTextBoxID.'"></textarea>';
 	}
 	
 	// get the response options
 	$questionStr.= '<table width="90%">'.chr(10);
-	$optionsRS = getResponseOptions($questionID);
 	
 	foreach ($optionsRS as $myOptions)
 	{		
@@ -196,8 +199,24 @@ function drawQuestion($questionID, $formative=false)
 		// Remove the last comma
 		$correctStr = substr($correctStr,0,-1);
 		$IDStr = substr($IDStr,0,-1);
+	
+		$questionStr.= '<input type="submit" value="Check Answer" onclick="';
+		$questionStr.='checkExampleQuestionExampleAnswer('.$questionID.', \''.$qType.'\', \''.$correctStr.'\', \''.$IDStr.'\');';
+
+
+		// only call this if they are logged in
 		
-		$questionStr.= '<input type="submit" value="Check Answer" onclick="checkExampleQuestionExampleAnswer('.$questionID.', \''.$qType.'\', \''.$correctStr.'\', \''.$IDStr.'\')">';
+		if($saveResponse==true && is_user_logged_in() )
+		{
+			$current_user = wp_get_current_user();
+			$username = $current_user->user_login;
+			//$questionStr.='ajaxQuestionResponseUpdate(\''.$refectionTextBoxID.'\', \''.$questionID.'\', \''.$username.'\')';
+			$questionStr.='ajaxQuestionResponseUpdate(\''.$refectionTextBoxID.'\', \''.$questionID.'\', \''.$IDStr.'\', \''.$qType.'\', \''.$username.'\')';
+		}
+		
+		$questionStr.='">';
+	
+		
 		$questionStr.= '<div id="exampleQuestionAnswerCorrect'.$questionID.'" class="hidden">';
 		
 		
@@ -447,15 +466,50 @@ function startQuiz($atts)
 function drawExampleQuestion($atts)
 {
 	global $overrideAdminCheck; // we need to load the plugin scripts but override the is admin check
-	extract(shortcode_atts(array('id' => '#'), $atts));
-	$questionID = $id;
+	
+	$atts = shortcode_atts( 
+		array(
+			'id'   => '#',
+			'savedata'   => ''
+		), 
+		$atts
+	);
+	
+	$questionID = (int) $atts['id'];
+	$saveResponse = esc_attr($atts['savedata']);
+	
 	$overrideAdminCheck=true;
+	
+	$questionSettingArray = array('saveResponse'=> $saveResponse); 
 	
 	AI_Quiz_loadMyPluginScripts(); // Load up the plugin scripts for the front end (define true to override admin check)
 	
-	$questionStr = drawQuestion($questionID, true);
+	$questionStr = drawQuestion($questionID, true, $questionSettingArray);
 	return $questionStr;
 }
 
+function drawUserResponse($atts)
+{
+	
+	$atts = shortcode_atts( 
+		array(
+			'id'   => '#'
+		), 
+		$atts
+	);
+	
+	$questionID = (int) $atts['id'];
+	
+	$current_user = wp_get_current_user();
+	$username = $current_user->user_login;
+	
+	if($username)
+	{
+		$responseInfo = getQuestionResponse($questionID, $username);
+		
+		$response = utils::convertTextFromDB($responseInfo['userResponse']);
+		echo $response;
+	}	
+}
 
 ?>

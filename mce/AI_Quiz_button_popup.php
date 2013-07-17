@@ -44,7 +44,7 @@ html
 </head>
 
 <body>
-<h1>Select your Question</h1>
+<h1>Select your Question or Quiz</h1>
 <?php
 
 define('AIQUIZ_PATH', plugin_dir_path(__FILE__)); # inc /
@@ -60,6 +60,36 @@ echo '<div id="container">';
 
 echo '<div id="potsDiv">';
 
+
+// Draw the quiz list
+echo '<h3>Quizzes</h3>';
+$quizCount=0;
+$quizListStr="";
+$quizRS = getQuizzes();
+
+foreach ($quizRS as $myQuizList)
+{		
+	
+	$quizName =  utils::convertTextFromDB($myQuizList['quizName']);
+	$quizID = $myQuizList['quizID'];		
+
+	$quizListStr.= '<a href="?quizID='.$quizID.'">'.$quizName.'</a><br/>';
+	
+	
+	$quizCount++;
+}
+
+if($quizCount==0)
+{
+	echo 'No Quizzes found';	
+}
+else
+{
+	echo $quizListStr;	
+}
+
+
+// Draw the question pots
 echo '<h3>Question Pots</h3>';
 $potRS = getQuestionPots();
 
@@ -69,13 +99,55 @@ foreach ($potRS as $myPots)
 	
 	$potName =  utils::convertTextFromDB($myPots['potName']);
 	$potID = $myPots['potID'];		
-	echo '<a href="?potID='.$potID.'&view=questionList">'.$potName.'</a><br/>';
+	echo '<a href="?potID='.$potID.'">'.$potName.'</a><br/>';
 }
 
 echo '</div>';
+
+// Start of quiz options if seleted
 echo '<div id="questionsDiv">';
 
+$quizID = $_GET['quizID'];
+if($quizID)
+{
+	$quizInfo = getQuizInfo($quizID);
+	$quizName = utils::convertTextFromDB($quizInfo['quizName']);
+	$quizInfo = getQuizInfo($quizID);
+	$questionArray = unserialize($quizInfo['questionArray']);
+	
+	$potCount = count($questionArray);
+	
+	if($potCount>=1)
+	{
+		echo 'This Quiz will show:<br/>';	
+		echo '<ul>';	
+		
+		foreach ($questionArray as $key => $value)
+		{
+			$potID = $key;
+			$questionCount= $value;
+			
+			$potInfo = getPotInfo($potID);
+			$potName = utils::convertTextFromDB($potInfo['potName']);
+	
+			echo '<li><b>'.$questionCount.'</b> questions from "'.$potName.'"</li>';
+		}
+		echo '</ul>';
+		$thisShortcode = 'QTL-Quiz id='.$quizID;
+		
+		echo '<br/><a href="javascript:insertAI_shortcode(\''.$thisShortcode.'\');">Insert this quiz</a>';
+		echo '<hr/>';
+		
+	}
+	else
+	{
+		echo 'There are currently no questions in this quiz.';
+		
+	}
+}
 
+
+// Start of question list if selected
 $potID = $_GET['potID'];
 if($potID)
 {
@@ -97,18 +169,18 @@ if($potID)
 			$questionID= $myQuestions['questionID'];		
 			
 			echo $question.'<br/>';
-			$thisShortcode = 'AI-Draw-Question id='.$questionID;
+			$thisShortcode = 'QTL-Question id='.$questionID;
 			
 			echo '<br/><a href="javascript:insertAI_shortcode(\''.$thisShortcode.'\');">Insert this question</a>';
 			echo '<hr/>';
 		}
 	}
 }
-echo '</div>';
+echo '</div>'; // End of questions Div
 	
 	
 
-echo '</div>';
+echo '</div>';// End of container div
 
 
 
