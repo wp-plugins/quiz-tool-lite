@@ -98,6 +98,18 @@ function AI_Quiz_create_tables()
 	
 	dbDelta($sql);	
 	
+	
+	$table_name = $wpdb->prefix . "AI_Quiz_tblSubmittedAnswers";		
+	$sql = "CREATE TABLE ".$table_name." (
+	resultID int NOT NULL AUTO_INCREMENT,	
+	username varchar(255),
+	userResponse longtext,
+	dateSubmitted datetime,
+	questionID int,
+	PRIMARY KEY (resultID)
+	);";
+	dbDelta($sql);	
+	
 
 	//Add database table versions to options
 	add_option("AI_Quiz_db_table_version", $AI_Quiz_db_table_version);

@@ -135,4 +135,17 @@ function getAttemptInfo($username, $quizID)
 }
 
 
+function getQuestionResponse($questionID, $username)
+{
+	global $wpdb;
+	$table_name = $wpdb->prefix . "AI_Quiz_tblSubmittedAnswers";		
+	
+	$SQL='Select * FROM '.$table_name.' WHERE username="'.$username.'" AND questionID='.$questionID;
+	
+	$responseInfo = $wpdb->get_row($SQL, ARRAY_A);
+	
+	return $responseInfo;
+}
+
+
 ?>

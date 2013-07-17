@@ -8,7 +8,7 @@ if(isset($_SESSION['questionid']))
 */
 $potID = $_GET['potID'];
 $potInfo = getPotInfo($potID);
-$potName = $potInfo['potName'];
+$potName = utils::convertTextFromDB($potInfo['potName']);
 ?>
 <h1><?php echo $potName." - Add a new question"?></h1>
 <a href="admin.php?page=ai-quiz-home" class="backButton">Return to all question pots</a>

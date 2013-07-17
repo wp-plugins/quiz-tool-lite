@@ -70,8 +70,8 @@ function AI_Quiz_createAdminMenu() {
 	$page_title="Settings";
 	$menu_title="Settings";
 	$capability="administrator";
-	$menu_slug="ai-quiz-setting";
-	$function="drawAIquiz_setting";
+	$menu_slug="ai-quiz-settings";
+	$function="drawAIquiz_settings";
 	add_submenu_page($parentSlug, $page_title, $menu_title, $capability, $menu_slug, $function);	
 	
 	$parentSlug="ai-quiz-home";
@@ -82,8 +82,13 @@ function AI_Quiz_createAdminMenu() {
 	$function="drawAIquiz_export";
 	add_submenu_page($parentSlug, $page_title, $menu_title, $capability, $menu_slug, $function);
 	
-
-	
+	$parentSlug="ai-quiz-home";
+	$page_title="Help";
+	$menu_title="Help";
+	$capability="administrator";
+	$menu_slug="ai-quiz-help";
+	$function="drawAIquiz_help";
+	add_submenu_page($parentSlug, $page_title, $menu_title, $capability, $menu_slug, $function);	
 }
 
 
@@ -133,14 +138,15 @@ function AI_Quiz_isMyPluginScreen()
 		"admin_page_ai-quiz-quiz-edit",
 		"admin_page_ai-quiz-question-edit",
 		"admin_page_ai-quiz-questionType",
+		"quiz-questions_page_ai-quiz-export",
+		"quiz-questions_page_ai-quiz-settings",
+		"quiz-questions_page_ai-quiz-help"	
 		);
 		
 		
 		$screen = get_current_screen();
 		
 		$thisPage = $screen->id;
-		
-		//echo $thisPage; // Spit out in the dashbaord the name of the aopge for debugging
 	
 		if (in_array($thisPage, $myPluginPages)) {
 			$isMyPluginPage = true;
@@ -163,7 +169,7 @@ function AI_Quiz_isMyPluginScreen()
 
 
 // Adds the ADD QUESTION option to posts and pages in the editor
-class AIQuiz_TinyMCE_Button
+class AIQuiz_TinyMCE_Button 
 {	
 	
 	static public function tinymce_add_button()
@@ -281,6 +287,8 @@ if (!class_exists('DownloadCSV'))
 
 // Allow the poopup thickbox to appear all pages.
 add_thickbox(); 
+
+
 
 
 ?>

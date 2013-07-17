@@ -35,41 +35,38 @@ if($questionCount==0)
 }
 else
 {
-	echo '<table width="90%"><tr><th>Question</th><th width="190">Shortcode</th><th></th><th></th></tr>';
+	echo '<div id="quiztable">';
+	echo '<table><tr><th>Question</th><th width="190">Shortcode</th><th width="150"></th><th width="50"></th></tr>';
 	$i = 1; // Increment for question numbner. Meaningless as its randomised buy hey.
-////	while ($myQuestions = mysql_fetch_array($questionsRS))
-	//{
 		
 	foreach ( $questionsRS as $myQuestions ) 
 	{
 		
-	
 		$question = utils::convertTextFromDB($myQuestions['question']);
 		$question = wpautop($question);	
 		$question = utils::limitWords($question, 20);
 		$questionID= $myQuestions['questionID'];
 		
-		$jsDeleteToggleLink = 'javascript:toggleLayerVis(\'deleteQuestionCheck'.$questionID.'\'); javascript:toggleLayerVis(\'deleteQuestion'.$questionID.'\')';
-	
 		echo '<tr>';
 		echo '<td><b>Question '.$i.'.</b> '.$question.'</td>';
-		echo '<td valign="top"><span class="greyText">[AI-Draw-Question id='.$questionID.']</span></td>';		
-		echo '<td valign="top"><a href="admin.php?page=ai-quiz-question-edit&questionID='.$questionID.'" class="editIcon">Edit</a></td>';
+		echo '<td valign="top"><span class="greyText">[QTL-Question id='.$questionID.']</span></td>';		
+		echo '<td valign="top"><a href="admin.php?page=ai-quiz-question-edit&questionID='.$questionID.'" class="editIcon">Edit Question</a></td>';	
 		echo '<td valign="top">';
-		echo '<div id="deleteQuestion'.$questionID.'">';	
-		echo '<a href="'.$jsDeleteToggleLink.'" class="deleteIcon" class="deleteIcon">Delete</a>';
+		echo '<a href="#TB_inline?width=400&height=200&inlineId=QuestionDeleteCheck'.$questionID.'" class="thickbox deleteIcon">Delete</a>';
+		echo '<div id="QuestionDeleteCheck'.$questionID.'" style="display:none">';
+		echo '<div style="text-align:center">';
+		echo '<h2>Are you sure you want to delete question '.$i.': '.$question.'</h2>';		
+		echo '<input type="submit" value="Yes, delete this question" onclick="location.href=\'?page=ai-quiz-question-list&potID='.$potID.'&action=questionDelete&questionID='.$questionID.'&tab=options\'" class="button-primary">';			
+		echo '<input type="submit" value="Cancel" onclick="self.parent.tb_remove();return false" class="button-secondary">';	
 		echo '</div>';
-		echo '<div id="deleteQuestionCheck'.$questionID.'" style="display:none">';
-		echo 'Are you sure you want to delete this question?<br/>';
-		echo '<a href="?page=ai-quiz-question-list&potID='.$potID.'&action=questionDelete&questionID='.$questionID.'">Yes</a>';
-		echo '| <a href="'.$jsDeleteToggleLink.'">No</a>';
 		echo '</div>';
-		
 		echo '</td>';
+		
 		echo '</tr>';
 		$i++;
 	}
 	echo '</table>';
+	echo '</div>';
 }
 
 ?>
