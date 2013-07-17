@@ -3,7 +3,7 @@ Contributors: alexfurr, lcw102
 Tags: academic, assessment, formative, quiz, questions
 Requires at least: 3.0.1
 Tested up to: 3.5
-Stable tag: 1.2
+Stable tag: 1.2.1
 
 A simple quiz tool aimed at individuals wanting to insert formative questions into their wordpress posts and pages.
 
