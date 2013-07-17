@@ -19,12 +19,13 @@ This tool was originally written as we wanted to display an individual question 
 *   Adds an 'Insert Question' link to the editor toolbar
 *   Uses shortcode
 *   Export questions from one WP site to another
+*   Display participants responses to previously submitted reflective questions on different pages
 
 <div>
   <a href="https://www.efolio.soton.ac.uk/blog/alexfurr/quiz-tool-lite-demo/">Click here to view some example of the embedded formative questions</a>
 </div>
 
-This plugin is supported by the <a href="cite.soton.ac.uk/">University of Southampton</a>
+This plugin is supported by the <a href="http://cite.soton.ac.uk/">University of Southampton</a>
 
 
 
