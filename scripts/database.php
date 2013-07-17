@@ -5,7 +5,7 @@
 
 //Database table versions
 global $AI_Quiz_db_table_version;
-$AI_Quiz_db_table_version = "1.0";
+$AI_Quiz_db_table_version = "1.1";
 
 //Create database tables needed by the DiveBook widget
 function AI_Quiz_db_create ()
