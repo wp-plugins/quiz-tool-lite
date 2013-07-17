@@ -728,3 +728,44 @@ function checkExampleQuestionExampleAnswer(questionID, qType, correctResponse, I
 
 
 
+//function ajaxQuestionResponseUpdate(elementID, questionID, currentUser)
+function ajaxQuestionResponseUpdate(elementID, questionID, IDStr, qType, currentUser)
+{
+	var userResponse = '';
+	//if is refection question with text inout, save it to the userResponse string for update
+	if (qType=='reflectionText'){
+		userResponse = document.getElementById(elementID).value;
+	}else{
+		//if is single or multi response question, save the selected optionID(s) to the userResponse string for update
+		var optionIDArray = IDStr.split(',');
+
+		for (var i = 0; i < optionIDArray.length; i++)
+		{		
+			//currentOptionID = optionIDArray[i];	
+			if(document.getElementById("option"+optionIDArray[i]).checked){
+				
+				userResponse = userResponse + optionIDArray[i] + ',';
+			}
+		}		
+	}
+	
+	//alert('test');		
+	//alert (userResponse);
+	
+	// We need question ID AND the logged in user AND the value passed to the beneath query	
+	jQuery.ajax({
+		type: 'POST',
+		url: ajaxurl,
+		data: {			
+			"action": "addResponseToDatabase",
+			"userResponse": userResponse,
+			"currentUser": currentUser,
+			"questionID": questionID
+		},
+		success: function(data){}
+	});
+	
+	return false;		
+	
+}
+

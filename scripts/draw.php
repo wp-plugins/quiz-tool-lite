@@ -11,7 +11,8 @@ function drawRadioCheckOptionsEditTable($questionID, $qType)
 //	echo '<div id="testID" style="display:none"><h2>HELLO</h2></div>';
 	
 	echo '<span class="smallText greyText">These responses are shown in a random order</span>';
-	echo '<table width="90%">'.chr(10);
+	echo '<div id="quiztable">';
+	echo '<table>'.chr(10);
 		
 
 	$optionsRS = getResponseOptions($questionID);
@@ -52,6 +53,7 @@ function drawRadioCheckOptionsEditTable($questionID, $qType)
 		echo '</tr>'.chr(10);
 	}
 	echo '</table>'.chr(10);
+	echo '</div>';
 	
 	
 	

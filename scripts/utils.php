@@ -153,10 +153,11 @@ class utils
 	{
 		$input = stripslashes($input);
 		$input = html_entity_decode($input, ENT_QUOTES, 'ISO-8859-1');	
+		
+		// Also add breaks if applicable
+		$input = str_replace("\n", "<br />", $input);			
+		
 		return $input;
-		
-		
-		
 	}
 	
 	function dateDiff($startDate, $endDate)
