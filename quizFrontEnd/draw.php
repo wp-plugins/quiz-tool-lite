@@ -491,6 +491,7 @@ function drawExampleQuestion($atts)
 function drawUserResponse($atts)
 {
 	
+	$response = "";
 	$atts = shortcode_atts( 
 		array(
 			'id'   => '#'
@@ -508,8 +509,10 @@ function drawUserResponse($atts)
 		$responseInfo = getQuestionResponse($questionID, $username);
 		
 		$response = utils::convertTextFromDB($responseInfo['userResponse']);
-		echo $response;
 	}	
+	
+	return $response;
 }
+
 
 ?>
