@@ -3,7 +3,11 @@
 <span class="greyText">Please note : Results are only saved from logged in users</span><br/>
 
 <?php
-$quizID = $_GET['quizID'];
+$quizID="";
+if(isset($_GET['quizID']))
+{
+	$quizID = $_GET['quizID'];
+}
 
 //display all quiz in a list for selection
 if($quizID=="")
@@ -140,6 +144,7 @@ class TT_Example_List_Table extends WP_List_Table {
 				$attemptInfo = getAttemptInfo($username, $quizID);				
 				$highestScore = $attemptInfo['highestScore'];
 				$highestScoreDate = $attemptInfo['highestScoreDate'];
+				$attemptCount = $attemptInfo['attemptCount'];
 				
 				if($highestScore){$highestScore=$highestScore.'%';}
 		
@@ -147,11 +152,12 @@ class TT_Example_List_Table extends WP_List_Table {
 				
 				$example_data[] = array(
 			//		'ID'        => $ID, //no id is required
-					'title'     => $lastName.', '.$firstName,
+					'fullname'     => $lastName.', '.$firstName,
 					'username'    => $username,
 					'role'    => $userlevel,
 					'highestScore'  => $highestScore, 
 					'highestScoreDate'  => $highestScoreDate, 
+					'attemptCount'  => $attemptCount, 
 				);
 				
 			//	$ID++;		
@@ -187,9 +193,11 @@ class TT_Example_List_Table extends WP_List_Table {
      **************************************************************************/
     function column_default($item, $column_name){
         switch($column_name){
+        	case 'fullname':
 			case 'username':
             case 'role':
             case 'highestScore':
+            case 'attemptCount':
             case 'highestScoreDate':
                 return $item[$column_name];
             default:
@@ -214,24 +222,17 @@ class TT_Example_List_Table extends WP_List_Table {
      * @param array $item A singular item (one full row's worth of data)
      * @return string Text to be placed inside the column <td> (movie title only)
      **************************************************************************/
-    function column_title($item){
+/*    function column_title($item){
         
-        //Build row actions
-       /* $actions = array(
-            'edit'      => sprintf('<a href="?page=%s&action=%s&movie=%s">Edit</a>',$_REQUEST['page'],'edit',$item['ID']),
-            'delete'    => sprintf('<a href="?page=%s&action=%s&movie=%s">Delete</a>',$_REQUEST['page'],'delete',$item['ID']),
-        );
-        */
-        //Return the title contents
-        
+           
         return sprintf('%1$s <span style="color:silver">%2$s</span>%3$s',
-            /*$1%s*/ $item['title'],
-            /*$2%s*/ $item['ID'],
-            /*$3%s*/ $this->row_actions($actions)
+             $item['title'],
+             $item['ID'],
+             $this->row_actions($actions)
         );     
         
     }
-    
+ */   
     /** ************************************************************************
      * REQUIRED if displaying checkboxes or using bulk actions! The 'cb' column
      * is given special treatment when columns are processed. It ALWAYS needs to
@@ -241,14 +242,14 @@ class TT_Example_List_Table extends WP_List_Table {
      * @param array $item A singular item (one full row's worth of data)
      * @return string Text to be placed inside the column <td> (movie title only)
      **************************************************************************/
-    function column_cb($item){
+/*    function column_cb($item){
         return sprintf(
             '<input type="checkbox" name="%1$s[]" value="%2$s" />',
-            /*$1%s*/ $this->_args['singular'],  //Let's simply repurpose the table's singular label ("movie")
-            /*$2%s*/ $item['ID']                //The value of the checkbox should be the record's id
+             $this->_args['singular'],  //Let's simply repurpose the table's singular label ("movie")
+             $item['ID']                //The value of the checkbox should be the record's id
         );
     }
-    
+*/    
     
     /** ************************************************************************
      * REQUIRED! This method dictates the table's columns and titles. This should
@@ -266,11 +267,12 @@ class TT_Example_List_Table extends WP_List_Table {
     function get_columns(){
         $columns = array(
         //    'cb'        => '<input type="checkbox" />', //Render a checkbox instead of text  // hide the id check box column
-            'title'     => 'Name',
+            'fullname'     => 'Name',
 			'username'     => 'Username',
             'role'    => 'Role',
             'highestScore'  => 'Highest Score',
-            'highestScoreDate'  => 'Highest Score Date'
+            'highestScoreDate'  => 'Highest Score Date',
+            'attemptCount'  => 'Number of Attempts'
         );
         return $columns;
     }
@@ -291,11 +293,12 @@ class TT_Example_List_Table extends WP_List_Table {
      **************************************************************************/
     function get_sortable_columns() {
         $sortable_columns = array(
-            'title'     => array('title',false),     //true means it's already sorted
+            'fullname'     => array('title',false),     //true means it's already sorted
             'username'    => array('username',false),
 			'role'    => array('role',false),
             'highestScore'  => array('highestScore',false),
-            'highestScoreDate'  => array('highestScoreDate',false)
+            'highestScoreDate'  => array('highestScoreDate',false),
+            'attemptCount'  => array('attemptCount',false)
         );
         return $sortable_columns;
     }
@@ -366,7 +369,7 @@ class TT_Example_List_Table extends WP_List_Table {
 			//get the search data records
 			$searchData = array();
 			foreach ($data as $resultRecord){
-				if (strlen(strstr(strtolower($resultRecord[title]), $search))>0 || strlen(strstr(strtolower($resultRecord[username]), $search))>0 || strlen(strstr(strtolower($resultRecord[role]), $search))>0 || strlen(strstr(strtolower($resultRecord[highestScore]), $search))>0 || strlen(strstr(strtolower($resultRecord[highestScoreDate]), $search))>0 ){	
+				if (strlen(strstr(strtolower($resultRecord[fullname]), $search))>0 || strlen(strstr(strtolower($resultRecord[username]), $search))>0 || strlen(strstr(strtolower($resultRecord[role]), $search))>0 || strlen(strstr(strtolower($resultRecord[highestScore]), $search))>0 || strlen(strstr(strtolower($resultRecord[highestScoreDate]), $search))>0 || strlen(strstr(strtolower($resultRecord[attemptCount]), $search))>0){	
 					$searchData[] = $resultRecord;
 				}
 			}
@@ -383,7 +386,7 @@ class TT_Example_List_Table extends WP_List_Table {
          * sorting technique would be unnecessary.
          */
         function usort_reorder($a,$b){
-            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'title'; //If no sort, default to title
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'fullname'; //If no sort, default to fullname
             $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc'; //If no order, default to asc
             $result = strcmp($a[$orderby], $b[$orderby]); //Determine sort order
             return ($order==='asc') ? $result : -$result; //Send final sort direction to usort

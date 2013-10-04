@@ -192,6 +192,7 @@ function quizEdit()
 	$table_name = $wpdb->prefix . "AI_Quiz_tblQuizzes";
 	
 	$questionArray = array();
+	$quizOptions = array();
 	
 	foreach ($_POST as $key => $value)
 	{
@@ -204,17 +205,36 @@ function quizEdit()
 		  {
 			 $questionArray[$thisPotID] = $value;
 		  }
-		  
 		}		
 		else
 		{
 			${$key}=$value;
 		}
+		
+		$optionArrayValues = array
+		(
+			"startDate",
+			"endDate",
+			"maxAttempts",
+			"timeAttemptsHour",
+			"timeAttemptsDay",
+			"showFeedback",
+			"requireUserLoggedIn"
+		);
+		
+		
+		if (in_array($key, $optionArrayValues))
+		{
+		    $quizOptions[$key] = $value;  
+		}
+	
 	}
+
 	
 	// Now serialise the ruleArray
 	$questionArray = serialize($questionArray);
-	
+	$quizOptionsArray = serialize($quizOptions);
+		
 	$currentUsername = utils::getCurrentUsername();
 	
 	$myDate = utils::getCurrentDate();
@@ -226,8 +246,10 @@ function quizEdit()
 		$myFields.="quizName='%s', ";
 		$myFields.="questionArray='%s', ";		
 		$myFields.="lastEditedBy='%s', ";		
-		$myFields.="lastEditedDate='%s' ";
+		$myFields.="lastEditedDate='%s', ";
+		$myFields.="quizOptions='%s' ";  
 		$myFields.="WHERE quizID =%u";
+		
 		
 		//echo $myFields;
 		
@@ -246,6 +268,7 @@ function quizEdit()
 			$questionArray,
 			$currentUsername,
 			$myDate,
+			$quizOptionsArray, 
 			$quizID
 		));
 		
@@ -255,8 +278,8 @@ function quizEdit()
 	{
 		
 		
-		$myFields="INSERT into ".$table_name." (quizName, questionArray, lastEditedBy, lastEditedDate) ";
-		$myFields.="VALUES ('%s', '%s', '%s', '%s')";	
+		$myFields="INSERT into ".$table_name." (quizName, questionArray, lastEditedBy, lastEditedDate, quizOptions) ";
+		$myFields.="VALUES ('%s', '%s', '%s', '%s', '%s')";	
 
 	/*	$qry = sprintf($myFields,
 		mysql_real_escape_string($quizName),
@@ -271,7 +294,8 @@ function quizEdit()
 			$quizName,
 			$questionArray,
 			$currentUsername,
-			$myDate
+			$myDate,
+			$quizOptionsArray
 		));
 	
 		

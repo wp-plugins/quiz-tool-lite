@@ -769,3 +769,10 @@ function ajaxQuestionResponseUpdate(elementID, questionID, IDStr, qType, current
 	
 }
 
+//function for picking a date, e.g. used in edit quiz page
+jQuery(document).ready(function() {
+
+    jQuery('.MyDate').datepicker({
+        dateFormat : 'dd-mm-yy'
+    });
+});

@@ -9,23 +9,27 @@
 </div>
 <?php
 // Get the current question pots
+$feedback="";
 
-$action=$_GET['action'];
-
-switch ($action) {
-    case "potCreate":
-        $feedback = questionPotCreate();
-        break;
-		
-    case "potEdit":
-        $feedback = questionPotEdit();
-        break;	
-        
-    case "potDelete":
-        $potID = $_GET['potID'];
-        $feedback = potDelete($potID);
-        break;	       
-        	
+if(isset($_GET['action']))
+{
+	$action=$_GET['action'];
+	
+	switch ($action) {
+		case "potCreate":
+			$feedback = questionPotCreate();
+			break;
+			
+		case "potEdit":
+			$feedback = questionPotEdit();
+			break;	
+			
+		case "potDelete":
+			$potID = $_GET['potID'];
+			$feedback = potDelete($potID);
+			break;	       
+				
+	}
 }
 
 
@@ -65,11 +69,11 @@ if($potCount>=1)
 		echo '</form>';		
 		echo '</div>';
 		echo 'The question pot has '.$questionCount.' question(s)<br/>';
-		
-		echo '<span class="editIcon greyLink smallText"><a href="javascript:toggleLayerVis(\'potEdit'.$potID.'\');toggleLayerVis(\'pot'.$potID.'\');">Edit</a></span> | ';
+		echo '<span class="addIcon greyLink smallText"><a href="admin.php?page=ai-quiz-question-list&potID='.$potID.'">Add / edit questions</a></span> | ';		
+		echo '<span class="editIcon greyLink smallText"><a href="javascript:toggleLayerVis(\'potEdit'.$potID.'\');toggleLayerVis(\'pot'.$potID.'\');">Change Pot Name</a></span> | ';
 		echo '<span class="deleteIcon smalltext greyLink smallText"><a href="#TB_inline?width=400&height=150&inlineId=QuestionPotDeleteCheck'.$potID.'" class="thickbox">Delete this question pot</a></span>';
 
-		echo '</div>';		
+		echo '</div>';
 		
 //		echo '<a href="admin.php?page=ai-quiz-question-list&potID='.$potID.'" class="editIcon">Add / Edit Questions</a>';
 
@@ -87,7 +91,13 @@ if($potCount>=1)
 
 	echo '</div>';
 }
+else
+{
+	echo '<hr/><span class="greyText">To start creating your questions, firstly create a question \'pot\' by clicking the link above.<br/>Once created, click on the question pot to create your questions';	
+	echo '<br/><br/>For more information and help please read the <a href="admin.php?page=ai-quiz-help">help pages</a></span>';
+}
 
 
 
 ?>
+

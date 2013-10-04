@@ -1,15 +1,24 @@
 <?php
+
+// Define the variables
+
+
+$feedback="";
 $potID = $_GET['potID'];
 $potInfo = getPotInfo($potID);
 
 $potName = utils::convertTextFromDB($potInfo['potName']);		
 
-$myAction = $_GET['action'];
-if($myAction=="questionDelete")
+
+if(isset($_GET['action']))
 {
-	$questionID=$_GET['questionID'];
-	questionDelete($questionID);
-	$feedback = '<span class="successText">Question Deleted</span><br/>';
+	$myAction = $_GET['action'];
+	if($myAction=="questionDelete")
+	{
+		$questionID=$_GET['questionID'];
+		questionDelete($questionID);
+		$feedback = '<span class="successText">Question Deleted</span><br/>';
+	}
 }
 
 ?>

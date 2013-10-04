@@ -3,12 +3,16 @@
 <a href="admin.php?page=ai-quiz-quiz-edit" class="addIcon">Add a new quiz</a>
 <?php
 
-$action=$_GET['action'];
 
-if($action=="quizDelete")
+if(isset($_GET['action']))
 {
-	$quizID = $_GET['quizID'];
-	quizDelete($quizID);
+	$action=$_GET['action'];
+	
+	if($action=="quizDelete")
+	{
+		$quizID = $_GET['quizID'];
+		quizDelete($quizID);
+	}
 }
 
 
@@ -30,10 +34,10 @@ if($quizCount>=1)
 		echo '<tr>';
 		echo '<td>'.$quizName.'</td>';
 		echo '<td valign="top"><span class="greyText">[QTL-Quiz id='.$quizID.']</span></td>';		
-		echo '<td><a href="admin.php?page=ai-quiz-quiz-edit&quizID='.$quizID.'" class="editIcon">Edit</a></td>';
+		echo '<td><a href="admin.php?page=ai-quiz-quiz-edit&quizID='.$quizID.'" class="editIcon">Edit Quiz</a></td>';
 	//	echo '<td><a href="admin.php?page=ai-quiz-quiz-list&action=quizDelete&quizID='.$quizID.'" class="deleteIcon">Delete</a></td>';
 		echo '<td>';
-		echo '<a href="#TB_inline?width=400&height=150&inlineId=QuizDeleteCheck'.$quizID.'" class="thickbox deleteIcon">Delete</a>';
+		echo '<a href="#TB_inline?width=400&height=150&inlineId=QuizDeleteCheck'.$quizID.'" class="thickbox deleteIcon">Delete Quiz</a>';
 		echo '<div id="QuizDeleteCheck'.$quizID.'" style="display:none">';
 		echo '<div style="text-align:center">';
 		echo '<h2>Are you sure you want to delete quiz: '.$quizName.' ?</h2>';		
@@ -49,6 +53,6 @@ if($quizCount>=1)
 }
 else
 {
-	
+	echo '<br/><br/><span class="greyText">Create a quiz by clicking the link above</span>';
 }
 ?>

@@ -47,9 +47,7 @@ html
 <h1>Select your Question or Quiz</h1>
 <?php
 
-define('AIQUIZ_PATH', plugin_dir_path(__FILE__)); # inc /
-define('AIQUIZ_DIR', plugin_dir_path(__FILE__)); # inc /
-define ('AI_Plugin_Path', plugin_basename(__FILE__));
+
 
 require_once AIQUIZ_PATH.'scripts/qry-functions.php'; # All the DB queries
 ?>
@@ -107,7 +105,11 @@ echo '</div>';
 // Start of quiz options if seleted
 echo '<div id="questionsDiv">';
 
-$quizID = $_GET['quizID'];
+$quizID="";
+if(isset($_GET['quizID']))
+{
+	$quizID = $_GET['quizID'];
+}
 if($quizID)
 {
 	$quizInfo = getQuizInfo($quizID);
@@ -148,7 +150,12 @@ if($quizID)
 
 
 // Start of question list if selected
-$potID = $_GET['potID'];
+
+$potID="";
+if(isset($_GET['potID']))
+{
+	$potID = $_GET['potID'];
+}
 if($potID)
 {
 	$potInfo = getPotInfo($potID);

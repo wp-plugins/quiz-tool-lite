@@ -5,7 +5,7 @@ function drawRadioCheckOptionsEditTable($questionID, $qType)
 {
 	
 	
-	echo '<a href="#TB_inline?width=800&height=500&inlineId=optionEditForm" class="thickbox addIcon">Add a new response option</a><br/>';
+	echo '<a href="#TB_inline?width=800&height=550&inlineId=optionEditForm" class="thickbox addIcon">Add a new response option</a><br/>';
 	
 //	echo '<a href="#TB_inline?width=800&height=50&inlineId=testID" class="thickbox">popup</a>';
 //	echo '<div id="testID" style="display:none"><h2>HELLO</h2></div>';
@@ -36,7 +36,7 @@ function drawRadioCheckOptionsEditTable($questionID, $qType)
 		if($isCorrect==1){echo '<span class="tickIcon successText">Correct Answer</span>';}
 		
 		echo '</td>'.chr(10);
-		echo '<td><a href="#TB_inline?width=800&height=500&inlineId=optionEditForm'.$optionID.'" class="thickbox editIcon">Edit</a></td>'.chr(10);
+		echo '<td><a href="#TB_inline?width=800&height=550&inlineId=optionEditForm'.$optionID.'" class="thickbox editIcon">Edit</a></td>'.chr(10);
 		
 		echo '<td>';
 		echo '<a href="#TB_inline?width=400&height=150&inlineId=optionDeleteCheck'.$optionID.'" class="thickbox deleteIcon">Delete</a>';
@@ -64,14 +64,23 @@ function drawRadioCheckOptionsEditTable($questionID, $qType)
 
 function responseOptionEditForm($questionID, $optionInfoArray="")
 {
+	// Define the vars
+	$optionID="";
+	$optionValue="";
+	$responseCorrectFeedback ="";
+	$responseIncorrectFeedback ="";
+	$isCorrect ="";
 	
-	$optionID= $optionInfoArray['optionID'];	
-	$optionValue = utils::convertTextFromDB($optionInfoArray['optionValue']);
+	if($optionInfoArray)
+	{
+		$optionID= $optionInfoArray['optionID'];	
+		$optionValue = utils::convertTextFromDB($optionInfoArray['optionValue']);
 
 		
-	$isCorrect= $optionInfoArray['isCorrect'];
-	$responseCorrectFeedback= $optionInfoArray['responseCorrectFeedback'];
-	$responseIncorrectFeedback= $optionInfoArray['responseIncorrectFeedback'];	
+		$isCorrect= $optionInfoArray['isCorrect'];
+		$responseCorrectFeedback= $optionInfoArray['responseCorrectFeedback'];
+		$responseIncorrectFeedback= $optionInfoArray['responseIncorrectFeedback'];	
+	}
 	
 	// Create the edit div for this option		
 	echo '<div id="optionEditForm'.$optionID.'" style="display:none">';
@@ -83,13 +92,15 @@ function responseOptionEditForm($questionID, $optionInfoArray="")
 	//the_editor($optionValue, 'optionValue'.$optionID, '', false);
 	
 	// Correct feedback
-	echo '<label for="responseCorrectFeedback'.$optionID.'">Correct Feedback: </label>';
+	echo '<label for="responseCorrectFeedback'.$optionID.'">Correct Feedback:  (optional)</label>';
+	echo '<span class="smallText greyText">The feedback shown next to this response if answered correctly</span><br/>';
 	echo '<textarea rows="3" cols="50" name="responseCorrectFeedback'.$optionID.'" id="responseCorrectFeedback.'.$optionID.'">'.$responseCorrectFeedback.'</textarea>';
 	
 //	the_editor($responseCorrectFeedback, 'responseCorrectFeedback'.$optionID, '', false);
 			
 	// incorrect feedback
-	echo '<label for="responseIncorrectFeedback'.$optionID.'">Incorrect Feedback: </label>';
+	echo '<label for="responseIncorrectFeedback'.$optionID.'">Incorrect Feedback:  (optional)</label>';
+	echo '<span class="smallText greyText">The feedback shown next to this response if answered incorrectly</span><br/>';	
 	echo '<textarea rows="3" cols="50" name="responseIncorrectFeedback'.$optionID.'" id="responseIncorrectFeedback.'.$optionID.'">'.$responseIncorrectFeedback.'</textarea>';
 	
 	echo '<br/>';
