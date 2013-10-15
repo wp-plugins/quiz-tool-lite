@@ -180,6 +180,19 @@ function drawQuiz($quizID)
 			$days = floor($timeLeft / 86400);
 			
 			$quizFailureReason = '<li>You can next take this test in <b>'.$min.' minutes, '.$hours.' hours and '.$days.' days</b></li>';
+			
+			$originalAttemptCount = ($newAttemptCount-1);
+			
+			// Because the attempt count is auto updated regardless, we need to reset this to minus one if they can't catually take it
+			$myFields ="UPDATE ".$table_name." SET ";
+			$myFields.="attemptCount=%u ";
+			$myFields.="WHERE username ='%s' AND quizID=%u";
+			
+			$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
+				$originalAttemptCount,
+				$currentUsername,
+				$quizID
+			));				
 		}
 	}
 	
