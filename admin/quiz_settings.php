@@ -6,12 +6,12 @@ function color_config()
 {
 	return array
 	( 
-		'correctFeedbackBoxColour' => array( "default_color" => '#EBFEE9', label => 'Correct feedback box colour' ),
-		'correctFeedbacktextColour' => array( "default_color" => '#000000', label => 'Correct feedback text colour' ),
-		'incorrectFeedbackBoxColour' => array ( "default_color" => '#FEEDED', label => 'Incorrect feedback box colour' ),
-		'incorrectFeedbacktextColour' => array ( "default_color" => '#000000', label => 'Incorrect feedback text colour' ),
-		'reflectiveFeedbackBoxColour' => array ( "default_color" => '#EBF2FE', label => 'Reflective feedback box colour'),
-		'reflectiveFeedbacktextColour' => array ( "default_color" => '#000000', label => 'Reflective feedback text colour')
+		'correctFeedbackBoxColour' => array( "default_color" => '#EBFEE9', "label" => 'Correct feedback box colour' ),
+		'correctFeedbacktextColour' => array( "default_color" => '#000000', "label" => 'Correct feedback text colour' ),
+		'incorrectFeedbackBoxColour' => array ( "default_color" => '#FEEDED', "label" => 'Incorrect feedback box colour' ),
+		'incorrectFeedbacktextColour' => array ( "default_color" => '#000000', "label" => 'Incorrect feedback text colour' ),
+		'reflectiveFeedbackBoxColour' => array ( "default_color" => '#EBF2FE', "label" => 'Reflective feedback box colour'),
+		'reflectiveFeedbacktextColour' => array ( "default_color" => '#000000', "label" => 'Reflective feedback text colour')
 	);
 }
 
@@ -24,7 +24,9 @@ initialise_color_options();
 
 
 //if the user has submitted new choices, update them
-if ( isset($_POST['update_options'])) { 
+if ( isset($_POST['update_options']))
+{ 
+	$feedback =  '<span class="successText">Settings updated</span>';
 	color_picker_option_update(); 
 }
 
@@ -92,14 +94,18 @@ function display_color_picker($col)
 {
 	$conf = color_config();
 ?>
-     <label for="<?php echo $col?>"><?php echo $conf[$col][label]?></label>
+     <label for="<?php echo $col?>"><?php echo $conf[$col]["label"]?></label>
      <input type="text" id="<?php echo $col ?>" value="<?php echo get_option($col); ?>" name="color_picker_<?php echo $col?>" />
      <div id="color_picker_<?php echo $col?>"></div>
 <?php
 }
 ?>
 
-<h1>Quiz color setting</h1>
+<h1>Feedback colour settings</h1>
+
+<?php
+echo $feedback
+?>
 
 <form method="POST" action="">
 
@@ -152,8 +158,9 @@ function display_color_picker($col)
 		<?php  display_color_picker('reflectiveFeedbacktextColour')?>
 		</div>
 	</div>
-	
-     <div style="clear:both;"><input type="submit" name="update_options" value="Update Options" /></div>
+
+     <div style="clear:both; padding-top:20px">     	
+     <input type="submit" name="update_options" value="Update Options" class="button-primary"/></div>
 </form>
 
 <?php echo make_javascript(); ?>

@@ -17,14 +17,20 @@ function questionPotCreate()
 		$myFields="INSERT into ".$table_name." (potName, creator, createDate) ";
 		$myFields.="VALUES ('%s', '%s','%s')";	
 		
-		$qry = sprintf($myFields,
+	/*	$qry = sprintf($myFields,
 		mysql_real_escape_string($potName),
 		$currentUsername,
 		$myDate
 		);
 		
 		$RunQry=mysql_query($qry);
-	
+	*/	
+		$RunQry = $wpdb->query( $wpdb->prepare($myFields,
+			$potName,
+			$currentUsername,
+			$myDate
+		));
+						
 		$feedback = '<span class="successText">Question Pot created</span>';	
 	}
 	else
@@ -58,13 +64,21 @@ function questionPotEdit()
 		
 		//echo $myFields;
 		
-		$qry = sprintf($myFields,
+	/*	$qry = sprintf($myFields,
 		mysql_real_escape_string($potName),
 		$currentUsername,
 		$myDate,
 		$potID);
 		
 		$RunQry=mysql_query($qry);
+	*/
+		$RunQry = $wpdb->query( $wpdb->prepare($myFields,
+			$potName,
+			$currentUsername,
+			$myDate,
+			$potID
+		));
+		
 		
 		$feedback = '<span class="successText">Question Pot Name Edited</span>';	
 		
@@ -104,7 +118,7 @@ function questionEdit($questionID)
 		
 		//echo $myFields;
 		
-		$qry = sprintf($myFields,
+	/*	$qry = sprintf($myFields,
 		mysql_real_escape_string($question),
 		mysql_real_escape_string($incorrectFeedback),
 		mysql_real_escape_string($correctFeedback),
@@ -112,6 +126,13 @@ function questionEdit($questionID)
 		);
 		
 		$RunQry=mysql_query($qry);
+	*/	
+		$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
+			$question,
+			$incorrectFeedback,
+			$correctFeedback,
+			$questionID
+		));
 		
 	}
 	else
@@ -121,7 +142,7 @@ function questionEdit($questionID)
 		$myFields="INSERT into ".$table_name." (qType, question, potID, correctFeedback, incorrectFeedback, creator, createDate) ";
 		$myFields.="VALUES ('%s', '%s', %u, '%s', '%s', '%s', '%s')";	
 
-		$qry = sprintf($myFields,
+	/*	$qry = sprintf($myFields,
 						$qType,
 						mysql_real_escape_string($question),
 						$potID,
@@ -132,13 +153,20 @@ function questionEdit($questionID)
 					);
 		
 		$RunQry=mysql_query($qry);
+	*/	
+		$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
+			$qType,
+			$question,
+			$potID,
+			$correctFeedback,
+			$incorrectFeedback,
+			$currentUsername,
+			$myDate
+		));
 		
 		$questionID=mysql_insert_id();
 	}
-	
-	
 
-	
 	return $questionID;
 		
 
@@ -149,8 +177,12 @@ function questionDelete($questionID)
 	global $wpdb;
 	$table_name = $wpdb->prefix . "AI_Quiz_tblQuestions";
 			
-	$qry = 'DELETE FROM '.$table_name.' WHERE questionID='.$questionID; // Delete from the questions
+/*	$qry = 'DELETE FROM '.$table_name.' WHERE questionID='.$questionID; // Delete from the questions
 	$RunQry=mysql_query($qry);	
+*/	
+	$RunQry = $wpdb->query( $wpdb->prepare(	'DELETE FROM '.$table_name.' WHERE questionID= %s',
+		$questionID
+	));
 
 }
 
@@ -160,6 +192,7 @@ function quizEdit()
 	$table_name = $wpdb->prefix . "AI_Quiz_tblQuizzes";
 	
 	$questionArray = array();
+	$quizOptions = array();
 	
 	foreach ($_POST as $key => $value)
 	{
@@ -172,17 +205,36 @@ function quizEdit()
 		  {
 			 $questionArray[$thisPotID] = $value;
 		  }
-		  
 		}		
 		else
 		{
 			${$key}=$value;
 		}
+		
+		$optionArrayValues = array
+		(
+			"startDate",
+			"endDate",
+			"maxAttempts",
+			"timeAttemptsHour",
+			"timeAttemptsDay",
+			"showFeedback",
+			"requireUserLoggedIn"
+		);
+		
+		
+		if (in_array($key, $optionArrayValues))
+		{
+		    $quizOptions[$key] = $value;  
+		}
+	
 	}
+
 	
 	// Now serialise the ruleArray
 	$questionArray = serialize($questionArray);
-	
+	$quizOptionsArray = serialize($quizOptions);
+		
 	$currentUsername = utils::getCurrentUsername();
 	
 	$myDate = utils::getCurrentDate();
@@ -194,12 +246,14 @@ function quizEdit()
 		$myFields.="quizName='%s', ";
 		$myFields.="questionArray='%s', ";		
 		$myFields.="lastEditedBy='%s', ";		
-		$myFields.="lastEditedDate='%s' ";
+		$myFields.="lastEditedDate='%s', ";
+		$myFields.="quizOptions='%s' ";  
 		$myFields.="WHERE quizID =%u";
+		
 		
 		//echo $myFields;
 		
-		$qry = sprintf($myFields,
+	/*	$qry = sprintf($myFields,
 		mysql_real_escape_string($quizName),
 		$questionArray,
 		$currentUsername,
@@ -208,6 +262,15 @@ function quizEdit()
 		);
 		
 		$RunQry=mysql_query($qry);
+	*/
+		$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
+			$quizName,
+			$questionArray,
+			$currentUsername,
+			$myDate,
+			$quizOptionsArray, 
+			$quizID
+		));
 		
 		
 	}
@@ -215,10 +278,10 @@ function quizEdit()
 	{
 		
 		
-		$myFields="INSERT into ".$table_name." (quizName, questionArray, lastEditedBy, lastEditedDate) ";
-		$myFields.="VALUES ('%s', '%s', '%s', '%s')";	
+		$myFields="INSERT into ".$table_name." (quizName, questionArray, lastEditedBy, lastEditedDate, quizOptions) ";
+		$myFields.="VALUES ('%s', '%s', '%s', '%s', '%s')";	
 
-		$qry = sprintf($myFields,
+	/*	$qry = sprintf($myFields,
 		mysql_real_escape_string($quizName),
 		$questionArray,
 		$currentUsername,
@@ -226,6 +289,15 @@ function quizEdit()
 		);
 		
 		$RunQry=mysql_query($qry);
+	*/
+		$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
+			$quizName,
+			$questionArray,
+			$currentUsername,
+			$myDate,
+			$quizOptionsArray
+		));
+	
 		
 		$quizID=mysql_insert_id();
 	}
@@ -239,8 +311,12 @@ function quizDelete($quizID)
 	global $wpdb;
 	$table_name = $wpdb->prefix . "AI_Quiz_tblQuizzes";
 	
-	$qry = 'DELETE FROM '.$table_name.' WHERE quizID='.$quizID; // Delete from the questions
+/*	$qry = 'DELETE FROM '.$table_name.' WHERE quizID='.$quizID; // Delete from the questions
 	$RunQry=mysql_query($qry);	
+*/
+	$RunQry = $wpdb->query( $wpdb->prepare(	'DELETE FROM '.$table_name.' WHERE quizID=%d',
+		$quizID
+	));
 
 }
 
@@ -256,7 +332,9 @@ function potDelete($potID)
 	
 	// select the questions in the pot 
 
-	$questionIDs = $wpdb->get_results( "SELECT questionID FROM ".$question_table_name." WHERE potID=".$potID);
+	//$questionIDs = $wpdb->get_results( "SELECT questionID FROM ".$question_table_name." WHERE potID=".$potID);
+	$questionIDs = $wpdb->get_results( $wpdb->prepare(	"SELECT questionID FROM ".$question_table_name." WHERE potID=%d", $potID));
+
 	//$questions = getQuestionsInPot($potID);
 	//$questionIDs = $questions->questionID;
 	//$questionIDs = $questions['questionID'];
@@ -269,8 +347,13 @@ function potDelete($potID)
 	}
 	//delect the pot
 	$wpdb->query( 			
-		$wpdb->prepare( "DELETE FROM ".$pot_table_name." WHERE potID=".$potID)
-	);		
+		$wpdb->prepare( "DELETE FROM ".$pot_table_name." WHERE potID=%d", $potID)
+	);	
+	
+	
+	$feedback = '<span class="successText">Question Pot Deleted</span>';	
+	return $feedback;
+		
 }
 
 //delete the selected question and all the options of the question
@@ -291,12 +374,12 @@ function quizQuestionDelete($questionID)
 //	if ($optionCount > 0){
 //		echo "count is 2 - ".$optionCount;
 		$wpdb->query( 			
-			$wpdb->prepare( "DELETE FROM ".$responseOptions_table_name." WHERE questionID=".$questionID)
+			$wpdb->prepare( "DELETE FROM ".$responseOptions_table_name." WHERE questionID=%d", $questionID)
 		);
 //	}
 	//delect the question
 	$wpdb->query( 			
-		$wpdb->prepare( "DELETE FROM ".$question_table_name." WHERE questionID=".$questionID)
+		$wpdb->prepare( "DELETE FROM ".$question_table_name." WHERE questionID=%d", $questionID)
 	);
 }
 
@@ -342,7 +425,7 @@ function responseOptionUpdate($questionID)
 			$myFields="INSERT into ".$table_name." (optionValue, questionID, responseCorrectFeedback, responseIncorrectFeedback) ";
 			$myFields.="VALUES ('%s', %u, '%s', '%s')";	
 		
-			$qry = sprintf($myFields,
+		/*	$qry = sprintf($myFields,
 			mysql_real_escape_string($optionValue),
 			$questionID,
 			mysql_real_escape_string($responseCorrectFeedback),
@@ -350,7 +433,13 @@ function responseOptionUpdate($questionID)
 			);
 			
 			$RunQry=mysql_query($qry);
-			
+		*/	
+			$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
+				$optionValue,
+				$questionID,
+				$responseCorrectFeedback,
+				$responseIncorrectFeedback
+			));
 			
 			$optionID=mysql_insert_id(); // Get this optionID
 					
@@ -372,13 +461,17 @@ function responseOptionUpdate($questionID)
 	
 	if($qType=="radio" && $isCorrect==1) // If its a radio button type then only one can be correct so wipe everything
 	{
-		$qry = 'UPDATE '.$table_name.' SET isCorrect=0 WHERE questionID= '.$questionID;
-		$RunQry=mysql_query($qry);
+		//$qry = 'UPDATE '.$table_name.' SET isCorrect=0 WHERE questionID= '.$questionID;
+		//$RunQry=mysql_query($qry);
+		$RunQry = $wpdb->query( $wpdb->prepare(	'UPDATE '.$table_name.' SET isCorrect=0 WHERE questionID= %d', $questionID ));
+
 	}
 	
 	// Now update it for this option	
-	$qry = 'UPDATE '.$table_name.' SET isCorrect='.$isCorrect.' WHERE optionID = '.$optionID;
-	$RunQry=mysql_query($qry);	
+	//$qry = 'UPDATE '.$table_name.' SET isCorrect='.$isCorrect.' WHERE optionID = '.$optionID;
+	//$RunQry=mysql_query($qry);	
+	$RunQry = $wpdb->query( $wpdb->prepare('UPDATE '.$table_name.' SET isCorrect=%d WHERE optionID = %d', $isCorrect, $optionID));
+
 		
 }
 
@@ -387,8 +480,10 @@ function responseOptionDelete($optionID)
 	global $wpdb;
 	$table_name = $wpdb->prefix . "AI_Quiz_tblResponseOptions";
 	
-	$qry = 'DELETE FROM '.$table_name.' WHERE optionID='.$optionID; // Delete from the resopsne options
-	$RunQry=mysql_query($qry);	
+	//$qry = 'DELETE FROM '.$table_name.' WHERE optionID='.$optionID; // Delete from the resopsne options
+	//$RunQry=mysql_query($qry);	
+	$RunQry = $wpdb->query( $wpdb->prepare( 'DELETE FROM '.$table_name.' WHERE optionID=%d', $optionID)); // Delete from the resopsne options
+
 		
 }
 
@@ -413,15 +508,31 @@ function logAttempt($quizID, $questionArray)
 	
 	if($attemptCount=="")
 	{
-		$qry = "INSERT into ".$table_name." (attemptCount, username, lastDateStarted, questionArray, quizID) ";
-		$qry.="VALUES (0, '".$username."', '".$dateTime."', '".serialize($questionArray)."', ".$quizID.")";
-		$RunQry=mysql_query($qry);
+		//$qry = "INSERT into ".$table_name." (attemptCount, username, lastDateStarted, questionArray, quizID) ";
+		//$qry.="VALUES (0, '".$username."', '".$dateTime."', '".serialize($questionArray)."', ".$quizID.")";
+		//$RunQry=mysql_query($qry);
+		
+		$RunQry = $wpdb->query( $wpdb->prepare( 
+			"INSERT into ".$table_name." (attemptCount, username, lastDateStarted, questionArray, quizID) VALUES (%d, %s, %s, %s, %d)", 
+			0, 
+			$username,
+			$dateTime, 
+			serialize($questionArray), 
+			$quizID
+		));
 			
 	}
 	else
 	{
-		$qry = "UPDATE ".$table_name." SET lastDateStarted='".$dateTime."', questionArray='".serialize($questionArray)."' WHERE username = '".$username."' AND quizID=".$quizID;
-		$RunQry=mysql_query($qry);
+		//$qry = "UPDATE ".$table_name." SET lastDateStarted='".$dateTime."', questionArray='".serialize($questionArray)."' WHERE username = '".$username."' AND quizID=".$quizID;
+		//$RunQry=mysql_query($qry);
+		$RunQry = $wpdb->query( $wpdb->prepare( 
+			 "UPDATE ".$table_name." SET lastDateStarted=%s, questionArray=%s WHERE username=%s AND quizID=%s",
+			 $dateTime,
+			 serialize($questionArray),
+			 $username,
+			 $quizID
+		));
 	}
 	
 }

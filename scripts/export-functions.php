@@ -86,7 +86,12 @@ class AI_Quiz_importExport
 	function checkCSVUpload()
 	{
 		// if the form is submitted
-		if ($_POST['mode'] == "submit") {
+		$postCheck="";
+		if(isset($_POST['mode']))
+		{
+			$postCheck = $_POST['mode'];
+		}
+		if ($postCheck == "submit") {
 			   
 			$myFilename = $_FILES['csvFile']['tmp_name'];
 			//echo 'Filename = '.$myFilename.'<br/>';

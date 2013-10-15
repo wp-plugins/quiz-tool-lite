@@ -1,6 +1,3 @@
-
-
-
 <h1>Export / Import Quiz Questions</h1>
 <h2>Export</h2>
 This page will export the quiz questions to the selected format.
@@ -20,5 +17,3 @@ Upload your CSV import file.<br/>
 <input type="hidden" name="mode" value="submit">
 <input type="submit" value="Upload">
 </form>
-
-

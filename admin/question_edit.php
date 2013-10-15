@@ -1,31 +1,50 @@
 <?php
 
 wp_enqueue_media();
-$action=$_GET['action'];  
-$questionID = $_GET['questionID']; 
 
-switch ($action) {
-    case "questionEdit": 
-		$feedback =  'Question updated';
-		$questionID = questionEdit($questionID);			
-        break;		
+/// Declare  the vars
+$questionID="";
+$feedback="";
+$question="";
+$correctFeedback ="";
+$incorrectFeedback ="";
+$hideIncorrectFeedback="";
 
-    case "optionUpdate":
-		$feedback =  'Options updated';
-		responseOptionUpdate($questionID);
-        break;		
-		
-		
-    case "optionDelete":
-		$feedback =  'Option deleted';
-		$optionID = $_GET['optionID'];
-		responseOptionDelete($optionID);
-        break;	
-		
-		
-    default:
-		if($questionID==""){$questionID = $_POST['questionID'];}
-        break;		
+if(isset($_GET['questionID']))
+{	
+	$questionID = $_GET['questionID']; 
+}
+
+
+if(isset($_GET['action']))
+{
+	$action=$_GET['action'];
+	
+
+	
+	switch ($action) {
+		case "questionEdit": 
+			$feedback =  'Question updated';
+			$questionID = questionEdit($questionID);
+			break;		
+	
+		case "optionUpdate":
+			$feedback =  'Options updated';
+			responseOptionUpdate($questionID);
+			break;		
+			
+			
+		case "optionDelete":
+			$feedback =  'Option deleted';
+			$optionID = $_GET['optionID'];
+			responseOptionDelete($optionID);
+			break;	
+			
+			
+		default:
+			if($questionID==""){$questionID = $_POST['questionID'];}
+			break;		
+	}
 }
 $potID = "";
 
@@ -36,12 +55,14 @@ if($questionID){
 	$correctFeedback = utils::convertTextFromDB($questionInfo['correctFeedback']);
 	$potID = $questionInfo['potID'];
 	$qType = $questionInfo['qType'];
+	
 
 }
 else
 {
 	$potID = $_GET['potID'];
 	$qType = $_GET['qType'];	
+	
 }
 
 
@@ -67,12 +88,8 @@ else
 	$questionEditFormAction = 'admin.php?page=ai-quiz-question-edit&action=questionEdit&potID='.$potID.'&questionID='.$questionID.'&qType='.$qType.'&tab=options';
 }
 
-
-
 $potInfo = getPotInfo($potID);
 $potName = utils::convertTextFromDB($potInfo['potName']);
-
-
 
 function ilc_admin_tabs( $current = 'question', $potID, $questionID, $qType) {
 	
@@ -93,14 +110,16 @@ function ilc_admin_tabs( $current = 'question', $potID, $questionID, $qType) {
     echo '</h3>';
 }
 
+?>
+<a href="admin.php?page=ai-quiz-question-list&potID=<?php echo $potID?>" class="backIcon">Return to <?php echo $potName?> questions</a>
+<?php
+
 if ( isset ( $_GET['tab'] ) ) ilc_admin_tabs($_GET['tab'], $potID, $questionID, $qType); else ilc_admin_tabs('question', $potID, $questionID, $qType);
 
 ?>
 
 
-<a href="admin.php?page=ai-quiz-question-list&potID=<?php echo $potID?>" class="backIcon">Return to <?php echo $potName?> questions</a>
 
-<hr/>
 <div id="questionEdit">
 
 
@@ -125,12 +144,12 @@ if ( $_GET['page'] == 'ai-quiz-question-edit' ){
             
 			<div id="textEditor">    
 			<label for ="question">Question</label>
-			<?php the_editor($question, 'question', '', true);	?>
+			<?php wp_editor($question, 'question', '', true);	?>
             
             
             <!-- Correct Feedback General -->
 			<label for ="correctFeedback"><?php echo $correctFeedbackLabel?></label>
-			<?php the_editor($correctFeedback, 'correctFeedback', '', true);	?>   
+			<?php wp_editor($correctFeedback, 'correctFeedback', '', true);	?>   
             
             
             <!-- Incorrect Feedback Overall -->
@@ -139,7 +158,7 @@ if ( $_GET['page'] == 'ai-quiz-question-edit' ){
 			{
 			?>
                 <label for ="incorrectFeedback">Incorrect Feedback</label> 
-                <?php the_editor($incorrectFeedback, 'incorrectFeedback', '', true);	?>
+                <?php wp_editor($incorrectFeedback, 'incorrectFeedback', '', true);	?>
             <?php
 			}
 			?>

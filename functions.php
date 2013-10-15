@@ -70,8 +70,8 @@ function AI_Quiz_createAdminMenu() {
 	$page_title="Settings";
 	$menu_title="Settings";
 	$capability="administrator";
-	$menu_slug="ai-quiz-setting";
-	$function="drawAIquiz_setting";
+	$menu_slug="ai-quiz-settings";
+	$function="drawAIquiz_settings";
 	add_submenu_page($parentSlug, $page_title, $menu_title, $capability, $menu_slug, $function);	
 	
 	$parentSlug="ai-quiz-home";
@@ -82,8 +82,13 @@ function AI_Quiz_createAdminMenu() {
 	$function="drawAIquiz_export";
 	add_submenu_page($parentSlug, $page_title, $menu_title, $capability, $menu_slug, $function);
 	
-
-	
+	$parentSlug="ai-quiz-home";
+	$page_title="Help";
+	$menu_title="Help";
+	$capability="administrator";
+	$menu_slug="ai-quiz-help";
+	$function="drawAIquiz_help";
+	add_submenu_page($parentSlug, $page_title, $menu_title, $capability, $menu_slug, $function);	
 }
 
 
@@ -91,23 +96,45 @@ function AI_Quiz_createAdminMenu() {
   
 function AI_Quiz_loadMyPluginScripts()
 {  
-
 	// Include JS/CSS only if we're on our options page  
 	if (AI_Quiz_isMyPluginScreen())
 	{  
 		wp_enqueue_script('js_custom', plugins_url('/scripts/js-functions.js',__FILE__) ); #Custom JS functions
 
-		wp_register_style( 'css_custom',  plugins_url('/css/styles.css',__FILE__) );
-        wp_enqueue_style( 'css_custom' );
+		wp_register_style( 'QTL_css_custom',  plugins_url('/css/styles.css',__FILE__) );
+        wp_enqueue_style( 'QTL_css_custom' );
 		
-		wp_register_style( 'css_icons',  plugins_url('/css/icons.css',__FILE__) );
-        wp_enqueue_style( 'css_icons' );		
-		
-
+		wp_register_style( 'QTL_css_icons',  plugins_url('/css/icons.css',__FILE__) );
+        wp_enqueue_style( 'QTL_css_icons' );	
 	} 
 } 
 
+function my_admin_init()
+{
+	$pluginfolder = plugins_url();
+	wp_enqueue_script('jquery');
+	wp_enqueue_script('jquery-ui-core');
+	wp_enqueue_script('jquery-ui-datepicker');
+		
+	// tell WordPress to load the Smoothness theme from Google CDN
+	$url = "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.7/themes/smoothness/jquery-ui.css";
+	wp_enqueue_style('jquery-ui-smoothness', $url, false, null);		
+}
+add_action('admin_init', 'my_admin_init');
 
+
+function my_admin_footer() {
+	    ?>
+	    <script type="text/javascript">
+	    jQuery(document).ready(function(){
+	        jQuery('.MyDate').datepicker({
+	            dateFormat : 'yy-mm-dd'
+	        });
+	    });
+	    </script>
+	    <?php
+	}
+add_action('admin_footer', 'my_admin_footer');
  
  
 // Check if we're on our options page   and only load plugin scripts if so
@@ -130,9 +157,12 @@ function AI_Quiz_isMyPluginScreen()
 		"quiz-questions_page_ai-quiz-quiz-list",
 		"admin_page_ai-quiz-quiz-edit",
 		"quiz-questions_page_ai-quiz-results",
-		"admin_page_ai-quiz-quiz-edit",
 		"admin_page_ai-quiz-question-edit",
 		"admin_page_ai-quiz-questionType",
+		"quiz-questions_page_ai-quiz-export",
+		"quiz-questions_page_ai-quiz-settings",
+		"quiz-questions_page_ai-quiz-help",
+		"ai-quiz-results_uos"	
 		);
 		
 		
@@ -140,8 +170,6 @@ function AI_Quiz_isMyPluginScreen()
 		
 		$thisPage = $screen->id;
 		
-		//echo $thisPage; // Spit out in the dashbaord the name of the aopge for debugging
-	
 		if (in_array($thisPage, $myPluginPages)) {
 			$isMyPluginPage = true;
 		}
@@ -163,7 +191,7 @@ function AI_Quiz_isMyPluginScreen()
 
 
 // Adds the ADD QUESTION option to posts and pages in the editor
-class AIQuiz_TinyMCE_Button
+class AIQuiz_TinyMCE_Button 
 {	
 	
 	static public function tinymce_add_button()
@@ -208,6 +236,10 @@ add_shortcode('kkytv', array('AIQuiz_TinyMCE_Button','addAI_Button'));
 
 
 
+
+
+
+
 // farbtastic code is required for the colour picker wheel
 add_action('init', 'load_scripts');
 function load_scripts() {
@@ -237,7 +269,15 @@ if (!class_exists('DownloadCSV'))
 	//	{) // Are they logged in?
 			{
 				
-				if ($pagenow=='admin.php' && $_GET['download']=='csv')
+				
+				$downloadType="";
+				if(isset($_GET['download']))
+				{
+					$downloadType = $_GET['download'];
+				}
+				
+				
+				if ($pagenow=='admin.php' && $downloadType=='csv')
 				{
 					$fileName = 'quizQuestionsExport.csv';
 					 
@@ -281,6 +321,8 @@ if (!class_exists('DownloadCSV'))
 
 // Allow the poopup thickbox to appear all pages.
 add_thickbox(); 
+
+
 
 
 ?>

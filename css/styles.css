@@ -1,3 +1,10 @@
+h1{
+	margin-right:180px;
+	line-height:30px;
+}	
+
+
+
 #wpbody, #TB_window
 {
 	font-size:1.2em !important;
@@ -36,30 +43,28 @@
 }
 
 
-#wpbody table
+
+#quiztable table
 {
 	padding:5px !important;
 	margin:0px !important;
+	width:90% !important;
 	
 }
 
-
-/* Override styles for the editor on question edit page */
-
-#wpbody th
+#quiztable th
 {
 	background:#ccc;
 	padding:6px;
 	text-align:left;
 }
 
-#wpbody td
+#quiztable td
 {
 	padding:0px !important;
 	border-bottom:1px solid #ccc !important;
 	margin:0px !important;
 }
-
 
 .wp-editor-area {
     height:200px !important;
@@ -225,8 +230,36 @@ a
 	background:#E9FEE7;	
 }
 
-.addIcon
+
+#qtl_content
 {
-	
+	background:url(../images/qtl_logo.gif) no-repeat right top;
+	margin-top:5px;
+
 }
 
+.codeExample
+{
+	background:#f3f3f7;
+	padding:11px;
+	border:1px solid #dedee3;
+	font-family: Consolas, Monaco, "Courier New", Courier, monospace;
+}
+
+
+.questionPotAdminDiv
+{
+	background:url(../images/pot_icon_large.png) left top no-repeat;	
+	padding-left:80px; padding-top:2px;
+}
+
+.greyLink a:link, .greyLink a:active, .greyLink a:visited {
+	color:#999999;
+	text-decoration:none;
+	font-weight:normal;
+	
+}
+.greyLink a:hover {
+	color:#333333;
+	text-decoration:underline;
+}

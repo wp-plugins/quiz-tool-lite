@@ -1,8 +1,59 @@
-<h1>View / Search Students</h1>
 
+<h1>Quiz Results</h1>
+<span class="greyText">Please note : Results are only saved from logged in users</span><br/>
 
 <?php
+$quizID="";
+if(isset($_GET['quizID']))
+{
+	$quizID = $_GET['quizID'];
+}
 
+//display all quiz in a list for selection
+if($quizID=="")
+{
+	$quizRS = getQuizzes();
+	$quizCount = count($quizRS);
+	if($quizCount>=1)
+	{
+		
+		echo '<div id="quiztable">';
+		//echo '<table width="90%">';
+		echo '<table>';
+		echo '<tr><th>Quiz Name</th><th>Quiz ID</th><th></th></tr>';
+			
+		foreach ($quizRS as $myQuizzes)
+		{		
+			$quizName = stripslashes($myQuizzes['quizName']);
+			$quizID= $myQuizzes['quizID'];	
+			
+			echo '<tr>';
+			echo '<td>'.$quizName.'</td>';
+			echo '<td valign="top"><span class="greyText">Quiz ID '.$quizID.'</span></td>';		
+			echo '<td><a href="admin.php?page=ai-quiz-results&quizID='.$quizID.'" class="dataIcon">View results</a></td>';
+
+			echo '</tr>';
+		}
+		echo '</table>';
+		echo '</div>';
+	}
+	else
+	{
+		echo 'No quizzes found';
+	}	
+
+}
+else  //display the result for the selected quiz
+{
+	echo '<a href="admin.php?page=ai-quiz-results" class="backIcon">Pick a different quiz</a>';
+	$quizInfo = getQuizInfo($quizID);
+	$quizName = utils::convertTextFromDB($quizInfo['quizName']);
+	echo '<h2>'.$quizName.'</h2>';
+	//displaySearchForm();	
+	drawUserResults();
+	
+
+}
 
 
 /*************************** LOAD THE BASE CLASS *******************************
@@ -52,8 +103,8 @@ class TT_Example_List_Table extends WP_List_Table {
                 
         //Set parent defaults
         parent::__construct( array(
-            'singular'  => 'movie',     //singular name of the listed records
-            'plural'    => 'movies',    //plural name of the listed records
+            'singular'  => 'quiz',     //singular name of the listed records
+            'plural'    => 'quizzes',    //plural name of the listed records
             'ajax'      => false        //does this table support ajax?
         ) );
         
@@ -93,6 +144,7 @@ class TT_Example_List_Table extends WP_List_Table {
 				$attemptInfo = getAttemptInfo($username, $quizID);				
 				$highestScore = $attemptInfo['highestScore'];
 				$highestScoreDate = $attemptInfo['highestScoreDate'];
+				$attemptCount = $attemptInfo['attemptCount'];
 				
 				if($highestScore){$highestScore=$highestScore.'%';}
 		
@@ -100,10 +152,12 @@ class TT_Example_List_Table extends WP_List_Table {
 				
 				$example_data[] = array(
 			//		'ID'        => $ID, //no id is required
-					'title'     => $lastName.', '.$firstName,
+					'fullname'     => $lastName.', '.$firstName,
+					'username'    => $username,
 					'role'    => $userlevel,
 					'highestScore'  => $highestScore, 
 					'highestScoreDate'  => $highestScoreDate, 
+					'attemptCount'  => $attemptCount, 
 				);
 				
 			//	$ID++;		
@@ -139,8 +193,11 @@ class TT_Example_List_Table extends WP_List_Table {
      **************************************************************************/
     function column_default($item, $column_name){
         switch($column_name){
+        	case 'fullname':
+			case 'username':
             case 'role':
             case 'highestScore':
+            case 'attemptCount':
             case 'highestScoreDate':
                 return $item[$column_name];
             default:
@@ -165,24 +222,17 @@ class TT_Example_List_Table extends WP_List_Table {
      * @param array $item A singular item (one full row's worth of data)
      * @return string Text to be placed inside the column <td> (movie title only)
      **************************************************************************/
-    function column_title($item){
+/*    function column_title($item){
         
-        //Build row actions
-       /* $actions = array(
-            'edit'      => sprintf('<a href="?page=%s&action=%s&movie=%s">Edit</a>',$_REQUEST['page'],'edit',$item['ID']),
-            'delete'    => sprintf('<a href="?page=%s&action=%s&movie=%s">Delete</a>',$_REQUEST['page'],'delete',$item['ID']),
-        );
-        */
-        //Return the title contents
-        
+           
         return sprintf('%1$s <span style="color:silver">%2$s</span>%3$s',
-            /*$1%s*/ $item['title'],
-            /*$2%s*/ $item['ID'],
-            /*$3%s*/ $this->row_actions($actions)
+             $item['title'],
+             $item['ID'],
+             $this->row_actions($actions)
         );     
         
     }
-    
+ */   
     /** ************************************************************************
      * REQUIRED if displaying checkboxes or using bulk actions! The 'cb' column
      * is given special treatment when columns are processed. It ALWAYS needs to
@@ -192,14 +242,14 @@ class TT_Example_List_Table extends WP_List_Table {
      * @param array $item A singular item (one full row's worth of data)
      * @return string Text to be placed inside the column <td> (movie title only)
      **************************************************************************/
-    function column_cb($item){
+/*    function column_cb($item){
         return sprintf(
             '<input type="checkbox" name="%1$s[]" value="%2$s" />',
-            /*$1%s*/ $this->_args['singular'],  //Let's simply repurpose the table's singular label ("movie")
-            /*$2%s*/ $item['ID']                //The value of the checkbox should be the record's id
+             $this->_args['singular'],  //Let's simply repurpose the table's singular label ("movie")
+             $item['ID']                //The value of the checkbox should be the record's id
         );
     }
-    
+*/    
     
     /** ************************************************************************
      * REQUIRED! This method dictates the table's columns and titles. This should
@@ -217,10 +267,12 @@ class TT_Example_List_Table extends WP_List_Table {
     function get_columns(){
         $columns = array(
         //    'cb'        => '<input type="checkbox" />', //Render a checkbox instead of text  // hide the id check box column
-            'title'     => 'Name',
+            'fullname'     => 'Name',
+			'username'     => 'Username',
             'role'    => 'Role',
             'highestScore'  => 'Highest Score',
-            'highestScoreDate'  => 'Highest Score Date'
+            'highestScoreDate'  => 'Highest Score Date',
+            'attemptCount'  => 'Number of Attempts'
         );
         return $columns;
     }
@@ -241,10 +293,12 @@ class TT_Example_List_Table extends WP_List_Table {
      **************************************************************************/
     function get_sortable_columns() {
         $sortable_columns = array(
-            'title'     => array('title',false),     //true means it's already sorted
-            'role'    => array('role',false),
+            'fullname'     => array('title',false),     //true means it's already sorted
+            'username'    => array('username',false),
+			'role'    => array('role',false),
             'highestScore'  => array('highestScore',false),
-            'highestScoreDate'  => array('highestScoreDate',false)
+            'highestScoreDate'  => array('highestScoreDate',false),
+            'attemptCount'  => array('attemptCount',false)
         );
         return $sortable_columns;
     }
@@ -268,7 +322,7 @@ class TT_Example_List_Table extends WP_List_Table {
      * @uses $this->get_pagenum()
      * @uses $this->set_pagination_args()
      **************************************************************************/
-    function prepare_items() {
+    function prepare_items($search = NULL) {
         global $wpdb; //This is used only if making any database queries
 
         /**
@@ -309,6 +363,19 @@ class TT_Example_List_Table extends WP_List_Table {
          */
         //$data = $this->example_data;
         $data = $this->getUserData();
+        if( $search != NULL ){	   
+			// Trim Search Term
+			$search = trim(strtolower($search));
+			//get the search data records
+			$searchData = array();
+			foreach ($data as $resultRecord){
+				if (strlen(strstr(strtolower($resultRecord[fullname]), $search))>0 || strlen(strstr(strtolower($resultRecord[username]), $search))>0 || strlen(strstr(strtolower($resultRecord[role]), $search))>0 || strlen(strstr(strtolower($resultRecord[highestScore]), $search))>0 || strlen(strstr(strtolower($resultRecord[highestScoreDate]), $search))>0 || strlen(strstr(strtolower($resultRecord[attemptCount]), $search))>0){	
+					$searchData[] = $resultRecord;
+				}
+			}
+			//reset the data with the search terms only for display
+			$data = $searchData;
+ 		}
         
         /**
          * This checks for sorting input and sorts the data in our array accordingly.
@@ -319,7 +386,7 @@ class TT_Example_List_Table extends WP_List_Table {
          * sorting technique would be unnecessary.
          */
         function usort_reorder($a,$b){
-            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'title'; //If no sort, default to title
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'fullname'; //If no sort, default to fullname
             $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc'; //If no order, default to asc
             $result = strcmp($a[$orderby], $b[$orderby]); //Determine sort order
             return ($order==='asc') ? $result : -$result; //Send final sort direction to usort
@@ -406,55 +473,31 @@ function tt_add_menu_items(){
  */
 function drawUserResults(){
     
+    
+    
     //Create an instance of our package class...
     $testListTable = new TT_Example_List_Table();
+
     //Fetch, prepare, sort, and filter our data...
-    $testListTable->prepare_items();    
+   // $testListTable->prepare_items(); 
+	if( isset($_POST['s']) ){
+			$testListTable->prepare_items($_POST['s']);
+	} else {
+			$testListTable->prepare_items();
+	}
+    
+    echo '<form method="post">';
+	echo '<input type="hidden" name="quizResult" value="'.$_REQUEST['page'].'" />';
+	echo $testListTable->search_box('Search Quiz Result', 'your-element-id'); 
+	echo '</form>';  
+	
 	$testListTable->display();
 	
 }
 
-$quizID = $_GET['quizID'];
 
-if($quizID=="")
-{
-	$quizRS = getQuizzes();
-	$quizCount = count($quizRS);
-	if($quizCount>=1)
-	{
-		echo '<table width="90%">';
-		echo '<tr><th>Quiz Name</th><th>Quiz ID</th><th></th></tr>';
-			
-		foreach ($quizRS as $myQuizzes)
-		{		
-			$quizName = stripslashes($myQuizzes['quizName']);
-			$quizID= $myQuizzes['quizID'];	
-			
-			echo '<tr>';
-			echo '<td>'.$quizName.'</td>';
-			echo '<td valign="top"><span class="greyText">Quiz ID '.$quizID.'</span></td>';		
-			echo '<td><a href="admin.php?page=ai-quiz-results&quizID='.$quizID.'">View results</a></td>';
 
-			echo '</tr>';
-		}
-		echo '</table>';
-	}
-	else
-	{
-		echo 'No quizzes found';
-	}	
-	
-	
-	
-	
-}
-else
-{
-	echo '<a href="admin.php?page=ai-quiz-results" class="backIcon">Pick a different quiz</a>';
-	drawUserResults();
-	
 
-}
 
 
 	

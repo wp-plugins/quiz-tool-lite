@@ -58,6 +58,7 @@ function getQuestionsInPot($potID, $includeReflection=true, $orderType="", $limi
 		$limit = ' LIMIT '.$limit;	
 	}
 	
+	$reflectionClause="";
 	if($includeReflection==false){$reflectionClause = ' AND (qType<>"reflection" AND qType<>"reflectionText")';}
 	
 	
@@ -127,11 +128,25 @@ function getAttemptInfo($username, $quizID)
 	$table_name = $wpdb->prefix . "AI_Quiz_tblQuizAttempts";		
 	
 	$SQL='Select * FROM '.$table_name.' WHERE Username="'.$username.'" AND quizID='.$quizID;	
+	
 	//$rs=mysql_query($SQL);
 	$attemptInfo = $wpdb->get_row($SQL, ARRAY_A);
 	
 //	mysql_free_result($rs);
 	return $attemptInfo;	
+}
+
+
+function getQuestionResponse($questionID, $username)
+{
+	global $wpdb;
+	$table_name = $wpdb->prefix . "AI_Quiz_tblSubmittedAnswers";		
+	
+	$SQL='Select * FROM '.$table_name.' WHERE username="'.$username.'" AND questionID='.$questionID;
+	
+	$responseInfo = $wpdb->get_row($SQL, ARRAY_A);
+	
+	return $responseInfo;
 }
 
 

@@ -4,14 +4,33 @@
  */
 
 //Database table versions
-global $AI_Quiz_db_table_version;
-$AI_Quiz_db_table_version = "1.0";
+global $this_qtl_db_version;
+$this_qtl_db_version = "1.4";
+
+
+// CHeck the DB version of the plugin
+$current_qtl_db_version = get_option( 'qtl-db-version' );
+
+if($current_qtl_db_version==false) // aadd the option and create DB
+{
+	AI_Quiz_db_create();
+	add_option( 'qtl-db-version', $this_qtl_db_version);
+	
+}
+elseif($current_qtl_db_version<$this_qtl_db_version) // update the option and update DB
+{
+	AI_Quiz_db_create();
+	update_option( 'qtl-db-version', $this_qtl_db_version );
+}
+
+
 
 //Create database tables needed by the DiveBook widget
 function AI_Quiz_db_create ()
 {
-	
     AI_Quiz_create_tables();
+
+	
 }
 
 //Create tables - uses the dbDelta stuff that looks to see if the tables already exist and udpates if not
@@ -37,7 +56,8 @@ function AI_Quiz_create_tables()
 	quizName longtext,
 	questionArray longtext,
 	lastEditedBy varchar(255),
-	lastEditedDate datetime,	
+	lastEditedDate datetime,
+	quizOptions longtext,	
 	PRIMARY KEY (quizID)
 	);";
 	dbDelta($sql);
@@ -93,9 +113,23 @@ function AI_Quiz_create_tables()
 	questionArray longtext,
 	highestScore int,
 	highestScoreDate datetime,
+	lastAttemptMarked int,
+	test5555 int,
 	PRIMARY KEY (attemptID)
 	);";
 	
+	dbDelta($sql);	
+	
+	
+	$table_name = $wpdb->prefix . "AI_Quiz_tblSubmittedAnswers";		
+	$sql = "CREATE TABLE ".$table_name." (
+	resultID int NOT NULL AUTO_INCREMENT,	
+	username varchar(255),
+	userResponse longtext,
+	dateSubmitted datetime,
+	questionID int,
+	PRIMARY KEY (resultID)
+	);";
 	dbDelta($sql);	
 	
 
@@ -103,4 +137,7 @@ function AI_Quiz_create_tables()
 	add_option("AI_Quiz_db_table_version", $AI_Quiz_db_table_version);
 
 }
+
+
+
 ?>

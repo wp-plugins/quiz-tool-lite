@@ -1,36 +1,68 @@
 <?php
-$action=$_GET['action'];
 
-if($action=="quizEdit")
+$quizID="";
+$feedback="";
+$questionArray="";
+$quizName="";
+$quizOptionsArray=array();
+
+if(isset($_GET['action']))
 {
-	$feedback =  '<span class="successText">Quizzes updated</span>';
-	$quizID= quizEdit();
+	$action=$_GET['action'];
+	
+	if($action=="quizEdit")
+	{
+		$feedback =  '<span class="successText">Quizzes updated</span>';
+		$quizID= quizEdit();
+	}
+
+
 }
-else
+
+
+if(isset($_GET['quizID']))
 {
-	$quizID= $_GET['quizID'];
-	if($quizID==""){$quizID = $_POST['quizID'];}
+	$quizID= $_GET['quizID'];	
 }
-if($quizID){
+
+
+if($quizID=="")
+{
+	if(isset($_POST['quizID']))
+	{
+		$quizID = $_POST['quizID'];
+	}
+	
+}
+
+
+if($quizID)
+{
 	$quizInfo = getQuizInfo($quizID);
-	$quizName = stripslashes($quizInfo['quizName']);
+	$quizName = utils::convertTextFromDB($quizInfo['quizName']);
 	$questionArray = $quizInfo['questionArray'];
+	$quizOptionsArray = $quizInfo['quizOptions'];
+	
+	// Unserialise the array
+	$questionArray = unserialize($questionArray);
+	$quizOptionsArray = unserialize($quizOptionsArray);	
+	
+	
 }
 else
 {
-	$quizID = $_GET['quizID'];
+	$quizOptionsArray['showFeedback']="yes";
 }
 
 
-// Unserialise the array
-$questionArray = unserialize($questionArray);
+
 
 ?>
 
 <h1>Edit Quiz</h1>
 
 
-<a href="admin.php?page=ai-quiz-quiz-list" class="backButton">Return to my quizzes</a>
+<a href="admin.php?page=ai-quiz-quiz-list" class="backIcon">Return to my quizzes</a>
 
 
     <hr/>
@@ -59,7 +91,12 @@ if($feedback)
 		$potID= $myPots['potID'];	
 		
 		// Ge tthe number of questinos form this pot, if any
-		$qCountFromPot = $questionArray[$potID];
+		$qCountFromPot="";		
+		
+		if(isset($questionArray[$potID]))
+		{
+			$qCountFromPot = $questionArray[$potID];
+		}
 		
 		// Get the question Count from those pots
 		$questionRS = getQuestionsInPot($potID, false); // fasl referes to ignoring the reflcetion questions
@@ -89,8 +126,75 @@ if($feedback)
 	}
 	echo '</table>';
     ?>
-    
-    
+    <hr/>
+    <h3>Quiz Options</h3>  
+    <table>
+    <tr>
+  		<td>
+			<label for="startDate">Start Date</label>
+		</td>
+		<td>			
+			<input type="text" class="MyDate" name="startDate" id="startDate" size="8" value="<?php echo $quizOptionsArray['startDate']; ?>"/><br> 
+		</td>
+	</tr>
+	<tr>	
+		<td>	
+			<label for="endDate">End Date</label>
+		</td>
+		<td>
+			<input type="text" class="MyDate" name="endDate" id="endDate" size="8" value="<?php echo $quizOptionsArray['endDate']; ?>"/><br>   
+		</td>
+	</tr>
+	<tr>	
+		<td>	   
+			<label for="maxAttempts">Max number of attempts</label>
+		</td>
+		<td>
+			<input type="text" name="maxAttempts" id="maxAttempts"  size="3" value="<?php echo $quizOptionsArray['maxAttempts']; ?>"/><br> 
+		</td>
+	</tr>
+	<tr>	
+		<td>	
+			Display feedback
+
+		</td>
+		<td>
+			<label for="showFeedbackYes">Yes</label>
+			<input type="radio" name="showFeedback" id="showFeedbackYes"  value="yes"  <?php if ($quizOptionsArray['showFeedback']=='yes'){echo 'checked'; }?>/>
+			<label for="showFeedbackNo">No</label>
+			<input type="radio" name="showFeedback" id="showFeedbackNo"  value="no" <?php if ($quizOptionsArray['showFeedback']=='no'){echo 'checked'; }?>/><br> 
+		</td>
+	</tr>
+    <tr>
+    <td><label for="requireUserLoggedIn">Require user to be logged in</label></td>
+    <td>
+    <input type="checkbox" name="requireUserLoggedIn" id="requireUserLoggedIn" <?php if ($quizOptionsArray['requireUserLoggedIn']=='on'){echo 'checked'; }?>/>
+    </td>
+    </tr>
+	<tr>	
+		<td>
+			Minimum time between attempts
+		</td>
+		<td>
+			<select name="timeAttemptsHour" id="timeAttemptsHour">
+			<?php
+			$hourRange = range(0, 24, 1);
+			foreach ($hourRange as $hour) {
+			  	//echo "<option value='$hour'>$hour </option>";
+			   	echo "<option value='$hour'";
+			   	if(($quizOptionsArray[timeAttemptsHour]==$hour)){
+			   	 	echo 'selected';
+			   	}
+			   	echo ">$hour </option>";			  
+			}
+			?>
+			</select><label for="timeAttemptsDay">Hour(s)</label> 
+			<input type="text" name="timeAttemptsDay" id="timeAttemptsDay"  size="3" value="<?php echo $quizOptionsArray[timeAttemptsDay]; ?>"/>
+			<label for="timeAttemptsDay">Day(s)</label>
+	</td>
+
+	</table>
+    <hr/>
     <input type="hidden" value="<?php echo $quizID?>" name="quizID" />
     <input type="submit" value="Update Quiz" class="button-primary" />
 </form>
