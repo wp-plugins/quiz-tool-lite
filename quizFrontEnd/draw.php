@@ -154,7 +154,7 @@ function drawQuiz($quizID)
 	$minTimeBetweenAttempts = 0;
 	if($timeAttemptsHour)
 	{
-		$minTimeBetweenAttempts = ($timeAttemptsHour*60*60);		
+		$minTimeBetweenAttempts = ($timeAttemptsHour*60*60);
 	}
 	
 	if($timeAttemptsDay)
@@ -162,19 +162,19 @@ function drawQuiz($quizID)
 		$minTimeBetweenAttempts = $minTimeBetweenAttempts+($timeAttemptsDay*24*60*60);		
 	}	
 	
-	
 	if($minTimeBetweenAttempts>0)
 	{
 		$lastDateStarted_TS = strtotime($lastDateStarted); // Get timestamp of last attempt
 		$TStoCheck = $lastDateStarted_TS + $minTimeBetweenAttempts; // Get timestamp of next attempt allowed i./ last attempt + time interval
 		
-		// Checl to see if current timstamp is greater than the total
+		// Check to see if current timstamp is greater than the total
 		if($currentDate_TS<$TStoCheck)
 		{
 			$allowQuizAttempt=false; // not allow them to take the quiz
 			
 			// get the time until the next allowed attempt
-			$timeLeft = ($TStoCheck - $lastDateStarted_TS);
+			$timeLeft = ($TStoCheck - $currentDate_TS);
+			
 			$min = floor($timeLeft / 60) % 60;
 			$hours = floor($timeLeft / 3600) % 24;
 			$days = floor($timeLeft / 86400);
@@ -254,8 +254,9 @@ function drawQuiz($quizID)
 			$quizStr.= '<div id="questionDiv">';
 			$questionID = $value;
 			$quizStr.= '<b class="greyText">Question '.$currentQuestionNumber.'</b><br/>';
-			$quizStr.= '<div id="question">';
-			$quizStr.= drawQuestion($questionID);
+			$quizStr.= '<div id="question">';			
+			$questionStr = drawQuestion($questionID);			
+			$quizStr.= do_shortcode($questionStr);
 			$currentQuestionNumber++;
 			$quizStr.= '</div></div>';
 		}
@@ -746,7 +747,7 @@ function drawExampleQuestion($atts)
 	AI_Quiz_loadMyPluginScripts(); // Load up the plugin scripts for the front end (define true to override admin check)
 	
 	$questionStr = drawQuestion($questionID, true, $questionSettingArray);
-	return $questionStr;
+	return do_shortcode($questionStr);
 }
 
 function drawUserResponse($atts)
