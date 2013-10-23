@@ -52,6 +52,7 @@ if($quizID)
 else
 {
 	$quizOptionsArray['showFeedback']="yes";
+	$quizOptionsArray['emailUser']="no";		
 }
 
 
@@ -145,8 +146,19 @@ if($feedback)
 			<input type="text" class="MyDate" name="endDate" id="endDate" size="8" value="<?php echo $quizOptionsArray['endDate']; ?>"/><br>   
 		</td>
 	</tr>
+    <tr>
+    <td><label for="requireUserLoggedIn">Require user to be logged in</label></td>
+    <td>
+    <input type="checkbox" name="requireUserLoggedIn" id="requireUserLoggedIn" <?php if ($quizOptionsArray['requireUserLoggedIn']=='on'){echo 'checked'; }?>/>
+    </td>
+    </tr>   
+    <tr>
+    <td colspan="2">
+        	<span class="greyText">All the options below are only applicable if you have ticked 'Require user to be logged in'</span>
+    </td>
+    </tr> 
 	<tr>	
-		<td>	   
+		<td>      	   
 			<label for="maxAttempts">Max number of attempts</label>
 		</td>
 		<td>
@@ -165,12 +177,19 @@ if($feedback)
 			<input type="radio" name="showFeedback" id="showFeedbackNo"  value="no" <?php if ($quizOptionsArray['showFeedback']=='no'){echo 'checked'; }?>/><br> 
 		</td>
 	</tr>
-    <tr>
-    <td><label for="requireUserLoggedIn">Require user to be logged in</label></td>
-    <td>
-    <input type="checkbox" name="requireUserLoggedIn" id="requireUserLoggedIn" <?php if ($quizOptionsArray['requireUserLoggedIn']=='on'){echo 'checked'; }?>/>
-    </td>
-    </tr>
+	<tr>	
+		<td>	
+			Email user their mark after completing the quiz
+
+		</td>
+		<td>
+			<label for="emailUserYes">Yes</label>
+			<input type="radio" name="emailUser" id="emailUserYes"  value="yes"  <?php if ($quizOptionsArray['emailUser']=='yes'){echo 'checked'; }?>/>
+			<label for="emailUserNo">No</label>
+			<input type="radio" name="emailUser" id="emailUserNo"  value="no" <?php if ($quizOptionsArray['emailUser']=='no'){echo 'checked'; }?>/><br> 
+		</td>
+	</tr>    
+    
 	<tr>	
 		<td>
 			Minimum time between attempts

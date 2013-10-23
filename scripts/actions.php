@@ -219,7 +219,8 @@ function quizEdit()
 			"timeAttemptsHour",
 			"timeAttemptsDay",
 			"showFeedback",
-			"requireUserLoggedIn"
+			"requireUserLoggedIn",
+			"emailUser"
 		);
 		
 		

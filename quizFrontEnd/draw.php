@@ -318,12 +318,13 @@ function markTest($quizID)
 
 	
 	$quizInfo = getQuizInfo($quizID);
+	$quizName = utils::convertTextFromDB($quizInfo['quizName']);	
 	$quizOptionsArray = $quizInfo['quizOptions'];
 	
 	// Unserialise the quiz options array
 	$quizOptionsArray = unserialize($quizOptionsArray);		
 	$showFeedback = $quizOptionsArray['showFeedback'];
-	
+	$emailUser = $quizOptionsArray['emailUser'];	
 
 	
 	if($markTest==false)
@@ -399,7 +400,7 @@ function markTest($quizID)
 		
 		$markedTest.= '</div>';// end of exam div
 		
-		// they got them all right yay. Update the DB to reflect this
+		// This score is higher than any previous score so update the DB to reflect this
 		if($percentageScore>$previousHighestScore)
 		{
 			$myFields ="UPDATE ".$table_name." SET ";
@@ -414,6 +415,21 @@ function markTest($quizID)
 				$quizID
 			));					
 		} // End if this attempt is higher than previous scores
+		
+		// Finally check to see if they willg et emailed their results or not
+		if($emailUser=="yes")
+		{
+			global $current_user;
+			get_currentuserinfo();
+			$thisEmail = $current_user->user_email;		
+			$subject = "Quiz Results for ".$quizName;
+			$message = "This email is a receipt of your quiz results for '".$quizName."'\n\n";
+			$message.= "Date Taken : ".$currentDate."\n";
+			$message.="Score  : ".$_SESSION['totalCorrect']."/".$questionCount." = ".$percentageScore."%\n\n";
+			$message.="This message has been generated automatically";
+			
+			wp_mail( $thisEmail, $subject, $message );
+		}
 	}
 	
 	return $markedTest;
