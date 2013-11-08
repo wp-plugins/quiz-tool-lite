@@ -2,10 +2,10 @@
 Contributors: alexfurr, lcw102 
 Tags: academic, assessment, formative, quiz, questions
 Requires at least: 3.0.1
-Tested up to: 3.5
-Stable tag: 1.4.3
+Tested up to: 3.6
+Stable tag: 1.4.4
 
-A simple quiz tool aimed at individuals wanting to insert formative questions into their wordpress posts and pages.
+A light weight quiz tool aimed at academics or individuals wanting to create interactive learning content. Insert single questions into wordpress posts and pages, or deply an entire quiz.
 
 == Description ==
 
@@ -81,6 +81,9 @@ Yes, but results won't be stored in the database
 5. Creating a quiz from question pots
 
 == Changelog ==
+
+= 1.4.4 =
+* Added options for copying questions to different pots
 
 = 1.4.3 =
 * Added the option to email users their score after test completion

@@ -14,10 +14,16 @@
 	padding-left:20px; padding-top:3px;	padding-bottom:3px;	margin:2px;
 }
 
+.copyIcon
+{
+	background:url(../images/icons/page_copy.png) left no-repeat;
+	padding-left:20px; padding-top:3px;	padding-bottom:3px;	margin:2px;
+}
+
 .deleteIcon
 {
 	background:url(../images/icons/cancel.png) left no-repeat;
-	padding-left:20px; padding-top:3px;	padding-bottom:3pxmargin:2px;
+	padding-left:20px; padding-top:3px;	padding-bottom:3px; margin:2px;
 }
 
 .tickIcon

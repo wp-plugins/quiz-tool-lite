@@ -489,6 +489,66 @@ function responseOptionDelete($optionID)
 }
 
 
+function questionCopy()
+{
+	global $wpdb;
+	
+	$currentUsername = utils::getCurrentUsername();
+	$myDate = utils::getCurrentDate();
+	
+	$question_table_name = $wpdb->prefix . "AI_Quiz_tblQuestions";
+	$responseOptions_table_name = $wpdb->prefix . "AI_Quiz_tblResponseOptions";
+	
+	$questionID = $_POST['questionToCopy'];
+	$targetPotID = $_POST['copyQuestionPot'];
+	// Copy the question
+	
+	$questionInfo = getQuestionInfo($questionID);
+	$qType = $questionInfo['qType'];
+	$question = $questionInfo['question'];
+	$correctFeedback = $questionInfo['correctFeedback'];	
+	$incorrectFeedback = $questionInfo['incorrectFeedback'];
+	
+	$myFields="INSERT into ".$question_table_name." (qType, question, potID, correctFeedback, incorrectFeedback, creator, createDate) ";
+	$myFields.="VALUES ('%s', '%s', %u, '%s', '%s', '%s', '%s')";	
+	
+	$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
+		$qType,
+		$question,
+		$targetPotID, // New Pot ID
+		$correctFeedback,
+		$incorrectFeedback,
+		$currentUsername,
+		$myDate
+	));
+	
+	$newQuestionID=mysql_insert_id();
+	
+	// Now add the response options	
+	$optionsRS = getResponseOptions($questionID);
+	foreach ($optionsRS	as $myOptions)
+	{
+		$optionValue = $myOptions['optionValue'];
+		
+		$optionID= $myOptions['optionID'];	
+		$isCorrect= $myOptions['isCorrect'];
+		$responseCorrectFeedback= $myOptions['responseCorrectFeedback'];
+		$responseIncorrectFeedback= $myOptions['responseIncorrectFeedback'];
+		
+		$myFields="INSERT into ".$responseOptions_table_name." (optionValue, questionID, responseCorrectFeedback, responseIncorrectFeedback, isCorrect) ";
+		$myFields.="VALUES ('%s', %u, '%s', '%s', '%s')";	
+	
+		$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
+			$optionValue,
+			$newQuestionID, // The new question ID
+			$responseCorrectFeedback,
+			$responseIncorrectFeedback,
+			$isCorrect
+		));			
+	}
+}
+
+
 
 // ************** Quiz Front End ************//
 

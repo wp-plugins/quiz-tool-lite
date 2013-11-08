@@ -31,7 +31,7 @@ function drawRadioCheckOptionsEditTable($questionID, $qType)
 		responseOptionEditForm($questionID, $myOptions);	
 		
 		echo '</td>'.chr(10);
-		echo '<td>';
+		echo '<td width="180px">';
 		
 		if($isCorrect==1){echo '<span class="tickIcon successText">Correct Answer</span>';}
 		

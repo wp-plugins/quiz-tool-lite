@@ -105,7 +105,7 @@ function AI_Quiz_loadMyPluginScripts()
         wp_enqueue_style( 'QTL_css_custom' );
 		
 		wp_register_style( 'QTL_css_icons',  plugins_url('/css/icons.css',__FILE__) );
-        wp_enqueue_style( 'QTL_css_icons' );	
+        wp_enqueue_style( 'QTL_css_icons' );
 	} 
 } 
 
