@@ -3,7 +3,7 @@ Contributors: alexfurr, lcw102
 Tags: academic, assessment, formative, quiz, questions
 Requires at least: 3.0.1
 Tested up to: 3.6
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 
 A light weight quiz tool aimed at academics wanting to create interactive learning content. Insert a single question or deploy an entire quiz.
 
@@ -81,6 +81,9 @@ Yes, but results won't be stored in the database
 5. Creating a quiz from question pots
 
 == Changelog ==
+
+= 1.4.5 =
+* Bug fix when creating a quiz with only one question
 
 = 1.4.4 =
 * Added options for copying questions to different pots
