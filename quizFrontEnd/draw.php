@@ -443,32 +443,27 @@ function generateQuizQuestions($questionArray="")
 	// unserialise the array
 	$questionArray = unserialize($questionArray);	
 	
-	$i=0;
 	foreach ($questionArray as $key => $value)
 	{
 		$potID = $key;
-
-		$qCount = $value;
-		
+		$qCount = $value;		
 		$questionRS = getQuestionsInPot($potID, false, "random", $qCount);
-		
 		
 
 		// NOW go through the RS and add the question IDs to an array		
 		foreach ($questionRS as $myQuestions)
 		{		
 			$questionID = $myQuestions['questionID'];
-			$questionArray[$i] = $questionID;
-			$i++;
+			$quizQuestionArray[] = $questionID;
 		}
 	}
 
 	
-	
 	//Randomise the question array
-	shuffle($questionArray);
+	shuffle($quizQuestionArray);
 	
-	return $questionArray;
+	
+	return $quizQuestionArray;
 }
 
 
