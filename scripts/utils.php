@@ -152,7 +152,7 @@ class utils
 	function convertTextFromDB($input)
 	{
 		$input = stripslashes($input);
-		$input = html_entity_decode($input, ENT_QUOTES, 'ISO-8859-1');	
+		$input = html_entity_decode($input, ENT_QUOTES, 'UTF-8');	
 		
 		return $input;
 	}
