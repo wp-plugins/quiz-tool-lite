@@ -1,5 +1,5 @@
 <?php
-
+$feedback = "";
 
 //Initialisation Functions
 function color_config()

@@ -50,7 +50,7 @@ $potID = "";
 
 if($questionID){
 	$questionInfo = getQuestionInfo($questionID);
-	$question = utils::convertTextFromDB($questionInfo['question']);
+	$question = utils::convertTextFromDB($questionInfo['question']);	
 	$incorrectFeedback = utils::convertTextFromDB($questionInfo['incorrectFeedback']);
 	$correctFeedback = utils::convertTextFromDB($questionInfo['correctFeedback']);
 	$potID = $questionInfo['potID'];

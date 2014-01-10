@@ -2,8 +2,8 @@
 Contributors: alexfurr, lcw102 
 Tags: academic, assessment, formative, quiz, questions
 Requires at least: 3.0.1
-Tested up to: 3.6
-Stable tag: 1.4.6
+Tested up to: 3.7
+Stable tag: 1.4.7
 
 A light weight quiz tool aimed at academics wanting to create interactive learning content. Insert a single question or deploy an entire quiz.
 
@@ -20,7 +20,7 @@ This tool was originally written as we wanted to display an individual question 
 *   Uses shortcode
 *   Export questions from one WP site to another
 *   Display participants responses to previously submitted reflective questions on different pages
-*   Quiz options for data windo available, max attempts, display feedback or not and max time between attempts
+*   Quiz options for date window available, max attempts, display feedback or not and max time between attempts
 
 <div>
   <a href="https://www.efolio.soton.ac.uk/blog/alexfurr/quiz-tool-lite-demo/">Click here to view some example of the embedded formative questions</a>
@@ -81,6 +81,9 @@ Yes, but results won't be stored in the database
 5. Creating a quiz from question pots
 
 == Changelog ==
+
+= 1.4.7 =
+* Enqueue debug now fixed, CSS changed so H1 tags no longer global. Many other debug messages now fixed.
 
 = 1.4.6 =
 * Bug fix to stop adding double BR tags

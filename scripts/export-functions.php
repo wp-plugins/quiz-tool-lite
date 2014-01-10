@@ -193,6 +193,8 @@ class AI_Quiz_importExport
 	
 	function importQuestion($data, $potParentID)
 	{
+		
+		$questionIDCheck=""; // Define this first
 		$questionID = $data[1];
 		$question = $data[2];
 		$qType = $data[3];
@@ -258,6 +260,7 @@ class AI_Quiz_importExport
 	
 	function importResponseOption($data, $questionParentID)
 	{
+		$questionIDCheck ="";
 		$optionValue = $data[1];
 		$isCorrect = $data[2];
 		$responseCorrectFeedback = $data[3];
@@ -266,30 +269,25 @@ class AI_Quiz_importExport
 		global $wpdb;
 		$table_name = $wpdb->prefix . "AI_Quiz_tblResponseOptions";	
 		
-		if($questionIDCheck=="")
-		{
-			$wpdb->insert( 
-				$table_name, 
-				array( 
-					'optionValue' => $optionValue, 
-					'questionID' => $questionParentID,
-					'isCorrect' => $isCorrect,
-					'responseCorrectFeedback' => $responseCorrectFeedback,
-					'responseIncorrectFeedback' => $responseIncorrectFeedback																		
-				), 
-				array( 
-					'%s',
-					'%d', 
-					'%s',
-					'%s',
-					'%s'
-				) 
-			);
-			
-		}
 
+		$wpdb->insert( 
+			$table_name, 
+			array( 
+				'optionValue' => $optionValue, 
+				'questionID' => $questionParentID,
+				'isCorrect' => $isCorrect,
+				'responseCorrectFeedback' => $responseCorrectFeedback,
+				'responseIncorrectFeedback' => $responseIncorrectFeedback																		
+			), 
+			array( 
+				'%s',
+				'%d', 
+				'%s',
+				'%s',
+				'%s'
+			) 
+		);
 		
-		return $questionID;			
 	}
 	
 }

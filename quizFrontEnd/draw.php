@@ -2,7 +2,11 @@
 
 function drawQuizPage($quizID)
 {
-	$action=$_GET['action'];	
+	$action="";
+	if(isset($_GET['action']))
+	{
+		$action=$_GET['action'];
+	}
 	
 	if($action=="markTest")
 	{
@@ -11,8 +15,9 @@ function drawQuizPage($quizID)
 	else
 	{
 		$quizStr = drawQuiz($quizID);
-	}
+	}	
 	
+
 	return $quizStr;
 	
 }
@@ -277,6 +282,9 @@ function drawQuiz($quizID)
 
 function markTest($quizID)
 {
+	
+	// Set some vars
+	$markedTest ="";
 
 	global $wpdb;
 	$table_name = $wpdb->prefix . "AI_Quiz_tblQuizAttempts";
@@ -370,9 +378,20 @@ function markTest($quizID)
 		$currentQuestionNumber=1;
 		foreach ($questionArray as $key => $value)
 		{
+			
 			$markedTest.= '<div id="questionDiv">';
 			$questionID = $value;
-			$response = ${'question'.$questionID}; // Set the response
+			// Create the var
+			//${'question'.$questionID}="";
+	
+			if(isset(${'question'.$questionID}))
+			{
+				$response = ${'question'.$questionID}; // Set the response
+			}
+			else
+			{
+				$response="";	
+			}
 			
 			$markedTest.= '<b class="greyText">Question '.$currentQuestionNumber.'</b><br/>';
 			$markedTest.= '<div id="question">';
@@ -469,6 +488,10 @@ function generateQuizQuestions($questionArray="")
 
 function drawQuestion($questionID, $formative=false, $questionSettingArray=false)
 {
+	// Set some defaults
+	$questionStr="";
+	
+	
 	// get the info about that question	
 	$questionInfo = getQuestionInfo($questionID);
 	$question = utils::convertTextFromDB($questionInfo['question']);
@@ -625,6 +648,9 @@ function drawQuestion($questionID, $formative=false, $questionSettingArray=false
 
 function drawMarkedQuestion($questionID, $response="", $showFeedback="yes")
 {
+	
+	// Set some vars
+	$incorrectCheck="";
 	
 	// get the info about that question	
 	$questionInfo = getQuestionInfo($questionID);
@@ -786,5 +812,44 @@ function drawUserResponse($atts)
 	
 	return $response;
 }
+
+function drawUserScore($atts)
+{
+	
+	$myScore = "";
+	$atts = shortcode_atts( 
+		array(
+			'id'   => '#'
+		), 
+		$atts
+	);
+	
+	$quizID = (int) $atts['id'];
+
+	$current_user = wp_get_current_user();
+	$username = $current_user->user_login;
+	
+	
+	
+	if($username)
+	{
+		
+		// Get previous attempts info
+		$previousAttemptInfo = getAttemptInfo($username, $quizID);
+		foreach ($previousAttemptInfo as $key => $value)
+		{
+			$$key = $value;
+		}
+		if($highestScore==""){$highestScore=0;}
+		
+		
+		$myScore = '<div style="border:solid 1px #ccc; padding:5px; background:#f1f1f1">You have taken this test <b>'.$attemptCount.'</b> times and achieved a maximum of <b>'.$highestScore.'%</b>.</div><br/>';
+		
+	}	
+	
+	return $myScore;
+	
+}
+
 
 ?>

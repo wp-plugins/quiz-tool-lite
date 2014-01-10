@@ -4,7 +4,11 @@ $quizID="";
 $feedback="";
 $questionArray="";
 $quizName="";
+$maxAttempts="";
+$timeAttemptsDay = "";
 $quizOptionsArray=array();
+$startDate  = "";
+$endDate = "";
 
 if(isset($_GET['action']))
 {
@@ -46,6 +50,12 @@ if($quizID)
 	// Unserialise the array
 	$questionArray = unserialize($questionArray);
 	$quizOptionsArray = unserialize($quizOptionsArray);	
+	
+	$maxAttempts = $quizOptionsArray['maxAttempts'];	
+	$timeAttemptsDay = $quizOptionsArray['timeAttemptsDay'];
+	$startDate = $quizOptionsArray['startDate'];
+	$endDate = $quizOptionsArray['endDate'];
+	
 	
 	
 }
@@ -135,7 +145,7 @@ if($feedback)
 			<label for="startDate">Start Date</label>
 		</td>
 		<td>			
-			<input type="text" class="MyDate" name="startDate" id="startDate" size="8" value="<?php echo $quizOptionsArray['startDate']; ?>"/><br> 
+			<input type="text" class="MyDate" name="startDate" id="startDate" size="8" value="<?php echo $startDate; ?>"/><br> 
 		</td>
 	</tr>
 	<tr>	
@@ -143,7 +153,7 @@ if($feedback)
 			<label for="endDate">End Date</label>
 		</td>
 		<td>
-			<input type="text" class="MyDate" name="endDate" id="endDate" size="8" value="<?php echo $quizOptionsArray['endDate']; ?>"/><br>   
+			<input type="text" class="MyDate" name="endDate" id="endDate" size="8" value="<?php echo $endDate; ?>"/><br>   
 		</td>
 	</tr>
     <tr>
@@ -162,7 +172,7 @@ if($feedback)
 			<label for="maxAttempts">Max number of attempts</label>
 		</td>
 		<td>
-			<input type="text" name="maxAttempts" id="maxAttempts"  size="3" value="<?php echo $quizOptionsArray['maxAttempts']; ?>"/><br> 
+			<input type="text" name="maxAttempts" id="maxAttempts"  size="3" value="<?php echo $maxAttempts; ?>"/><br> 
 		</td>
 	</tr>
 	<tr>	
@@ -208,7 +218,7 @@ if($feedback)
 			}
 			?>
 			</select><label for="timeAttemptsDay">Hour(s)</label> 
-			<input type="text" name="timeAttemptsDay" id="timeAttemptsDay"  size="3" value="<?php echo $quizOptionsArray[timeAttemptsDay]; ?>"/>
+			<input type="text" name="timeAttemptsDay" id="timeAttemptsDay"  size="3" value="<?php echo $timeAttemptsDay; ?>"/>
 			<label for="timeAttemptsDay">Day(s)</label>
 	</td>
 

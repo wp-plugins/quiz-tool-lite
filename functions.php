@@ -118,7 +118,17 @@ function my_admin_init()
 		
 	// tell WordPress to load the Smoothness theme from Google CDN
 	$url = "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.7/themes/smoothness/jquery-ui.css";
-	wp_enqueue_style('jquery-ui-smoothness', $url, false, null);		
+	wp_enqueue_style('jquery-ui-smoothness', $url, false, null);	
+	
+	// Allow the poopup thickbox to appear all pages.
+	add_thickbox(); 
+	
+	// farbtastic code is required for the colour picker wheel
+	wp_enqueue_style( 'farbtastic' );
+	wp_enqueue_script( 'farbtastic' );
+	
+		
+		
 }
 add_action('admin_init', 'my_admin_init');
 
@@ -240,12 +250,7 @@ add_shortcode('kkytv', array('AIQuiz_TinyMCE_Button','addAI_Button'));
 
 
 
-// farbtastic code is required for the colour picker wheel
-add_action('init', 'load_scripts');
-function load_scripts() {
-	wp_enqueue_style( 'farbtastic' );
-	wp_enqueue_script( 'farbtastic' );
-}
+
 
 
 
@@ -319,8 +324,7 @@ if (!class_exists('DownloadCSV'))
 }
 
 
-// Allow the poopup thickbox to appear all pages.
-add_thickbox(); 
+
 
 
 

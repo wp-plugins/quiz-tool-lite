@@ -3,7 +3,7 @@
 Plugin Name: Quiz Tool Lite
 Plugin URI: http://www.cite.soton.ac.uk
 Description: Create questions and quizzes, embed individual questions for formative assessment or deploy entire an quiz
-Version: 1.4.6
+Version: 1.4.7
 Author: Alex Furr and Lisha Chen Wilson
 Author URI: https://www.cite.soton.ac.uk/quiz-tool-lite/
 License: GPL
@@ -39,7 +39,6 @@ if(is_admin())
 {
 	add_action('admin_menu', 'AI_Quiz_createAdminMenu'); // Create Admin Menus
 	add_action('admin_enqueue_scripts', 'AI_Quiz_loadMyPluginScripts'); // Load JS and CSS files
-	//add_action('init', 'my_admin_init');
 }
 
 

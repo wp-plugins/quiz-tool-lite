@@ -136,9 +136,18 @@ class TT_Example_List_Table extends WP_List_Table {
 				$username = $user->user_login;
 				$fullname = $user->display_name;
 				$roles = $user->roles;
-				$userlevel = $roles[0];
+				if($roles)
+				{
+					$userlevel = $roles[0];
+				}
+				else
+				{
+					$userlevel = "";	
+				}
 
-				list($firstName, $lastName) = split(' ', $fullname,2); // Split the name
+				$nameArray = explode(' ', $fullname); // Split the name
+				$firstName = $nameArray[0];
+				$lastName = $nameArray[1];
 		
 				// get the highest score
 				$attemptInfo = getAttemptInfo($username, $quizID);				

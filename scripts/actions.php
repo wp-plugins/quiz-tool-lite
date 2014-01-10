@@ -94,13 +94,20 @@ function questionPotEdit()
 function questionEdit($questionID)
 {
 	global $wpdb;
-	$table_name = $wpdb->prefix . "AI_Quiz_tblQuestions";		
+	$table_name = $wpdb->prefix . "AI_Quiz_tblQuestions";	
 	
-	$question = $_POST["question"]; 
-	$incorrectFeedback = $_POST["incorrectFeedback"]; 	
+	$question = $_POST["question"];
+		
+	$incorrectFeedback=""; // Define this required in case of reflection
+	if(isset($_POST["incorrectFeedback"]))
+	{
+		$incorrectFeedback = $_POST["incorrectFeedback"]; 	
+	}
 	$correctFeedback = $_POST["correctFeedback"]; 
 	$qType = $_POST["qType"]; 	
-	$potID = $_POST["potID"]; 
+	$potID = $_POST["potID"];
+	
+	
 
 	$currentUsername = utils::getCurrentUsername();
 	
