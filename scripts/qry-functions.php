@@ -80,13 +80,22 @@ function getQuestionInfo($questionID)
 	return $questionInfo;	
 }
 
-function getResponseOptions($questionID)  
+function getResponseOptions($questionID, $orderBy="")  
 {
 	global $wpdb;
 	$table_name = $wpdb->prefix . "AI_Quiz_tblResponseOptions";		
 	
-	$SQL='Select * FROM '.$table_name.' WHERE questionID='.$questionID.' ORDER by optionID ASC';
-	//$rs=mysql_query($SQL);
+	if($orderBy=="ordered")
+	{
+		$orderBy = 'optionOrder ASC';
+	}
+	else
+	{
+		$orderBy = 'RAND()';
+	}
+	
+	$SQL='Select * FROM '.$table_name.' WHERE questionID='.$questionID.' ORDER by '.$orderBy;
+	
 	$rs = $wpdb->get_results( $SQL, ARRAY_A );
 	return $rs;
 }

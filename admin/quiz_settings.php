@@ -82,7 +82,7 @@ function make_javascript()
 	$cols = color_names();
 	foreach ($cols as $col)
 	{
-		$JS .= "$('#color_picker_" . $col . "').farbtastic('#" . $col . "');";      
+		$JS .= "jQuery('#color_picker_" . $col . "').farbtastic('#" . $col . "');";      
     }
     $JS .= '});
 	</script>';

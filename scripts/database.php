@@ -5,7 +5,7 @@
 
 //Database table versions
 global $this_qtl_db_version;
-$this_qtl_db_version = "1.4";
+$this_qtl_db_version = "1.5";
 
 
 // CHeck the DB version of the plugin
@@ -71,6 +71,7 @@ function AI_Quiz_create_tables()
 	isCorrect tinyint,
 	responseCorrectFeedback longtext,
 	responseIncorrectFeedback longtext,	
+	optionOrder int,
 	PRIMARY KEY (optionID)
 	);";
 	dbDelta($sql);
@@ -85,6 +86,7 @@ function AI_Quiz_create_tables()
 	correctFeedback longtext,
 	creator varchar(255),
 	createDate datetime,
+	optionOrderType varchar (50),
 	PRIMARY KEY (questionID)
 	);";
 	

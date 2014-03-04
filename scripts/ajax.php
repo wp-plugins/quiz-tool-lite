@@ -52,9 +52,94 @@ function addResponseToDatabase()
 }
 
 add_action( 'wp_ajax_addResponseToDatabase', 'addResponseToDatabase' );
-add_action( 'wp_ajax_nopriv_addResponseToDatabase', 'addResponseToDatabase' );
 
 
+
+function responseOptionReorder()
+{
+	
+	global $wpdb;
+	$table_name = $wpdb->prefix . "AI_Quiz_tblResponseOptions";		
+
+	
+	$SQL='Select * FROM '.$table_name.' WHERE questionID='.$questionID.' ORDER by '.$orderBy;	
+	
+	$myOrder = $_POST['myOrder'];
+
+	$currentOrder = 1;
+	foreach ($myOrder as $optionID)
+	{	
+		$optionID = str_replace('thisOrder', '', $optionID);
+		
+		$myFields ="UPDATE ".$table_name." SET optionOrder=%u WHERE optionID =%u";		
+		$RunQry = $wpdb->query( $wpdb->prepare($myFields,
+			$currentOrder,
+			$optionID
+		));	
+		
+		$currentOrder++;
+		
+	}	
+	
+	$questionID = $_POST['questionID'];
+	$qType = $_POST['qType'];
+	$optionOrderType = $_POST['optionOrderType'];	
+
+
+	?>
+    <script>
+	jQuery('#responseOptionOrderFeedback').fadeIn(3000).delay(1000).fadeTo("slow",0);
+	</script>
+    
+	<?php
+
+	
+	
+	
+	drawRadioCheckOptionsEditTable($questionID, $qType, $optionOrderType);
+	echo '<div id="responseOptionOrderFeedback"><div id="feedback">Options reordered</div></div>';
+	
+	die();
+}
+
+add_action('wp_ajax_responseOptionReorder', 'responseOptionReorder');
+
+function responseOptionUpdateViewType()
+{
+	
+	global $wpdb;
+	$table_name = $wpdb->prefix . "AI_Quiz_tblQuestions";		
+
+	
+	$SQL='Select * FROM '.$table_name.' WHERE questionID='.$questionID.' ORDER by '.$orderBy;	
+	
+	$myOrder = $_POST['myOrder'];
+
+	$currentOrder = 1;
+	foreach ($myOrder as $optionID)
+	{	
+		$optionID = str_replace('thisOrder', '', $optionID);
+		
+		$myFields ="UPDATE ".$table_name." SET optionOrder=%u WHERE optionID =%u";		
+		$RunQry = $wpdb->query( $wpdb->prepare($myFields,
+			$currentOrder,
+			$optionID
+		));	
+		
+		$currentOrder++;
+		
+	}	
+	
+	$questionID = $_POST['questionID'];
+	$qType = $_POST['qType'];
+	
+	drawRadioCheckOptionsEditTable($questionID, $qType);
+	
+	
+	die();
+}
+
+add_action('wp_ajax_responseOptionUpdateViewType', 'responseOptionUpdateViewType');
 
 
 

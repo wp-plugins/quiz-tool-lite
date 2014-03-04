@@ -3,7 +3,7 @@ Contributors: alexfurr, lcw102
 Tags: academic, assessment, formative, quiz, questions
 Requires at least: 3.0.1
 Tested up to: 3.7
-Stable tag: 1.4.7
+Stable tag: 1.4.8
 
 A light weight quiz tool aimed at academics wanting to create interactive learning content. Insert a single question or deploy an entire quiz.
 
@@ -81,6 +81,12 @@ Yes, but results won't be stored in the database
 5. Creating a quiz from question pots
 
 == Changelog ==
+
+= 1.4.8 =
+* Added div id="quizResults" to the results so this can be formatted as required using CSS
+* Question response options can now be ordered or disaplyed at random
+* Images now tranparent PNGs to work nicely with the new 1.8 grey background.
+* Please deactivate and then reactivate plugin to make drag / drop ordering work correctly!
 
 = 1.4.7 =
 * Enqueue debug now fixed, CSS changed so H1 tags no longer global. Many other debug messages now fixed.

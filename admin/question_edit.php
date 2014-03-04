@@ -1,6 +1,13 @@
 <?php
 
 wp_enqueue_media();
+?>
+
+
+<!-- doesnt work unless this is loaded HERE... WHY???? -->
+<!-- <script src="//code.jquery.com/jquery-1.9.1.js"></script> -->
+<?php
+
 
 /// Declare  the vars
 $questionID="";
@@ -9,6 +16,7 @@ $question="";
 $correctFeedback ="";
 $incorrectFeedback ="";
 $hideIncorrectFeedback="";
+
 
 if(isset($_GET['questionID']))
 {	
@@ -40,6 +48,11 @@ if(isset($_GET['action']))
 			responseOptionDelete($optionID);
 			break;	
 			
+		case "responseOrderTypeChange":
+			$newOrderType = $_GET['changeTo'];
+			responseOptionChangeOrderType($questionID, $newOrderType);
+			break;				
+			
 			
 		default:
 			if($questionID==""){$questionID = $_POST['questionID'];}
@@ -55,6 +68,12 @@ if($questionID){
 	$correctFeedback = utils::convertTextFromDB($questionInfo['correctFeedback']);
 	$potID = $questionInfo['potID'];
 	$qType = $questionInfo['qType'];
+	$optionOrderType= $questionInfo['optionOrderType'];	
+	
+	if($optionOrderType=="")
+	{
+		$optionOrderType="random";	
+	}
 	
 
 }
@@ -132,14 +151,20 @@ if ( $_GET['page'] == 'ai-quiz-question-edit' ){
    echo '<div class="formDiv">';
    switch ( $tab ){
 
-      case 'question' :
-       	
+      case 'question' :       	
          ?>         
          	<form action="<?php echo $questionEditFormAction?>" method="post">
-
 			<h1>Edit Question</h1>
 			<?php 
-			if($feedback){echo '<div id="feedback">'.$feedback.'</div>';}
+			if($feedback)
+			{
+				echo '<div id="questionEditFeedback"><div id="feedback">'.$feedback.'</div></div>';
+				?>
+				<script>
+                jQuery('#questionEditFeedback').fadeIn(3000).delay(1000).fadeTo("slow",0);
+                </script>
+                <?php
+			}
 			?>
             
 			<div id="textEditor">    
@@ -164,9 +189,10 @@ if ( $_GET['page'] == 'ai-quiz-question-edit' ){
 			?>
 			</div>
 			
-			<input type="hidden" value="<?php echo $qType?>" name="qType" />
+			<input type="hidden" value="<?php echo $qType?>" name="qType" id="qType"/>
    			<input type="hidden" value="<?php echo $potID?>" name="potID" /><hr/>
 			<input type="submit" value="<?php echo $buttonLabel?>" class="button-primary" />
+            
 
 			</form>
          <?php
@@ -179,14 +205,22 @@ if ( $_GET['page'] == 'ai-quiz-question-edit' ){
 				
 				echo '<div id="responseOptionsDiv">';	
 				echo '<h3>Possible Answers and Feedback</h3>';
-				if($feedback){echo '<div id="feedback">'.$feedback.'</div>';}
+
 				
 				if($qType=="radio" || $qType=="check")
 				{
-					drawRadioCheckOptionsEditTable($questionID, $qType);
+					drawRadioCheckOptionsEditTable($questionID, $qType, $optionOrderType);
 				}
 				
-				
+				if($feedback)
+				{
+					echo '<div id="responseOptionFadeDiv"><div id="feedback">'.$feedback.'</div></div>';
+					?>
+					<script>
+                    jQuery('#responseOptionFadeDiv').fadeIn(3000).delay(1000).fadeTo("slow",0);
+                    </script>
+                    <?php
+				}				
 				
 				echo '</div>';
 			}

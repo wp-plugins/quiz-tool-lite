@@ -401,6 +401,8 @@ function markTest($quizID)
 		}
 		
 		
+		
+		$markedTest.='<div id="quizResults">';
 		if($questionCount==$_SESSION['totalCorrect'])
 		{
 			$markedTest.= '<h1><span class="successText">Congratulations!</h1></span>';
@@ -414,7 +416,7 @@ function markTest($quizID)
 			$percentageScore = round($_SESSION['totalCorrect']/$questionCount,2)*100;
 			$markedTest.= '<h1>You got '.$percentageScore.'% on this attempt</h1>';
 		}
-		
+		$markedTest.='</div>';
 		
 		
 		$markedTest.= '</div>';// end of exam div
@@ -499,8 +501,10 @@ function drawQuestion($questionID, $formative=false, $questionSettingArray=false
 	$correctFeedback = utils::convertTextFromDB($questionInfo['correctFeedback']);
 	$correctFeedback = wpautop($correctFeedback);	
 	$incorrectFeedback = utils::convertTextFromDB($questionInfo['incorrectFeedback']);
-	$incorrectFeedback = wpautop($incorrectFeedback);
-	$optionsRS = getResponseOptions($questionID);
+	$incorrectFeedback = wpautop($incorrectFeedback);	
+	$optionOrderType = $questionInfo['optionOrderType'];
+	
+	$optionsRS = getResponseOptions($questionID, $optionOrderType);
 	
 	$qType = $questionInfo['qType'];
 	$refectionTextBoxID = 'refectiveTextBoxID'.$questionID;
@@ -563,7 +567,7 @@ function drawQuestion($questionID, $formative=false, $questionSettingArray=false
 	{
 		
 		// Get the correct reponse(s)
-		$optionsRS = getResponseOptions($questionID);
+		$optionsRS = getResponseOptions($questionID, $optionOrderType);
 		
 		
 		// DEfine the Vars
@@ -661,6 +665,7 @@ function drawMarkedQuestion($questionID, $response="", $showFeedback="yes")
 	$correctFeedback = wpautop($correctFeedback);
 	$incorrectFeedback = wpautop($incorrectFeedback);		
 	$qType = $questionInfo['qType'];
+	$optionOrderType = $questionInfo['optionOrderType'];	
 	
 	if($qType=="check") // If its checkbox turn the values into an array
 	{
@@ -674,7 +679,7 @@ function drawMarkedQuestion($questionID, $response="", $showFeedback="yes")
 	
 	// get the response options
 	$markedQuestionStr.= '<table width="90%">'.chr(10);
-	$optionsRS = getResponseOptions($questionID);
+	$optionsRS = getResponseOptions($questionID, $optionOrderType);
 
 	foreach ($optionsRS as $myOptions)
 	{				

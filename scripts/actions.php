@@ -394,6 +394,11 @@ function quizQuestionDelete($questionID)
 function responseOptionUpdate($questionID)
 {
 	
+	// Define the vars
+	$isCorrect="";
+	$responseCorrectFeedback="";
+	$responseIncorrectFeedback="";
+	
 	global $wpdb;
 	$table_name = $wpdb->prefix . "AI_Quiz_tblResponseOptions";
 
@@ -404,7 +409,10 @@ function responseOptionUpdate($questionID)
 	$optionValue = $_POST['optionValue'.$optionID];
 	$responseCorrectFeedback = $_POST['responseCorrectFeedback'.$optionID];
 	$responseIncorrectFeedback = $_POST['responseIncorrectFeedback'.$optionID];
-	$isCorrect = $_POST['isCorrect'.$optionID];	
+	if(isset($_POST['isCorrect'.$optionID]))
+	{
+		$isCorrect = $_POST['isCorrect'.$optionID];	
+	}
 	
 	if($optionID)
 	{
@@ -422,31 +430,49 @@ function responseOptionUpdate($questionID)
 		
 		$RunQry=mysql_query($qry);
 		
-		$optionValue = $_POST['newResponse'];
-		$responseCorrectFeedback = $_POST['responseCorrectFeedback'];
-		$responseIncorrectFeedback = $_POST['responseIncorrectFeedback'];
+		if(isset($_POST['newResponse']))
+		{
+			$optionValue = $_POST['newResponse'];
+		}
+		
+		if(isset($_POST['responseCorrectFeedback']))
+		{
+			$responseCorrectFeedback = $_POST['responseCorrectFeedback'];
+		}
+		
+		if(isset($_POST['responseIncorrectFeedback']))
+		{
+			$responseIncorrectFeedback = $_POST['responseIncorrectFeedback'];
+		}				
+		
 	}
 	else
 	{
 		if($optionValue)
 		{
-			$myFields="INSERT into ".$table_name." (optionValue, questionID, responseCorrectFeedback, responseIncorrectFeedback) ";
-			$myFields.="VALUES ('%s', %u, '%s', '%s')";	
-		
-		/*	$qry = sprintf($myFields,
-			mysql_real_escape_string($optionValue),
-			$questionID,
-			mysql_real_escape_string($responseCorrectFeedback),
-			mysql_real_escape_string($responseIncorrectFeedback)
-			);
 			
-			$RunQry=mysql_query($qry);
-		*/	
+			// get the number of options and add 1 so its appended to the end
+			
+			
+			$optionsRS = getResponseOptions($questionID);
+			$myCount=1;
+		
+			foreach ($optionsRS	as $myOptions)
+			{	
+				$myCount++;			
+			}
+			
+			
+			$myFields="INSERT into ".$table_name." (optionValue, questionID, responseCorrectFeedback, responseIncorrectFeedback, optionOrder) ";
+			$myFields.="VALUES ('%s', %u, '%s', '%s', %u)";	
+		
+
 			$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
 				$optionValue,
 				$questionID,
 				$responseCorrectFeedback,
-				$responseIncorrectFeedback
+				$responseIncorrectFeedback,
+				$myCount
 			));
 			
 			$optionID=mysql_insert_id(); // Get this optionID
@@ -602,6 +628,21 @@ function logAttempt($quizID, $questionArray)
 			 $quizID
 		));
 	}
+	
+}
+
+
+function responseOptionChangeOrderType($questionID, $newOrderType)
+{
+	global $wpdb;
+	
+	$table_name = $wpdb->prefix . "AI_Quiz_tblQuestions";
+	
+	$RunQry = $wpdb->query( $wpdb->prepare( 
+		"UPDATE ".$table_name." SET optionOrderType=%s WHERE questionID=%u",
+		$newOrderType,
+		$questionID
+	));
 	
 }
 

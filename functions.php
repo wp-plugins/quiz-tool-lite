@@ -106,21 +106,38 @@ function AI_Quiz_loadMyPluginScripts()
 		
 		wp_register_style( 'QTL_css_icons',  plugins_url('/css/icons.css',__FILE__) );
         wp_enqueue_style( 'QTL_css_icons' );
+		
 	} 
 } 
 
 function my_admin_init()
 {
-	$pluginfolder = plugins_url();
+	
+	global $wp_scripts;	
+	
 	wp_enqueue_script('jquery');
 	wp_enqueue_script('jquery-ui-core');
-	wp_enqueue_script('jquery-ui-datepicker');
-		
-	// tell WordPress to load the Smoothness theme from Google CDN
-	$url = "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.7/themes/smoothness/jquery-ui.css";
-	wp_enqueue_style('jquery-ui-smoothness', $url, false, null);	
+	wp_enqueue_script('jquery-ui-position'); 	//drag/drop dependency
 	
-	// Allow the poopup thickbox to appear all pages.
+	
+	wp_enqueue_script('jquery-ui-widget'); 		//drag/drop dependency
+	wp_enqueue_script('jquery-ui-mouse');  		//drag/drop dependency
+	wp_enqueue_script('jquery-ui-draggable');  	//drag/drop dependency
+	wp_enqueue_script('jquery-ui-droppable');  	//drag/drop dependency
+	wp_enqueue_script('jquery-ui-sortable');
+	
+	wp_enqueue_script('jquery-ui-datepicker');
+	wp_enqueue_script('jquery-touch-punch');
+	
+		
+	// get the jquery ui object
+    $queryui = $wp_scripts->query('jquery-ui-core');
+ 
+    // load the jquery ui theme
+    $url = "https://ajax.googleapis.com/ajax/libs/jqueryui/".$queryui->ver."/themes/smoothness/jquery-ui.css";	
+    wp_enqueue_style('jquery-ui-smoothness', $url, false, null);
+		
+	// Allow the poopup thickbox to appear all pages
 	add_thickbox(); 
 	
 	// farbtastic code is required for the colour picker wheel
@@ -172,7 +189,7 @@ function AI_Quiz_isMyPluginScreen()
 		"quiz-questions_page_ai-quiz-export",
 		"quiz-questions_page_ai-quiz-settings",
 		"quiz-questions_page_ai-quiz-help",
-		"ai-quiz-results_uos"	
+		"ai-quiz-results_uos"
 		);
 		
 		
@@ -180,7 +197,8 @@ function AI_Quiz_isMyPluginScreen()
 		
 		$thisPage = $screen->id;
 		
-		if (in_array($thisPage, $myPluginPages)) {
+		if (in_array($thisPage, $myPluginPages))
+		{
 			$isMyPluginPage = true;
 		}
 		else
@@ -322,7 +340,6 @@ if (!class_exists('DownloadCSV'))
 	//	}
 	//}
 }
-
 
 
 
