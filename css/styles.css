@@ -1,0 +1,289 @@
+#qtl_content h1{
+	margin-right:180px;
+	line-height:30px;
+}	
+
+
+
+#wpbody, #TB_window
+{
+	font-size:1.2em !important;
+	line-height:20px !important;
+}
+
+
+#theExam td
+{
+	padding:5px 5px 5px 10px !important;
+}
+
+#theExam hr
+{
+	border:dashed 1px #ccc;
+	margin: 0px 0px 5px 0px;
+}theExam #questionDiv
+{
+	padding: 5px 5px 20px 5px;
+	margin:5px;
+	border:2px solid #f1f1f1;
+}
+
+#theExam #question
+{
+	padding:5px;	
+}
+
+
+
+#responseOptionsDiv td
+{
+	padding:30px;
+}
+
+
+
+#quiztable table
+{
+	padding:5px !important;
+	margin:0px !important;
+	width:90% !important;
+	
+}
+
+#quiztable th
+{
+	background:#ccc;
+	padding:6px;
+	text-align:left;
+}
+
+#quiztable td
+{
+	padding:0px !important;
+	border-bottom:1px solid #ccc !important;
+	margin:0px !important;
+}
+
+.wp-editor-area {
+    height:200px !important;
+}
+
+
+#textEditor
+{
+	margin-right:100px;
+}
+
+#textEditor table
+{
+	padding:0px !important;
+}
+
+#textEditor td
+{
+	border-bottom:0px !important;
+}
+
+
+/* End of override srtyles for editor */
+
+#textEditor label{
+	color:#666;
+	font-size:1.3em;
+}
+
+
+
+
+
+#wpbody h3
+{
+	font-weight:bold !important;
+	font-size:18px !important;
+}
+
+#wpbody h2
+{
+	font-weight:bold !important;
+	font-size:22px !important;
+}
+
+.failText
+{
+	color:#990000;
+}
+
+.successText
+{
+	color:#009900;
+}
+
+.greyText
+{
+	color:#999999;
+}
+
+.smallText
+{
+	font-size:10px;
+}
+
+a
+{
+	text-decoration:none;	
+}
+
+
+
+/* Forms */
+#questionEdit form label, #TB_window label
+{
+	display: block;
+	font-weight:bold;
+	padding:20px 0px 10px 0px;
+}
+
+/* List Items */
+#wpbody ul
+{
+	list-style:disc !important;
+	padding:0px 0px 0px 15px;
+}
+
+
+
+
+
+
+#feedback
+{
+	margin:10px 10px 10px 0px;
+	padding:5px 0px 5px 5px;
+	border:solid 2px #090;
+	background:#F2FFF2;
+	font-style:bold;
+}
+
+
+/* The Test interface */
+
+.quizStart
+{
+
+	font-weight:bold;
+	font-size:18px;
+	background:left no-repeat url(../images/mark.png);
+	padding:30px 30px 30px 70px;
+	display:block;
+}
+
+.correct
+{
+	color:#009900;
+	font-weight:bold;
+	background:left no-repeat url(../images/tick.png);
+	padding:30px 30px 30px 50px;
+	display:block;
+}
+
+.correctFeedbackDiv
+{
+	border:solid 1px #009900;
+	background:#EBFEE9;
+	padding:5px;
+}
+
+.incorrect
+{
+	color:#990000;
+	font-weight:bold;
+	background:left no-repeat url(../images/cross.png);
+	padding:30px 30px 30px 50px;
+	display:block;
+}
+
+.incorrectFeedbackDiv
+{
+	border:solid 1px #990000;
+	background:#FEEDED;
+	padding:5px;
+}
+
+#reflectionFeedbackDiv
+{
+	border:solid 1px #ccc;
+	background:#EBF2FE;
+	padding:5px;
+	margin: 15px 0px;
+}
+
+.hidden
+{
+	display:none;	
+}
+
+
+.correctRowHighlight
+{
+	background:#E9FEE7;	
+}
+
+
+#qtl_content
+{
+	background:url(../images/qtl_logo.png) no-repeat right top;
+	margin-top:5px;
+
+}
+
+.codeExample
+{
+	background:#f3f3f7;
+	padding:11px;
+	border:1px solid #dedee3;
+	font-family: Consolas, Monaco, "Courier New", Courier, monospace;
+}
+
+
+.questionPotAdminDiv
+{
+	background:url(../images/pot_icon_large.png) left top no-repeat;	
+	padding-left:80px; padding-top:2px;
+}
+
+.greyLink a:link, .greyLink a:active, .greyLink a:visited {
+	color:#999999;
+	text-decoration:none;
+	font-weight:normal;
+	
+}
+.greyLink a:hover {
+	color:#333333;
+	text-decoration:underline;
+}
+
+
+/* This is for the drag drop orering stuff */
+#responseOptionsEditList ul
+{
+	margin-right:20px;	
+}
+
+#wpbody ul {
+list-style: none !important;
+}  
+
+#responseOptionsEditList li:hover {
+    cursor: move;
+}
+  
+.ui-state-default
+{
+	padding:5px;
+}
+
+#quiztable .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited
+{
+	color:#0074a2;
+}
+  
