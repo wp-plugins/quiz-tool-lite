@@ -52,8 +52,6 @@ jQuery(document).ready(function()
 	echo '<a href="#TB_inline?width=800&height=550&inlineId=optionEditForm" class="thickbox addIcon">Add a new response option</a><br/>';
 	
 	
-	
-	
 	if($optionOrderType=="random")
 	{
 		echo '<span class="smallText greyText">These responses are shown in a random order<br/>';
@@ -76,7 +74,7 @@ jQuery(document).ready(function()
 	
 	echo '<ul>';
 	$tempOptionOrder=1;
-	$optionsRS = getResponseOptions($questionID); // Do not order by rand, even if it as this is the edit screen
+	$optionsRS = getResponseOptions($questionID, "ordered"); // Do not order by rand, even if it as this is the edit screen
 
 	foreach ($optionsRS	as $myOptions)
 	{
@@ -91,13 +89,12 @@ jQuery(document).ready(function()
 			$optionOrder=$tempOptionOrder;
 		}
 		
-		echo '<li id="thisOrder'.$optionID.'" class="ui-state-default">';
-		
-		
 		if($optionOrderType<>"random")
 		{
+			echo '<li id="thisOrder'.$optionID.'" class="ui-state-default">';			
 			echo '<b>'.$tempOptionOrder.'.</b> ';
 		}
+
 		echo $optionValue;
 		
 		responseOptionEditForm($questionID, $myOptions);
@@ -115,8 +112,16 @@ jQuery(document).ready(function()
 		echo '<input type="submit" value="Yes, delete this response" onclick="location.href=\'?page=ai-quiz-question-edit&questionID='.$questionID.'&action=optionDelete&optionID='.$optionID.'&tab=options\'" class="button-primary">';
 		echo '<input type="submit" value="Cancel" onclick="self.parent.tb_remove();return false" class="button-secondary">';	
 		echo '</div>';
-		echo '</div>';		
-		echo '</li>';
+		echo '</div>';
+		
+		if($optionOrderType<>"random")
+		{	
+			echo '</li>';
+		}
+		else
+		{
+			echo '<hr/>';	
+		}
 		$tempOptionOrder++; // Increase the order by 1 for legacy stuff
 		
 		

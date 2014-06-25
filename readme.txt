@@ -1,9 +1,9 @@
 === Quiz Tool Lite ===
-Contributors: alexfurr, lcw102 
+Contributors: alexfurr, lcw102, simonward-1
 Tags: academic, assessment, formative, quiz, questions
 Requires at least: 3.0.1
-Tested up to: 3.7
-Stable tag: 1.4.8
+Tested up to: 3.9
+Stable tag: 1.4.9
 
 A light weight quiz tool aimed at academics wanting to create interactive learning content. Insert a single question or deploy an entire quiz.
 
@@ -81,6 +81,13 @@ Yes, but results won't be stored in the database
 5. Creating a quiz from question pots
 
 == Changelog ==
+
+= 1.4.9 =
+* Fixed manual response option ordering bug
+* Fixed undefined vars errors appearing if debug mode was switched on for the front end
+* Added image examples for question types in the select question type page
+* Fixed problems for non logged in users taking quizzes from front end
+* Much improved colour picker for feedback style
 
 = 1.4.8 =
 * Added div id="quizResults" to the results so this can be formatted as required using CSS

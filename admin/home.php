@@ -7,6 +7,7 @@
 <input type="submit" value="Create Question Pot" class="button-primary"/>
 </form>
 </div>
+<hr/>
 <?php
 // Get the current question pots
 $feedback="";
@@ -68,10 +69,11 @@ if($potCount>=1)
 		echo '<input type="submit" value="Cancel" onclick="toggleLayerVis(\'potEdit'.$potID.'\');toggleLayerVis(\'pot'.$potID.'\'); return false" class="button-secondary">';
 		echo '</form>';		
 		echo '</div>';
-		echo 'The question pot has '.$questionCount.' question(s)<br/>';
-		echo '<span class="addIcon greyLink smallText"><a href="admin.php?page=ai-quiz-question-list&potID='.$potID.'">Add / edit questions</a></span> | ';		
-		echo '<span class="editIcon greyLink smallText"><a href="javascript:toggleLayerVis(\'potEdit'.$potID.'\');toggleLayerVis(\'pot'.$potID.'\');">Change Pot Name</a></span> | ';
-		echo '<span class="deleteIcon smalltext greyLink smallText"><a href="#TB_inline?width=400&height=150&inlineId=QuestionPotDeleteCheck'.$potID.'" class="thickbox">Delete this question pot</a></span>';
+		if($questionCount>1 || $questionCount==0){$plural='s';}else{$plural='';}
+		echo $questionCount.' question'.$plural.'<br/><br/>';
+		echo '<span class="addIcon greyLink"><a href="admin.php?page=ai-quiz-question-list&potID='.$potID.'">Add / edit questions</a></span> | ';		
+		echo '<span class="editIcon greyLink"><a href="javascript:toggleLayerVis(\'potEdit'.$potID.'\');toggleLayerVis(\'pot'.$potID.'\');">Change Pot Name</a></span> | ';
+		echo '<span class="deleteIcon greyLink"><a href="#TB_inline?width=400&height=190&inlineId=QuestionPotDeleteCheck'.$potID.'" class="thickbox">Delete this question pot</a></span>';
 
 		echo '</div>';
 		
@@ -80,7 +82,7 @@ if($potCount>=1)
 
 		echo '<div id="QuestionPotDeleteCheck'.$potID.'" style="display:none">';
 		echo '<div style="text-align:center">';
-		echo '<h2>Are you sure you want to delete question pot: '.$potName.' ?</h2>';
+		echo '<h2>Are you sure you want to delete the question pot<br>"'.$potName.'" ?</h2>';
 		echo '<span class="failText">This will delete all questions in this pot and cannot be undone!</span><br/><br/>';
 		echo '<input type="submit" value="Yes, delete this question pot" onclick="location.href=\'?page=ai-quiz-home&potID='.$potID.'&action=potDelete&potID='.$potID.'&tab=options\'" class="button-primary">';			
 		echo '<input type="submit" value="Cancel" onclick="self.parent.tb_remove();return false" class="button-secondary">';	

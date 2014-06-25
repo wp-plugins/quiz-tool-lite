@@ -599,12 +599,8 @@ function logAttempt($quizID, $questionArray)
 	$attemptInfo = getAttemptInfo($username, $quizID);
 	$attemptCount = $attemptInfo['attemptCount'];
 	
-	
 	if($attemptCount=="")
 	{
-		//$qry = "INSERT into ".$table_name." (attemptCount, username, lastDateStarted, questionArray, quizID) ";
-		//$qry.="VALUES (0, '".$username."', '".$dateTime."', '".serialize($questionArray)."', ".$quizID.")";
-		//$RunQry=mysql_query($qry);
 		
 		$RunQry = $wpdb->query( $wpdb->prepare( 
 			"INSERT into ".$table_name." (attemptCount, username, lastDateStarted, questionArray, quizID) VALUES (%d, %s, %s, %s, %d)", 

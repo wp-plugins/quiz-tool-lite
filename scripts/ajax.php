@@ -47,6 +47,8 @@ function addResponseToDatabase()
 		$date,
 		$questionID
 	));		
+	
+
 
 	die();
 }
@@ -60,31 +62,22 @@ function responseOptionReorder()
 	
 	global $wpdb;
 	$table_name = $wpdb->prefix . "AI_Quiz_tblResponseOptions";		
-
 	
-	$SQL='Select * FROM '.$table_name.' WHERE questionID='.$questionID.' ORDER by '.$orderBy;	
 	
-	$myOrder = $_POST['myOrder'];
-
-	$currentOrder = 1;
-	foreach ($myOrder as $optionID)
-	{	
-		$optionID = str_replace('thisOrder', '', $optionID);
-		
-		$myFields ="UPDATE ".$table_name." SET optionOrder=%u WHERE optionID =%u";		
-		$RunQry = $wpdb->query( $wpdb->prepare($myFields,
-			$currentOrder,
-			$optionID
-		));	
-		
-		$currentOrder++;
-		
-	}	
-	
+	$myOrder = $_POST['myOrder'];	
 	$questionID = $_POST['questionID'];
 	$qType = $_POST['qType'];
-	$optionOrderType = $_POST['optionOrderType'];	
-
+	
+	
+	$currentOrder=1;
+	foreach($myOrder as $myOptionID)
+	{
+		$myOptionID = substr($myOptionID, 9);
+		$myFields ="UPDATE ".$table_name." SET optionOrder=%u WHERE optionID =%u";		
+		$RunQry = $wpdb->query( $wpdb->prepare($myFields, $currentOrder, $myOptionID));	
+		
+		$currentOrder++;		
+	}
 
 	?>
     <script>
@@ -94,9 +87,7 @@ function responseOptionReorder()
 	<?php
 
 	
-	
-	
-	drawRadioCheckOptionsEditTable($questionID, $qType, $optionOrderType);
+	drawRadioCheckOptionsEditTable($questionID, $qType, "ordered");
 	echo '<div id="responseOptionOrderFeedback"><div id="feedback">Options reordered</div></div>';
 	
 	die();

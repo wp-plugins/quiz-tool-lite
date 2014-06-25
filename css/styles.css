@@ -96,17 +96,12 @@
 
 
 
-#wpbody h3
+#TB_ajaxContent h2
+
 {
-	font-weight:bold !important;
-	font-size:18px !important;
+	line-height:30px !important;
 }
 
-#wpbody h2
-{
-	font-weight:bold !important;
-	font-size:22px !important;
-}
 
 .failText
 {

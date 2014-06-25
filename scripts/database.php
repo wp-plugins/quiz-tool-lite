@@ -11,7 +11,7 @@ $this_qtl_db_version = "1.5";
 // CHeck the DB version of the plugin
 $current_qtl_db_version = get_option( 'qtl-db-version' );
 
-if($current_qtl_db_version==false) // aadd the option and create DB
+if($current_qtl_db_version==false) // add the option and create DB
 {
 	AI_Quiz_db_create();
 	add_option( 'qtl-db-version', $this_qtl_db_version);

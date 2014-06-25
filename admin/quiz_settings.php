@@ -77,12 +77,16 @@ function initialise_color_options()
 function make_javascript()
 {
 	$JS =  '<script type="text/javascript">
-        jQuery(document).ready(function($){';
-
+        jQuery(document).ready(function($){';		
+		
 	$cols = color_names();
 	foreach ($cols as $col)
 	{
-		$JS .= "jQuery('#color_picker_" . $col . "').farbtastic('#" . $col . "');";      
+		//$JS .= "jQuery('#color_picker_" . $col . "').farbtastic('#" . $col . "');"; 
+		$JS .= "jQuery('#" . $col . "').spectrum({ ";
+		$JS .= 'clickoutFiresChange: true ';
+		$JS .= '}); ';
+		
     }
     $JS .= '});
 	</script>';
@@ -94,10 +98,27 @@ function display_color_picker($col)
 {
 	$conf = color_config();
 ?>
-     <label for="<?php echo $col?>"><?php echo $conf[$col]["label"]?></label>
-     <input type="text" id="<?php echo $col ?>" value="<?php echo get_option($col); ?>" name="color_picker_<?php echo $col?>" />
-     <div id="color_picker_<?php echo $col?>"></div>
+    <td style="width:250px;">
+		<label style="font-size:13px;" for="<?php echo $col; ?>"><?php echo $conf[$col]["label"]; ?></label>
+	</td>
+    <td>
+		<input type="text" id="<?php echo $col; ?>" value="<?php echo get_option($col); ?>" name="color_picker_<?php echo $col; ?>" />
+	</td>
+     <!--<div id="color_picker_<?php //echo $col?>"></div>-->
 <?php
+}
+?>
+
+<?php
+
+function display_feedback_example($textColour , $bgColour, $divType="")
+{
+	echo '<tr/>';
+	echo '<td colspan="2">';
+	echo  '<div class="'.$divType.'" id="'.$divType.'" style="color:'.$textColour .';background-color:'.$bgColour .'">Feedback Text Example</div>';
+	echo '</td>';
+	echo '</tr>';
+
 }
 ?>
 
@@ -124,14 +145,52 @@ echo $feedback
 */
  
 ?>
+	<div style="padding-top:5px;">
+		<h3 style="margin-bottom:10px;">Correct Feedback</h3>
+		<table>
+            <?php display_feedback_example(get_option('correctFeedbacktextColour'), get_option('correctFeedbackBoxColour'), 'correctFeedbackDiv'); ?>
+            <tr>
+				<?php display_color_picker('correctFeedbackBoxColour'); ?>
+			</tr>
+			<tr>
+				<?php display_color_picker('correctFeedbacktextColour'); ?>
+			</tr>
+		</table>
+		
+		<br />
+		<h3 style="margin-bottom:10px;">Incorrect Feedback</h3>
+		<table>
+            <?php display_feedback_example(get_option('incorrectFeedbacktextColour'), get_option('incorrectFeedbackBoxColour'), 'incorrectFeedbackDiv'); ?>        
+			<tr>
+				<?php display_color_picker('incorrectFeedbackBoxColour'); ?>
+			</tr>
+			<tr>
+				<?php display_color_picker('incorrectFeedbacktextColour'); ?>
+			</tr>
+		</table>
+		
+		<br />
+		<h3 style="margin-bottom:10px;">Reflective Feedback</h3>
+		<table>
+            <?php display_feedback_example(get_option('reflectiveFeedbacktextColour'), get_option('reflectiveFeedbackBoxColour'), 'reflectionFeedbackDiv'); ?>        
+			<tr>
+				<?php display_color_picker('reflectiveFeedbackBoxColour'); ?>
+			</tr>
+			<tr>
+				<?php display_color_picker('reflectiveFeedbacktextColour'); ?>
+			</tr>
+		</table>
+	</div>
 
+
+	<!--
 	<div style="clear:both;">
 		<h3>Correct Feedback</h3>
-		<div style="float:left; padding-right: 40px;">
-			<?php  display_color_picker('correctFeedbackBoxColour')?>
+		<div style="float:left;">
+			<?php  //display_color_picker('correctFeedbackBoxColour')?>
 		</div>
 		<div style="float:left;">
-		<?php  display_color_picker('correctFeedbacktextColour')?>
+		<?php //display_color_picker('correctFeedbacktextColour')?>
 		</div>
 	</div>
 	
@@ -139,11 +198,11 @@ echo $feedback
 	<div style="clear:both;">
 		<br/><br/>
 		<h3>Incorrect Feedback</h3>
-		<div style="float:left; padding-right: 40px;">
-			<?php  display_color_picker('incorrectFeedbackBoxColour')?>
+		<div style="float:left;">
+			<?php  //display_color_picker('incorrectFeedbackBoxColour')?>
 		</div>
 		<div style="float:left;">
-		<?php  display_color_picker('incorrectFeedbacktextColour')?>
+		<?php  //display_color_picker('incorrectFeedbacktextColour')?>
 		</div>
 	</div>
 	
@@ -151,15 +210,17 @@ echo $feedback
 	<div style="clear:both;">
 		<br/><br/>
 		<h3>Reflective Feedback</h3>
-		<div style="float:left; padding-right: 40px;">
-			<?php  display_color_picker('reflectiveFeedbackBoxColour')?>
+		<div style="float:left;">
+			<?php  //display_color_picker('reflectiveFeedbackBoxColour')?>
 		</div>
 		<div style="float:left;">
-		<?php  display_color_picker('reflectiveFeedbacktextColour')?>
+		<?php //display_color_picker('reflectiveFeedbacktextColour')?>
 		</div>
 	</div>
-
-     <div style="clear:both; padding-top:20px">     	
+	-->
+	
+	
+     <div style="clear:both; padding-top:35px">     	
      <input type="submit" name="update_options" value="Update Options" class="button-primary"/></div>
 </form>
 

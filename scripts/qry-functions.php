@@ -136,7 +136,7 @@ function getAttemptInfo($username, $quizID)
 	global $wpdb;
 	$table_name = $wpdb->prefix . "AI_Quiz_tblQuizAttempts";		
 	
-	$SQL='Select * FROM '.$table_name.' WHERE Username="'.$username.'" AND quizID='.$quizID;	
+	$SQL='Select * FROM '.$table_name.' WHERE username="'.$username.'" AND quizID='.$quizID;	
 	
 	//$rs=mysql_query($SQL);
 	$attemptInfo = $wpdb->get_row($SQL, ARRAY_A);

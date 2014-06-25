@@ -26,11 +26,11 @@ else
 	$copyPotStr.= '<select name="copyQuestionPot">';
 	foreach ($potRS	as $myPots)
 	{
-		$potName = utils::convertTextFromDB($myPots['potName']);		
+		$copyPotName = utils::convertTextFromDB($myPots['potName']);		
 		$tempPotID= $myPots['potID'];
 		$copyPotStr.= '<option value="'.$tempPotID.'"';
 		if($tempPotID==$potID){$copyPotStr.=' selected';}
-		$copyPotStr.= '>'.$potName.'</option>';
+		$copyPotStr.= '>'.$copyPotName.'</option>';
 	}
 
 	$copyPotStr.= '</select><br/><br/>';

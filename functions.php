@@ -64,6 +64,14 @@ function AI_Quiz_createAdminMenu() {
 	$capability="administrator";
 	$menu_slug="ai-quiz-questionType";
 	$function="drawAIquiz_questionType";
+	add_submenu_page($parentSlug, $page_title, $menu_title, $capability, $menu_slug, $function);	
+	
+	$parentSlug="ai-quiz-home";
+	$page_title="Export / Import";
+	$menu_title="Export / Import";
+	$capability="administrator";
+	$menu_slug="ai-quiz-export";
+	$function="drawAIquiz_export";
 	add_submenu_page($parentSlug, $page_title, $menu_title, $capability, $menu_slug, $function);		
 	
 	$parentSlug="ai-quiz-home";
@@ -73,14 +81,6 @@ function AI_Quiz_createAdminMenu() {
 	$menu_slug="ai-quiz-settings";
 	$function="drawAIquiz_settings";
 	add_submenu_page($parentSlug, $page_title, $menu_title, $capability, $menu_slug, $function);	
-	
-	$parentSlug="ai-quiz-home";
-	$page_title="Export Quiz Questions";
-	$menu_title="Export Quiz Questions";
-	$capability="administrator";
-	$menu_slug="ai-quiz-export";
-	$function="drawAIquiz_export";
-	add_submenu_page($parentSlug, $page_title, $menu_title, $capability, $menu_slug, $function);
 	
 	$parentSlug="ai-quiz-home";
 	$page_title="Help";
@@ -140,9 +140,10 @@ function my_admin_init()
 	// Allow the poopup thickbox to appear all pages
 	add_thickbox(); 
 	
-	// farbtastic code is required for the colour picker wheel
-	wp_enqueue_style( 'farbtastic' );
-	wp_enqueue_script( 'farbtastic' );
+	
+	//spectrum colour picker scripts
+	wp_enqueue_style( 'spectrum_css', plugins_url('', __FILE__) . '/css/spectrum.css' );
+	wp_enqueue_script( 'spectrum_js', plugins_url('', __FILE__) . '/scripts/spectrum.js' );
 	
 		
 		

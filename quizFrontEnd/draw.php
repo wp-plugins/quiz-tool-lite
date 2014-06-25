@@ -22,15 +22,33 @@ function drawQuizPage($quizID)
 	
 }
 
+function getFieldsArray ( $table = '' )
+{
+	return array( 
+		'attemptID' => '',
+		'quizID' => '',
+		'username' => '',
+		'attemptCount' => '',
+		'lastDateStarted' => '',
+		'questionArray' => array(),
+		'highestScore' => '',
+		'highestScoreDate' => '',
+		'lastAttemptMarked' => '',
+		'test5555' => ''
+	);
+}
+
+
 
 function drawQuiz($quizID)
 {
+	
 	global $wpdb;
 	global $quizOptionsArray;
 	$table_name = $wpdb->prefix . "AI_Quiz_tblQuizAttempts";
 	
 	$allowQuizAttempt = true; // By default allow them to take the quiz
-	
+		
 	$currentUsername = utils::getCurrentUsername();
 	$currentDate = utils::getCurrentDate(); // GEt current date AND time
 	$currentDate_TS = strtotime($currentDate); // Get current date AND tiem as timestamp	
@@ -39,9 +57,7 @@ function drawQuiz($quizID)
 	
 	$quizFailureReason=""; // set the failure reasons to null to start with.
 	
-	
 	$quizStr= '<div id="theExam">';
-	
 	$quizInfo = getQuizInfo($quizID);
 
 	$potQuestionArray = $quizInfo['questionArray'];
@@ -52,21 +68,68 @@ function drawQuiz($quizID)
 	
 	// Check for data rangem number of attempts etc to see if they can take this test
 	
-	foreach ($quizOptionsArray as $key => $value) {
-		$$key = $value;
-	}	
+	
+	
+	if($quizOptionsArray)
+	{	
+		foreach ($quizOptionsArray as $key => $value) {
+			$$key = $value;
+		}
+		
+		$requireUserLoggedIn = ( isset($requireUserLoggedIn) ) ? $requireUserLoggedIn : ""; //this key isn't necessarily in $quizOptionsArray so can be undefined
+	}
+	else
+	{
+		$maxAttempts ="";	
+		$startDate ="";
+		$endDate ="";
+		$requireUserLoggedIn ="";
+		$timeAttemptsHour ="";
+		$timeAttemptsDay="";
+	}
+	
+	// Set some other defaults
+	$attemptCount ="";
+	$attemptID="";
+	$lastDateStarted="";
+	$highestScore ="";
+	
+	if($currentUsername)
+	{
+	
+		//try and get previous attempt info
+		$DB_previousAttemptInfo = getAttemptInfo($currentUsername, $quizID);  
+		//if there wasn't any then just get an empty fields array
+		$previousAttemptInfo = ( !is_null($DB_previousAttemptInfo) && is_array($DB_previousAttemptInfo) ) ? $DB_previousAttemptInfo : getFieldsArray();
+		
+		if($previousAttemptInfo['quizID'])
+		{
+		
+			foreach ($previousAttemptInfo as $key => $value) 
+			{
+				$$key = $value;
+			}
+			
+		}
+		
+		
+		$newAttemptCount = ($attemptCount+1);
+	}
+	
 	
 	
 	// If they are logged in then we can update the DB
 	if(is_user_logged_in()) // ony get previous results if they are logged in
 	{
 		// Get previous attempts info
-		$previousAttemptInfo = getAttemptInfo($currentUsername, $quizID);
-		foreach ($previousAttemptInfo as $key => $value) {
-			$$key = $value;
-		}
+		//$previousAttemptInfo = getAttemptInfo($currentUsername, $quizID);
+		//foreach ($previousAttemptInfo as $key => $value) 
+		//{
+		//	$$key = $value;
+		//}
 		
-		$newAttemptCount = ($attemptCount+1);
+
+		//$newAttemptCount = ($attemptCount+1);
 		
 		$startTest=""; // Check to see if they have clicked to start the test yet ONly applies to max attempts
 		if(isset($_GET['startTest']))
@@ -84,7 +147,8 @@ function drawQuiz($quizID)
 		{	
 			// Check to see if they've done it all all
 			$attemptCheck = getAttemptInfo($currentUsername, $quizID);
-			$attemptID = $attemptCheck['attemptID'];
+			//$attemptID = $attemptCheck['attemptID'];
+			//$attemptID = ( is_array($attemptCheck) ) ? $attemptCheck['attemptID'] : '';
 			
 			
 			if($attemptID=="")
@@ -115,10 +179,12 @@ function drawQuiz($quizID)
 				));				
 			} // end of if previous attempt has been made or not
 		} // End of if max attempts are limited
+		
+		$lastDateStartedFormatted = utils::formatDate($lastDateStarted);
+		$lastDateStartedFormatted = $lastDateStartedFormatted[2];
+			
 	} // End if user needs to be logged in check
 	
-	$lastDateStartedFormatted = utils::formatDate($lastDateStarted);
-	$lastDateStartedFormatted = $lastDateStartedFormatted[2];
 		
 	
 	// Check start date
@@ -142,7 +208,6 @@ function drawQuiz($quizID)
 			$quizFailureReason.='<li>You need to <a href="'.$siteURL.'/wp-login.php">login</a> before you can take this quiz</li>';			
 		}
 	}
-	
 	
 	// Check end date
 	if($endDate)
@@ -227,12 +292,14 @@ function drawQuiz($quizID)
 	}
 	
 	
-	
-	if($highestScore && $clickToStart<>"")
+	// Only do this if they are logged in
+	if($currentUsername)
 	{
-		$quizStr.= 'You have taken this test <b>'.$attemptCount.'</b> times and achieved a maximum of <b>'.$highestScore.'%</b>.<br/>';
+		if($highestScore && $clickToStart<>"")
+		{
+			$quizStr.= 'You have taken this test <b>'.$attemptCount.'</b> times and achieved a maximum of <b>'.$highestScore.'%</b>.<br/>';
+		}
 	}
-	
 	
 	if($clickToStart && $startTest<>true)
 	{
@@ -248,26 +315,52 @@ function drawQuiz($quizID)
 		// Now generate the quiz based on the ruleID if it exists. If it doesnt' exist the function will simple generate ten at random from the generic questions	
 		$questionArray = generateQuizQuestions($potQuestionArray);	
 		
-		logAttempt($quizID, $questionArray);// Log this attempt
+		
+		
+		if($currentUsername)
+		{		
+			logAttempt($quizID, $questionArray);// Log this attempt
+		}
 		
 		// Add the form	
 		$quizStr.= '<form action="?action=markTest" method="post">';
 		
 		$currentQuestionNumber=1;
-		foreach ($questionArray as $key => $value)
+		
+		if($questionArray)
 		{
-			$quizStr.= '<div id="questionDiv">';
-			$questionID = $value;
-			$quizStr.= '<b class="greyText">Question '.$currentQuestionNumber.'</b><br/>';
-			$quizStr.= '<div id="question">';			
-			$questionStr = drawQuestion($questionID);			
-			$quizStr.= do_shortcode($questionStr);
-			$currentQuestionNumber++;
-			$quizStr.= '</div></div>';
+			$nonLoggedInString=""; // Create a var that will be sent via the form if NOT logged in.
+			foreach ($questionArray as $key => $value)
+			{
+				$quizStr.= '<div id="questionDiv">';
+				$questionID = $value;
+				$quizStr.= '<b class="greyText">Question '.$currentQuestionNumber.'</b><br/>';
+				$quizStr.= '<div id="question">';			
+				$questionStr = drawQuestion($questionID);			
+				$quizStr.= do_shortcode($questionStr);
+				$currentQuestionNumber++;
+				$quizStr.= '</div></div>';
+				
+				$nonLoggedInString.=$questionID.',';
+			}
 		}
 		
+		// Remove the last comma from the string
+		$nonLoggedInString = substr($nonLoggedInString, 0, -1);
+		
 		$quizStr.= '<div align="right"><input type="submit" value="Submit my answers"></div>';	
-		$quizStr.='<input type="hidden" value="'.$newAttemptCount.'" name="attemptCount">';
+		
+		
+		// If they are not required to login and are not logged in then store the serialise the questino array and put it in the hidden filed serialised
+		if($currentUsername=="")
+		{
+			$quizStr.='<input type="hidden" value="'.$nonLoggedInString.'" name="questionArray">';
+		}
+		else
+		{
+			$quizStr.='<input type="hidden" value="'.$newAttemptCount.'" name="attemptCount">';
+		}
+		
 		$quizStr.= '</form>';
 		
 		
@@ -285,45 +378,48 @@ function markTest($quizID)
 	
 	// Set some vars
 	$markedTest ="";
+	$previousHighestScore="";
 
 	global $wpdb;
 	$table_name = $wpdb->prefix . "AI_Quiz_tblQuizAttempts";
 
 	$currentUsername = utils::getCurrentUsername();
 	$currentDate = utils::getCurrentDate();
-	
-	$lastAttemptInfo = 	getAttemptInfo($currentUsername, $quizID);	
-	
-	$previousHighestScore = $lastAttemptInfo['highestScore'];	
 	$markTest=true; // Be default allow the test to be marked.	
 	
-	$attemptCount = $_POST['attemptCount'];
-	
-	$lastAttemptMarked = $lastAttemptInfo['lastAttemptMarked']; // Set the attempt count to the last attempt count +1	
-	
-	
-
-	
-	// If this isn't a page refresh then update the attempt DB with the current version of this quiz attempt
-	if($lastAttemptMarked<$attemptCount)
+	if($currentUsername)
 	{
-		$myFields ="UPDATE ".$table_name." SET ";
-		$myFields.="lastAttemptMarked=%u ";
-		$myFields.="WHERE username ='%s' AND quizID=%u";
+		//$lastAttemptInfo = getAttemptInfo($currentUsername, $quizID);
+		$DB_previousAttemptInfo = getAttemptInfo($currentUsername, $quizID);
+		$lastAttemptInfo = ( !is_null($DB_previousAttemptInfo) && is_array($DB_previousAttemptInfo) ) ? $DB_previousAttemptInfo : getFieldsArray();
 		
-		$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
-			$attemptCount,
-			$currentUsername,
-			$quizID
-		));			
+		$previousHighestScore = $lastAttemptInfo['highestScore'];	
+		
+		$attemptCount = $_POST['attemptCount'];
+		
+		$lastAttemptMarked = $lastAttemptInfo['lastAttemptMarked']; // Set the attempt count to the last attempt count +1	
+		
+		// If this isn't a page refresh then update the attempt DB with the current version of this quiz attempt
+		if($lastAttemptMarked<$attemptCount)
+		{
+			$myFields ="UPDATE ".$table_name." SET ";
+			$myFields.="lastAttemptMarked=%u ";
+			$myFields.="WHERE username ='%s' AND quizID=%u";
+			
+			$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
+				$attemptCount,
+				$currentUsername,
+				$quizID
+			));			
+		}
+		
+		
+		if($lastAttemptMarked==$attemptCount)
+		{
+			$markTest=false; // They have refreshed, possible gone back and cheated so don't mark the test.
+		}			
+	
 	}
-	
-	
-	if($lastAttemptMarked==$attemptCount)
-	{
-		$markTest=false; // They have refreshed, possible gone back and cheated so don't mark the test.
-	}	
-
 	
 	$quizInfo = getQuizInfo($quizID);
 	$quizName = utils::convertTextFromDB($quizInfo['quizName']);	
@@ -350,8 +446,10 @@ function markTest($quizID)
 		$markedTest.= '<b>Thank you.</b><br/>Scroll down to check your answers and final score<hr/><br/>';
 	
 		// Set the total marked session var
-		$_SESSION['totalCorrect']==0;
+		//$_SESSION['totalCorrect']==0;
 		
+		
+		$questionIDstrings = '';
 		foreach ($_POST as $KEY=>$VALUE)
 		{
 			$$KEY=$VALUE;
@@ -360,44 +458,68 @@ function markTest($quizID)
 			{
 				// This is a check box response. Get the question ID
 				$questionID = substr($KEY, 0, strpos($KEY, "_"));
+				//echo '<br /><br />questionID: ' . $questionID;
+				
 				// Now get the values
 				$optionID = substr($KEY, ($pos = strpos($KEY, '_')) !== false ? $pos + 1 : 0);	
+				//echo '<br />optionID: ' . $optionID;
+				
 				// NOw remove 'option' frmo the string to get the checkbox ID
 				$optionID = substr($optionID, 6);
+				//echo '<br />optionID: ' . $optionID . '';
 				
-				$$questionID.=$optionID.',';
+				//$$questionID.=$optionID.',';
+				$$questionID = ( isset( $$questionID ) ) ? $$questionID . $optionID . ',' : $optionID . ',';
+				//echo '<br />$$questionID: ' . $$questionID;
+				
 			}
 		}
 		
-		// Get the latest array of question IDs from the DB for this person and attempt
-		$attemptInfo = getAttemptInfo($currentUsername, $quizID);
-		$questionArray = unserialize($attemptInfo['questionArray']);
 		
+		
+		// Get the latest array of question IDs from the DB for this person and attempt
+		
+		
+		if($currentUsername)
+		{
+			$attemptInfo = getAttemptInfo($currentUsername, $quizID);
+			$questionArray = unserialize($attemptInfo['questionArray']);
+		
+		}
+		else
+		{
+			$questionArray = $_POST['questionArray'];
+			$questionArray=explode(",",$questionArray);
+			
+		}
 		$questionCount = count($questionArray);
 	
 		$currentQuestionNumber=1;
-		foreach ($questionArray as $key => $value)
+		if($questionArray)
 		{
-			
-			$markedTest.= '<div id="questionDiv">';
-			$questionID = $value;
-			// Create the var
-			//${'question'.$questionID}="";
-	
-			if(isset(${'question'.$questionID}))
+			foreach ($questionArray as $key => $value)
 			{
-				$response = ${'question'.$questionID}; // Set the response
+				
+				$markedTest.= '<div id="questionDiv">';
+				$questionID = $value;
+				// Create the var
+				//${'question'.$questionID}="";
+		
+				if(isset(${'question'.$questionID}))
+				{
+					$response = ${'question'.$questionID}; // Set the response
+				}
+				else
+				{
+					$response="";	
+				}
+				
+				$markedTest.= '<b class="greyText">Question '.$currentQuestionNumber.'</b><br/>';
+				$markedTest.= '<div id="question">';
+				$markedTest.= drawMarkedQuestion($questionID, $response, $showFeedback);
+				$currentQuestionNumber++;
+				$markedTest.= '</div></div>';
 			}
-			else
-			{
-				$response="";	
-			}
-			
-			$markedTest.= '<b class="greyText">Question '.$currentQuestionNumber.'</b><br/>';
-			$markedTest.= '<div id="question">';
-			$markedTest.= drawMarkedQuestion($questionID, $response, $showFeedback);
-			$currentQuestionNumber++;
-			$markedTest.= '</div></div>';
 		}
 		
 		
@@ -421,35 +543,39 @@ function markTest($quizID)
 		
 		$markedTest.= '</div>';// end of exam div
 		
-		// This score is higher than any previous score so update the DB to reflect this
-		if($percentageScore>$previousHighestScore)
-		{
-			$myFields ="UPDATE ".$table_name." SET ";
-			$myFields.="highestScore=%u ,";
-			$myFields.="highestScoreDate='%s' ";
-			$myFields.="WHERE username ='%s' AND quizID=%u";
-			
-			$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
-				$percentageScore,
-				$currentDate,
-				$currentUsername,
-				$quizID
-			));					
-		} // End if this attempt is higher than previous scores
 		
-		// Finally check to see if they willg et emailed their results or not
-		if($emailUser=="yes")
+		if($currentUsername)
 		{
-			global $current_user;
-			get_currentuserinfo();
-			$thisEmail = $current_user->user_email;		
-			$subject = "Quiz Results for ".$quizName;
-			$message = "This email is a receipt of your quiz results for '".$quizName."'\n\n";
-			$message.= "Date Taken : ".$currentDate."\n";
-			$message.="Score  : ".$_SESSION['totalCorrect']."/".$questionCount." = ".$percentageScore."%\n\n";
-			$message.="This message has been generated automatically";
+			// This score is higher than any previous score so update the DB to reflect this
+			if($percentageScore>$previousHighestScore)
+			{
+				$myFields ="UPDATE ".$table_name." SET ";
+				$myFields.="highestScore=%u ,";
+				$myFields.="highestScoreDate='%s' ";
+				$myFields.="WHERE username ='%s' AND quizID=%u";
+				
+				$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
+					$percentageScore,
+					$currentDate,
+					$currentUsername,
+					$quizID
+				));					
+			} // End if this attempt is higher than previous scores
 			
-			wp_mail( $thisEmail, $subject, $message );
+			// Finally check to see if they willg et emailed their results or not
+			if($emailUser=="yes")
+			{
+				global $current_user;
+				get_currentuserinfo();
+				$thisEmail = $current_user->user_email;		
+				$subject = "Quiz Results for ".$quizName;
+				$message = "This email is a receipt of your quiz results for '".$quizName."'\n\n";
+				$message.= "Date Taken : ".$currentDate."\n";
+				$message.="Score  : ".$_SESSION['totalCorrect']."/".$questionCount." = ".$percentageScore."%\n\n";
+				$message.="This message has been generated automatically";
+				
+				wp_mail( $thisEmail, $subject, $message );
+			}
 		}
 	}
 	
@@ -462,26 +588,31 @@ function generateQuizQuestions($questionArray="")
 {
 	
 	// unserialise the array
+	$quizQuestionArray="";
 	$questionArray = unserialize($questionArray);	
 	
-	foreach ($questionArray as $key => $value)
+	if($questionArray)
 	{
-		$potID = $key;
-		$qCount = $value;		
-		$questionRS = getQuestionsInPot($potID, false, "random", $qCount);
-		
-
-		// NOW go through the RS and add the question IDs to an array		
-		foreach ($questionRS as $myQuestions)
-		{		
-			$questionID = $myQuestions['questionID'];
-			$quizQuestionArray[] = $questionID;
+		foreach ($questionArray as $key => $value)
+		{
+			$potID = $key;
+			$qCount = $value;		
+			$questionRS = getQuestionsInPot($potID, false, "random", $qCount);
+			
+	
+			// NOW go through the RS and add the question IDs to an array		
+			foreach ($questionRS as $myQuestions)
+			{		
+				$questionID = $myQuestions['questionID'];
+				$quizQuestionArray[] = $questionID;
+			}
 		}
+	
+		//Randomise the question array
+		shuffle($quizQuestionArray);		
 	}
 
-	
-	//Randomise the question array
-	shuffle($quizQuestionArray);
+
 	
 	
 	return $quizQuestionArray;

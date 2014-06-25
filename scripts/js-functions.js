@@ -373,7 +373,7 @@ function ajaxQuestionResponseUpdate(elementID, questionID, IDStr, qType, current
 	}
 	
 	//alert('test');		
-	//alert (userResponse);
+//	alert (userResponse);
 	
 	// We need question ID AND the logged in user AND the value passed to the beneath query	
 	jQuery.ajax({
