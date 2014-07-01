@@ -1,5 +1,5 @@
 === Quiz Tool Lite ===
-Contributors: alexfurr, lcw102, simonward-1
+Contributors: alexfurr, lcw102, simon.ward
 Tags: academic, assessment, formative, quiz, questions
 Requires at least: 3.0.1
 Tested up to: 3.9
