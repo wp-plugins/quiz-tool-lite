@@ -2,14 +2,15 @@
 /**
  * Description: Creates database tables used by the quiz
  */
+ 
 
 //Database table versions
 global $this_qtl_db_version;
-$this_qtl_db_version = "1.5";
-
+$this_qtl_db_version = "1.6"; // INcrease this each time a DB change is made
 
 // CHeck the DB version of the plugin
 $current_qtl_db_version = get_option( 'qtl-db-version' );
+
 
 if($current_qtl_db_version==false) // add the option and create DB
 {
@@ -25,12 +26,10 @@ elseif($current_qtl_db_version<$this_qtl_db_version) // update the option and up
 
 
 
-//Create database tables needed by the DiveBook widget
+//Create / update tables if the version is old
 function AI_Quiz_db_create ()
 {
     AI_Quiz_create_tables();
-
-	
 }
 
 //Create tables - uses the dbDelta stuff that looks to see if the tables already exist and udpates if not
@@ -58,7 +57,7 @@ function AI_Quiz_create_tables()
 	lastEditedBy varchar(255),
 	lastEditedDate datetime,
 	quizOptions longtext,	
-	PRIMARY KEY (quizID)
+	PRIMARY KEY  (quizID)
 	);";
 	dbDelta($sql);
 	
@@ -72,7 +71,7 @@ function AI_Quiz_create_tables()
 	responseCorrectFeedback longtext,
 	responseIncorrectFeedback longtext,	
 	optionOrder int,
-	PRIMARY KEY (optionID)
+	PRIMARY KEY  (optionID)
 	);";
 	dbDelta($sql);
 	
@@ -87,7 +86,7 @@ function AI_Quiz_create_tables()
 	creator varchar(255),
 	createDate datetime,
 	optionOrderType varchar (50),
-	PRIMARY KEY (questionID)
+	PRIMARY KEY  (questionID)
 	);";
 	
 	dbDelta($sql);
@@ -100,7 +99,7 @@ function AI_Quiz_create_tables()
 	createDate datetime,
 	lastEditedBy varchar(255),
 	lastEditedDate datetime,
-	PRIMARY KEY (potID)
+	PRIMARY KEY  (potID)
 	);";
 	
 	dbDelta($sql);
@@ -117,7 +116,7 @@ function AI_Quiz_create_tables()
 	highestScoreDate datetime,
 	lastAttemptMarked int,
 	test5555 int,
-	PRIMARY KEY (attemptID)
+	PRIMARY KEY  (attemptID)
 	);";
 	
 	dbDelta($sql);	
@@ -130,7 +129,7 @@ function AI_Quiz_create_tables()
 	userResponse longtext,
 	dateSubmitted datetime,
 	questionID int,
-	PRIMARY KEY (resultID)
+	PRIMARY KEY  (resultID)
 	);";
 	dbDelta($sql);	
 	
