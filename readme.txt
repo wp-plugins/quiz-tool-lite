@@ -22,8 +22,8 @@ However it also handles summative assessment if you wish to deploy an entire qui
 *   Export questions from one WP site to another
 *   Display participants responses to previously submitted reflective questions on different pages
 *   Quiz options for date window available, max attempts, display feedback or not and max time between attempts
-*   Optional redirect to abother website once the quiz is completed
-*   Email participants an admin once a quiz has been completed
+*   Optional redirect to another website once the quiz is completed
+*   Email participants and admins once a quiz has been completed
 
 <div>
   <a href="https://www.efolio.soton.ac.uk/blog/alexfurr/quiz-tool-lite-demo/">Click here to view some example of the embedded formative questions</a>
