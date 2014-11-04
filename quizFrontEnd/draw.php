@@ -20,9 +20,10 @@ function drawQuizPage($quizID)
 		// Unserialise the quiz options array
 		$quizOptionsArray = unserialize($quizOptionsArray);	
 		$redirectPage = $quizOptionsArray['redirectPage'];
-		$redirectPage = utils::addhttp($redirectPage);
+		
 		if($redirectPage<>"")
 		{
+			$redirectPage = utils::addhttp($redirectPage);
 			echo '<script>';
 			echo 'window.location.replace("'.$redirectPage.'");';
 			echo '</script>';
