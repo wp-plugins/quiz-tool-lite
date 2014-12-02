@@ -9,18 +9,33 @@ A light weight quiz tool aimed at academics wanting to create interactive learni
 
 == Description ==
 
-This tool was originally written as we wanted to display an individual question on a page, along with feedback for formative assessment. However it also handles summative assessment if you wish to deploy an entire quiz.
+This plugin allows you to display an individual question on a page, along with feedback for formative assessment using no form or page submission. 
+It also handles summative assessment if you wish to deploy an entire quiz.
+
+
+**Question Types**
+*   Single response / True False(radio)
+*   Multiple response (checkbox)
+*   Free Text Entry (text box)
+*   Reflective question types (click to reveal)
 
 **Features**
-
-*   Single response (radio), multiple response (checkbox) and reflective question types (click to reveal)
-*   Can Embed a single question on a wordpress post or page for formative assessment (no form posting)
+*   Embed a single question on a post or page for formative assessment (no form posting)
 *   Create multiple quizzes from your question 'pots' and deploy on a page for recording student scores
 *   Adds an 'Insert Question' link to the editor toolbar
 *   Uses shortcode
-*   Export questions from one WP site to another
-*   Display participants responses to previously submitted reflective questions on different pages
-*   Quiz options for date window available, max attempts, display feedback or not and max time between attempts
+*   Export / import questions from one WP site to another
+*   Can display participants responses to previously submitted reflective questions on different pages
+
+**Quiz Options**
+*   Date window for availability
+*   Restrict access to logged in users
+*   Limit max attempts for logged in users
+*   Add a time limit that auto submits the page after x minutes and x seconds
+*   Limit time between attempts e.g. once a day
+*   Optional redirect to abother website once the quiz is completed
+*   Email participants an admin once a quiz has been completed
+*   Security measures so participants cannot use the browser back button to correct and resubmit
 
 <div>
   <a href="https://www.efolio.soton.ac.uk/blog/alexfurr/quiz-tool-lite-demo/">Click here to view some example of the embedded formative questions</a>
@@ -29,25 +44,16 @@ This tool was originally written as we wanted to display an individual question 
 This plugin is supported by the <a href="http://cite.soton.ac.uk/">University of Southampton</a>
 
 
-
 == Installation ==
 
 1.  Extract the zip file and copy contents in the wp-content/plugins/ directory of your WordPress installation
 2.  Activate the Plugin from Plugins page.
+
 == Frequently Asked Questions ==
 
 **Does this do summative assessment?**
 
 Yes the quiz can record answers if a quiz is deployed. If you deploy an individual question feedback is given but responses are not saved. This can be very useful for formative assessment.
-
-**What options are there for quizzes?**
-
-Currently you pick 'x' questions at random from a question pot. These questions are displayed randomly.
-You can also pick dates that the quiz will be available between, the maximum attempts, whether to display feedback or not and maximum times between attempts
-
-**What question types does this support?**
-
-You can create single reponse and multiple response questions which covers around 95% of question types used in academia. You can also write 'reflective' questions where you ask users to think of an answer before getting them to click a button which displays an 'ideal answer'.
 
 **How do I use this tool?**
 
@@ -61,8 +67,9 @@ To display a question.
 
 **To deploy a quiz.**
 
-1.  Create a new quiz and choose to display 'x' questions at random from pot 1 and (for example) 'x' questions at random from pot 2.
-2.  Copy the quiz shortcode onto a page.
+1.  Create a new quiz and choose to display 'x' questions from pot 1 and (for example) 'x' questions at random from pot 2.
+
+2.  Copy the quiz shortcode onto a page or use the 'in editor' button to add the quiz
 
 The quiz saves the HIGHEST score and quizzes can be taken as often as possible, or you can limit attempts if you wish. It will only save the score if a user is logged in.
 
@@ -81,6 +88,17 @@ Yes, but results won't be stored in the database
 5. Creating a quiz from question pots
 
 == Changelog ==
+
+= 2.0 =
+* Added the time limit option to quizzes
+* Added the free text option question type. YOu can now define possible answers typed into a box
+* Improved interface using jquery UI tabs
+* Added the ability to create a quiz from a defined set of question IDs as well as question pots
+
+= 1.5 =
+* Added the option to email admins once a quiz has been completed
+* Added the option to redirect to a new page after the quiz has been completed
+* Fixed table formatting issue for certain question types
 
 = 1.4.9 =
 * Fixed manual response option ordering bug
