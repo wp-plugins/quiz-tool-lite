@@ -14,28 +14,33 @@ It also handles summative assessment if you wish to deploy an entire quiz.
 
 
 **Question Types**
-*   Single response / True False(radio)
-*   Multiple response (checkbox)
-*   Free Text Entry (text box)
-*   Reflective question types (click to reveal)
 
+- Single response / True False(radio)
+- Multiple response (checkbox)
+- Free Text Entry (text box)
+- Reflective question types (click to reveal)
+
+<br>
 **Features**
-*   Embed a single question on a post or page for formative assessment (no form posting)
-*   Create multiple quizzes from your question 'pots' and deploy on a page for recording student scores
-*   Adds an 'Insert Question' link to the editor toolbar
-*   Uses shortcode
-*   Export / import questions from one WP site to another
-*   Can display participants responses to previously submitted reflective questions on different pages
 
+- Embed a single question on a post or page for formative assessment (no form posting)
+- Create multiple quizzes from your question 'pots' and deploy on a page for recording student scores
+- Adds an 'Insert Question' link to the editor toolbar
+- Uses shortcode
+- Export / import questions from one WP site to another
+- Can display participants responses to previously submitted reflective questions on different pages
+
+<br>
 **Quiz Options**
-*   Date window for availability
-*   Restrict access to logged in users
-*   Limit max attempts for logged in users
-*   Add a time limit that auto submits the page after x minutes and x seconds
-*   Limit time between attempts e.g. once a day
-*   Optional redirect to abother website once the quiz is completed
-*   Email participants an admin once a quiz has been completed
-*   Security measures so participants cannot use the browser back button to correct and resubmit
+
+- Date window for availability
+- Restrict access to logged in users
+- Limit max attempts for logged in users
+- Add a time limit that auto submits the page after x minutes and x seconds
+- Limit time between attempts e.g. once a day
+- Optional redirect to abother website once the quiz is completed
+- Email participants an admin once a quiz has been completed
+- Security measures so participants cannot use the browser back button to correct and resubmit
 
 <div>
   <a href="https://www.efolio.soton.ac.uk/blog/alexfurr/quiz-tool-lite-demo/">Click here to view some example of the embedded formative questions</a>
