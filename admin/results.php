@@ -1,5 +1,5 @@
 
-<h1>Quiz Results</h1>
+<h2>Quiz Results</h2>
 <span class="greyText">Please note : Results are only saved from logged in users</span><br/>
 
 <?php
@@ -7,52 +7,12 @@ $quizID="";
 if(isset($_GET['quizID']))
 {
 	$quizID = $_GET['quizID'];
-}
-
-//display all quiz in a list for selection
-if($quizID=="")
-{
-	$quizRS = getQuizzes();
-	$quizCount = count($quizRS);
-	if($quizCount>=1)
-	{
-		
-		echo '<div id="quiztable">';
-		//echo '<table width="90%">';
-		echo '<table>';
-		echo '<tr><th>Quiz Name</th><th>Quiz ID</th><th></th></tr>';
-			
-		foreach ($quizRS as $myQuizzes)
-		{		
-			$quizName = stripslashes($myQuizzes['quizName']);
-			$quizID= $myQuizzes['quizID'];	
-			
-			echo '<tr>';
-			echo '<td>'.$quizName.'</td>';
-			echo '<td valign="top"><span class="greyText">Quiz ID '.$quizID.'</span></td>';		
-			echo '<td><a href="admin.php?page=ai-quiz-results&quizID='.$quizID.'" class="dataIcon">View results</a></td>';
-
-			echo '</tr>';
-		}
-		echo '</table>';
-		echo '</div>';
-	}
-	else
-	{
-		echo 'No quizzes found';
-	}	
-
-}
-else  //display the result for the selected quiz
-{
-	echo '<a href="admin.php?page=ai-quiz-results" class="backIcon">Pick a different quiz</a>';
-	$quizInfo = getQuizInfo($quizID);
-	$quizName = utils::convertTextFromDB($quizInfo['quizName']);
+	echo '<a href="?page=ai-quiz-quiz-list" class="backIcon">Pick a different quiz</a>';
+	$quizInfo = qtl_queries::getQuizInfo($quizID);
+	$quizName = qtl_utils::convertTextFromDB($quizInfo['quizName']);
 	echo '<h2>'.$quizName.'</h2>';
 	//displaySearchForm();	
 	drawUserResults();
-	
-
 }
 
 
@@ -150,7 +110,7 @@ class TT_Example_List_Table extends WP_List_Table {
 				$lastName = $nameArray[1];
 		
 				// get the highest score
-				$attemptInfo = getAttemptInfo($username, $quizID);				
+				$attemptInfo = qtl_queries::getAttemptInfo($username, $quizID);				
 				$highestScore = $attemptInfo['highestScore'];
 				$highestScoreDate = $attemptInfo['highestScoreDate'];
 				$attemptCount = $attemptInfo['attemptCount'];

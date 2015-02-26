@@ -26,11 +26,9 @@ initialise_color_options();
 //if the user has submitted new choices, update them
 if ( isset($_POST['update_options']))
 { 
-	$feedback =  '<span class="successText">Settings updated</span>';
-	color_picker_option_update(); 
+	$feedback =  '<div class="updated">Settings updated</div>';
+	updateQTL_settings();
 }
-
-//Then render the html
 
 
 //return an array containing the names of all the color options
@@ -40,8 +38,11 @@ function color_names()
 }
 
 //Update all the options from the form
-function color_picker_option_update()
+function updateQTL_settings()
 {
+	$minimumEditLevel = $_POST['minimumEditLevel'];
+	
+	update_option('qtl-minimum-editor', $minimumEditLevel);
 	$cols = color_names();
 
 	foreach ($cols as $col)
@@ -50,7 +51,7 @@ function color_picker_option_update()
 		if (preg_match('/^#[a-f0-9]{6}$/i', $_POST['color_picker_' . $col])){
 			update_option($col, esc_html($_POST['color_picker_' . $col])); //perhaps test if there's a valid value here?
 		}else{
-			echo "<h3>Invalid color code for ".$col.'!</h3>';
+			echo "<h4>Invalid color code for ".$col.'!</h4>';
 		}
 	}
 }
@@ -122,7 +123,7 @@ function display_feedback_example($textColour , $bgColour, $divType="")
 }
 ?>
 
-<h1>Feedback colour settings</h1>
+<h2>Feedback colour settings</h2>
 
 <?php
 echo $feedback
@@ -131,22 +132,43 @@ echo $feedback
 <form method="POST" action="">
 
 <?php
-/*
-	$cols = color_names();
-	$conf = color_config();
-	foreach ($cols as $col)
-	{
-?>
-     <label for="<?php echo $col?>"><?php echo $conf[$col][label]?></label>
-     <input type="text" id="<?php echo $col ?>" value="<?php echo get_option($col); ?>" name="color_picker_<?php echo $col?>" />
-     <div id="color_picker_<?php echo $col?>"></div>
-<?php
-	}  
-*/
+
+// Get user role allowed
+
+$minimumEditLevel = get_option('qtl-minimum-editor');
+if($minimumEditLevel=="")
+{
+	add_option('qtl-minimum-editor', "administrator");
+	$minimumEditLevel = "administrator";
+}
  
 ?>
 	<div style="padding-top:5px;">
-		<h3 style="margin-bottom:10px;">Correct Feedback</h3>
+    <h4>Minimum level required to be able to edit quizzes</h4>
+<select name="minimumEditLevel">
+    <?php
+	$editable_roles =  get_editable_roles() ;	 
+	foreach ( $editable_roles as $role => $details )
+	{
+		$roleName = translate_user_role($details['name'] );
+		$roleValue = strtolower($roleName);
+		
+		if($roleValue<>"subscriber")
+		{
+			echo '<option value="'.$roleValue.'"';
+			if($roleValue == $minimumEditLevel){echo 'selected';}
+			echo '>';
+			echo $roleName;			
+			echo '</option>';
+			
+		}
+	}
+	
+	
+	?>
+</select>	
+<hr/>
+		<h4 style="margin-bottom:10px;">Correct Feedback</h4>
 		<table>
             <?php display_feedback_example(get_option('correctFeedbacktextColour'), get_option('correctFeedbackBoxColour'), 'correctFeedbackDiv'); ?>
             <tr>
@@ -158,7 +180,7 @@ echo $feedback
 		</table>
 		
 		<br />
-		<h3 style="margin-bottom:10px;">Incorrect Feedback</h3>
+		<h4 style="margin-bottom:10px;">Incorrect Feedback</h4>
 		<table>
             <?php display_feedback_example(get_option('incorrectFeedbacktextColour'), get_option('incorrectFeedbackBoxColour'), 'incorrectFeedbackDiv'); ?>        
 			<tr>
@@ -170,7 +192,7 @@ echo $feedback
 		</table>
 		
 		<br />
-		<h3 style="margin-bottom:10px;">Reflective Feedback</h3>
+		<h4 style="margin-bottom:10px;">Reflective Feedback</h4>
 		<table>
             <?php display_feedback_example(get_option('reflectiveFeedbacktextColour'), get_option('reflectiveFeedbackBoxColour'), 'reflectionFeedbackDiv'); ?>        
 			<tr>
@@ -185,7 +207,7 @@ echo $feedback
 
 	<!--
 	<div style="clear:both;">
-		<h3>Correct Feedback</h3>
+		<h4>Correct Feedback</h4>
 		<div style="float:left;">
 			<?php  //display_color_picker('correctFeedbackBoxColour')?>
 		</div>
@@ -197,7 +219,7 @@ echo $feedback
 
 	<div style="clear:both;">
 		<br/><br/>
-		<h3>Incorrect Feedback</h3>
+		<h4>Incorrect Feedback</h4>
 		<div style="float:left;">
 			<?php  //display_color_picker('incorrectFeedbackBoxColour')?>
 		</div>
@@ -209,7 +231,7 @@ echo $feedback
 
 	<div style="clear:both;">
 		<br/><br/>
-		<h3>Reflective Feedback</h3>
+		<h4>Reflective Feedback</h4>
 		<div style="float:left;">
 			<?php  //display_color_picker('reflectiveFeedbackBoxColour')?>
 		</div>

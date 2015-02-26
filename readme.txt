@@ -3,7 +3,7 @@ Contributors: alexfurr, lcw102, simon.ward
 Tags: academic, assessment, formative, quiz, questions
 Requires at least: 3.0.1
 Tested up to: 4.0
-Stable tag: 2.0
+Stable tag: 2.1
 
 A light weight quiz tool aimed at academics wanting to create interactive learning content. Insert a single question or deploy an entire quiz.
 
@@ -46,7 +46,6 @@ It also handles summative assessment if you wish to deploy an entire quiz.
   <a href="https://www.efolio.soton.ac.uk/blog/alexfurr/quiz-tool-lite-demo/">Click here to view some example of the embedded formative questions</a>
 </div>
 
-This plugin is supported by the <a href="http://cite.soton.ac.uk/">University of Southampton</a>
 
 
 == Installation ==
@@ -93,6 +92,16 @@ Yes, but results won't be stored in the database
 5. Creating a quiz from question pots
 
 == Changelog ==
+
+
+= 2.1 =
+* Added new shortcodes to view leaderboards and dispay the score of a quiz to the current logged in user
+* Added shortcode attribute to single question  so you can change the text of the submit button (button="My Text")
+* Added the ability to make the plugin available to other roles (Editor / Author / Contributor)
+* Integrated feedback messages and main buttons with standard WP styles for consitency
+* Quiz list and resukts page has been combined for a more streamlined look
+* Quiz list now tells you how many people have taken a quiz
+* Major under the hood cleanup and all methods now in appropriate classes
 
 = 2.0 =
 * Added the time limit option to quizzes

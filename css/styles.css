@@ -14,14 +14,16 @@
 
 #theExam td
 {
-	padding:5px 5px 5px 10px !important;
+	padding:2px 0px 2px 0px !important;
 }
 
 #theExam hr
 {
 	border:dashed 1px #ccc;
 	margin: 0px 0px 5px 0px;
-}theExam #questionDiv
+}
+
+theExam #questionDiv
 {
 	padding: 5px 5px 20px 5px;
 	margin:5px;
@@ -45,6 +47,7 @@
 #quiztable table
 {
 	padding:5px !important;
+	padding-left:0px !important;	
 	margin:0px !important;
 	width:90% !important;
 	
@@ -62,6 +65,7 @@
 	padding:0px !important;
 	border-bottom:1px solid #ccc !important;
 	margin:0px !important;
+	line-height:35px;
 }
 
 .wp-editor-area {
@@ -131,7 +135,7 @@ a
 
 
 /* Forms */
-#questionEdit form label, #TB_window label
+#TB_window label
 {
 	display: block;
 	font-weight:bold;
@@ -247,7 +251,7 @@ a
 }
 
 .greyLink a:link, .greyLink a:active, .greyLink a:visited {
-	color:#999999;
+	color:#999999 !important;
 	text-decoration:none;
 	font-weight:normal;
 	
@@ -281,4 +285,60 @@ list-style: none !important;
 {
 	color:#0074a2;
 }
-  
+
+
+.smallGreyText
+{
+	color:#777; font-size:11px	
+}
+
+
+
+#countdownDiv
+{
+	border:solid 1px #000;
+	background-color:#C61A1E;
+	color:#fff;
+	padding:5px;
+	width:600px;
+	height:55px;
+	text-align: center;
+	margin-left: auto;
+	position:fixed;
+}
+#countdownDiv span
+{
+	font-size:20px;
+}
+
+
+.ui-widget-content a
+{
+	color:#0074a2 !important;
+}
+
+
+
+
+
+/* data tables */
+table.dataTable thead{text-align:left ;}
+.DataTables_sort_icon  {display:none;}
+
+table.dataTable td {border-bottom:1px solid #ccc ;}
+
+.ui-buttonset .ui-button
+{
+	padding:5px;
+}
+.ui-widget-header{
+	padding-left:10px;
+}
+
+
+div .updated
+{
+	padding:10px;
+	margin-left:0px;
+	margin-bottom:20px;	
+}

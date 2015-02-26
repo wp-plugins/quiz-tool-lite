@@ -1,9 +1,9 @@
-<h1>Quiz List</h1>
+<h2>Quiz List</h2>
 
-<a href="admin.php?page=ai-quiz-quiz-edit" class="addIcon">Add a new quiz</a>
+<a href="?page=ai-quiz-quiz-edit" class="button-primary">Add a new quiz</a>
 <?php
 
-
+$feedback = "";
 if(isset($_GET['action']))
 {
 	$action=$_GET['action'];
@@ -11,30 +11,40 @@ if(isset($_GET['action']))
 	if($action=="quizDelete")
 	{
 		$quizID = $_GET['quizID'];
-		quizDelete($quizID);
+		qtl_actions::quizDelete($quizID);
+		$feedback = '<div class="updated">Quiz Deleted</div>';
 	}
 }
 
 
-$quizRS = getQuizzes();
+if($feedback){echo $feedback;}
+
+$quizRS = qtl_queries::getQuizzes();
 $quizCount = count($quizRS);
 if($quizCount>=1)
 {
 
 	echo '<div id="quiztable">';
 	echo '<table>';
-	echo '<tr><th>Quiz Name</th><th>Short Code</th><th></th><th></th></tr>';
+	echo '<tr><th>Quiz Name</th><th>Short Code</th><th>Participant Count</th><th></th><th></th></tr>';
 	
 		
 	foreach ($quizRS	as $myQuizzes)
 	{		
 		$quizName = stripslashes($myQuizzes['quizName']);
-		$quizID= $myQuizzes['quizID'];	
+		$quizID= $myQuizzes['quizID'];
+		
+		// Get the count of people who have taken the quiz
+		
+		$quizParticipants =  qtl_queries::getQuizResults($quizID);
+		$participantCount = count($quizParticipants);
 		
 		echo '<tr>';
-		echo '<td>'.$quizName.'</td>';
-		echo '<td valign="top"><span class="greyText">[QTL-Quiz id='.$quizID.']</span></td>';		
-		echo '<td><a href="admin.php?page=ai-quiz-quiz-edit&quizID='.$quizID.'" class="editIcon">Edit Quiz</a></td>';
+		echo '<td><a href="?page=ai-quiz-quiz-edit&quizID='.$quizID.'">'.$quizName.'</a></td>';
+		echo '<td valign="top"><span class="greyText">[QTL-Quiz id='.$quizID.']</span></td>';
+		echo '<td valign="top">'.$participantCount.' participant(s)</span></td>';
+		echo '<td><a href="?page=ai-quiz-results&quizID='.$quizID.'" class="dataIcon">View results</a></td>';
+		
 	//	echo '<td><a href="admin.php?page=ai-quiz-quiz-list&action=quizDelete&quizID='.$quizID.'" class="deleteIcon">Delete</a></td>';
 		echo '<td>';
 		echo '<a href="#TB_inline?width=400&height=150&inlineId=QuizDeleteCheck'.$quizID.'" class="thickbox deleteIcon">Delete Quiz</a>';
@@ -53,6 +63,6 @@ if($quizCount>=1)
 }
 else
 {
-	echo '<br/><br/><span class="greyText">Create a quiz by clicking the link above</span>';
+	echo '<hr/><span class="greyText">Create a quiz by clicking the button above</span>';
 }
 ?>

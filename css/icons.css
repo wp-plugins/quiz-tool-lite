@@ -41,6 +41,7 @@
 
 .dataIcon {
 	background:url(../images/icons/chart_curve.png) left top no-repeat;	
-	padding-left:20px; padding-top:2px;	padding-bottom:3px;	margin:1px;
+	padding-left:20px;
+	margin-top:30px
 }
 

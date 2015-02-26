@@ -95,7 +95,7 @@ class AI_Quiz_importExport
 			   
 			$myFilename = $_FILES['csvFile']['tmp_name'];
 			//echo 'Filename = '.$myFilename.'<br/>';
-			$fileExt = utils::getFileExtension ($_FILES['csvFile']['name']);
+			$fileExt = qtl_utils::getFileExtension ($_FILES['csvFile']['name']);
 			
 				// Its a group invite
 			if($fileExt<>"csv")
@@ -137,7 +137,7 @@ class AI_Quiz_importExport
 				// Now delete the temp file
 				unlink ($newFilename);
 				
-				echo '<span class="successText">Questions Added.</span><br/>';
+				echo '<div class="updated">Questions Added.</div><br/>';
 				
 			} // End of if filetype is CSV  
 		} // End of if the form has been submitted
@@ -151,7 +151,7 @@ class AI_Quiz_importExport
 		$potName = $data[2];
 		
 		// Check to see if the pot exists or not
-		$potCheckInfo = getPotInfo($potID);
+		$potCheckInfo = qtl_queries::getPotInfo($potID);
 		$potIDCheck = $potCheckInfo['potID'];
 		
 		global $wpdb;
@@ -202,7 +202,7 @@ class AI_Quiz_importExport
 		$correctFeedback = $data[5];
 		
 		// Check to see if the pot exists or not
-		$questionCheckInfo = getQuestionInfo($questionID);
+		$questionCheckInfo = qtl_queries::getQuestionInfo($questionID);
 		$questionIDCheck = $questionCheckInfo['questionID'];
 		
 		global $wpdb;

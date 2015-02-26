@@ -13,11 +13,20 @@ include("../../../../wp-blog-header.php"); // Load up the wordpress stuff first.
     margin:10px auto;
 	line-height:20px;
 	width: 800px;
+	font-family: "Open Sans",sans-serif;
+	padding:20px;
+}
+
+h1
+{
+	font-family: "Open Sans",sans-serif;
+	padding-left:20px;
 }
 
 #potsDiv {
     float:left;
     width:200px;
+	background:#f1f1f1;
 }
 
 #questionsDiv {
@@ -44,7 +53,7 @@ html
 </head>
 
 <body>
-<h1>Select your Question or Quiz</h1>
+<h2>Select your Question or Quiz</h2>
 <?php
 
 
@@ -60,15 +69,15 @@ echo '<div id="potsDiv">';
 
 
 // Draw the quiz list
-echo '<h3>Quizzes</h3>';
+echo '<h4>Quizzes</h4>';
 $quizCount=0;
 $quizListStr="";
-$quizRS = getQuizzes();
+$quizRS = qtl_queries::getQuizzes();
 
 foreach ($quizRS as $myQuizList)
 {		
 	
-	$quizName =  utils::convertTextFromDB($myQuizList['quizName']);
+	$quizName =  qtl_utils::convertTextFromDB($myQuizList['quizName']);
 	$quizID = $myQuizList['quizID'];		
 
 	$quizListStr.= '<a href="?quizID='.$quizID.'">'.$quizName.'</a><br/>';
@@ -88,14 +97,14 @@ else
 
 
 // Draw the question pots
-echo '<h3>Question Pots</h3>';
-$potRS = getQuestionPots();
+echo '<h4>Question Pots</h4>';
+$potRS = qtl_queries::getQuestionPots();
 
 	
 foreach ($potRS as $myPots)
 {		
 	
-	$potName =  utils::convertTextFromDB($myPots['potName']);
+	$potName =  qtl_utils::convertTextFromDB($myPots['potName']);
 	$potID = $myPots['potID'];		
 	echo '<a href="?potID='.$potID.'">'.$potName.'</a><br/>';
 }
@@ -112,9 +121,9 @@ if(isset($_GET['quizID']))
 }
 if($quizID)
 {
-	$quizInfo = getQuizInfo($quizID);
-	$quizName = utils::convertTextFromDB($quizInfo['quizName']);
-	$quizInfo = getQuizInfo($quizID);
+	$quizInfo = qtl_queries::getQuizInfo($quizID);
+	$quizName = qtl_utils::convertTextFromDB($quizInfo['quizName']);
+	$quizInfo = qtl_queries::getQuizInfo($quizID);
 	$questionArray = unserialize($quizInfo['questionArray']);
 	
 	$potCount = count($questionArray);
@@ -129,8 +138,8 @@ if($quizID)
 			$potID = $key;
 			$questionCount= $value;
 			
-			$potInfo = getPotInfo($potID);
-			$potName = utils::convertTextFromDB($potInfo['potName']);
+			$potInfo = qtl_queries::getPotInfo($potID);
+			$potName = qtl_utils::convertTextFromDB($potInfo['potName']);
 	
 			echo '<li><b>'.$questionCount.'</b> questions from "'.$potName.'"</li>';
 		}
@@ -158,10 +167,10 @@ if(isset($_GET['potID']))
 }
 if($potID)
 {
-	$potInfo = getPotInfo($potID);
-	$potName = utils::convertTextFromDB($potInfo['potName']);
+	$potInfo = qtl_queries::getPotInfo($potID);
+	$potName = qtl_utils::convertTextFromDB($potInfo['potName']);
 	echo '<h2>'.$potName.'</h2><br/>';
-	$questionRS = getQuestionsInPot($potID);
+	$questionRS = qtl_queries::getQuestionsInPot($potID);
 	$questionCount = count($questionRS);
 	if($questionCount==0)
 	{
@@ -172,7 +181,7 @@ if($potID)
 
 		foreach ($questionRS as $myQuestions)
 		{		
-			$question=  utils::convertTextFromDB($myQuestions['question']);
+			$question=  qtl_utils::convertTextFromDB($myQuestions['question']);
 			$questionID= $myQuestions['questionID'];		
 			
 			echo $question.'<br/>';

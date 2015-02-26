@@ -10,41 +10,6 @@ jQuery.fn.isChildof = function(b){
 };
 
 
-
-
-
-
-// Update the divName
-function ajaxcallback()
-{
-	if (xmlHttp.readyState==4 || xmlHttp.readyState=="complete")
-	{
-		document.getElementById(divName).innerHTML=xmlHttp.responseText;
-		document.getElementById(divName).style.display="block";
-		//alert("Updating DIV"+divName);	
-		document.getElementById("loading").style.display="none";
-		
-	}
-		
-}
-
-
-function formFocusOnElement(elementID)
-{
-	document.getElementById(elementID).focus()	
-}
-function toggleTabVis(currentPage, newPage)
-{
-	// Add one as its from an array :)
-	currentPage=currentPage+1;
-	newPage=newPage+1;	
-	currentPage = "tabPage"+currentPage;
-	newPage = "tabPage"+newPage;	
-	//alert ("newPage = 	"+newPage+" currentPage = "+currentPage);
-	toggleLayerVis(currentPage);
-	toggleLayerVis(newPage);
-}
-
 <!-- layervis - generic togggler for show/hide on any divs by id-->
 function toggleLayerVis(id){
 if (document.getElementById) {
@@ -113,70 +78,9 @@ function showDiv(divName) {
 	
 } 
 
-function ajaxProcessRequest(requestType, funcDivName, processStr)
-{
 
 
-	xmlHttp=GetXmlHttpObject();
-	
-	if (xmlHttp==null)
-	{
-		alert ("Browser does not support HTTP Request")
-		return
-	}
-	divName = funcDivName;
-	//alert ("NewdivName="+divName);
-	
-	var url="/wp-content/plugins/AI-Quiz/scripts/ajax.php?";
-	var qrystr=processStr+"&action="+requestType+"&sid="+Math.random();
-	
-	var sendURL = url+qrystr;
-	
-	//divName="markersDiv";
-	
-	//alert ("sendURL="+sendURL);
-	
-	xmlHttp.onreadystatechange=ajaxcallback
-	xmlHttp.open("POST",sendURL,true)
-	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xmlHttp.setRequestHeader("Content-length", qrystr.length);
-	xmlHttp.setRequestHeader("Connection", "close");
-	xmlHttp.send(qrystr);
-}
 
-function showUserSearchResult(searchStr, updateDivName, otherVars)
-{
-	if (searchStr.length>=3)
-	{
-	  
-		xmlHttp=GetXmlHttpObject();
-		if (xmlHttp==null)
-		{
-			alert ("Browser does not support HTTP Request")
-			return
-		}
-		var url="/scripts/php_ajax.php?";
-		var qrystr="action=userSearch";
-		qrystr=qrystr+"&searchStr="+searchStr+"&"+otherVars;
-		
-		qrystr=qrystr+"&sid="+Math.random();
-		
-		var sendURL = url+qrystr;
-		
-		
-		divName=updateDivName;
-		
-		//alert ("URL="+sendURL);
-		
-		
-		xmlHttp.onreadystatechange=ajaxcallback
-		xmlHttp.open("POST",sendURL,true)
-		xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xmlHttp.setRequestHeader("Content-length", qrystr.length);
-		xmlHttp.setRequestHeader("Connection", "close");
-		xmlHttp.send(qrystr);
-	}
-}
 
 
 
@@ -203,41 +107,14 @@ function GetXmlHttpObject()
 /// END OF AJAX STUFF ////
 
 
-<!-- layervis - generic togggler for show/hide on any divs by id-->
-function layervis(id){
-if (document.getElementById) {
-	if (this.document.getElementById(id).style.display=="none")
-		(this.document.getElementById(id).style.display="block") ;
-	else
-		(this.document.getElementById(id).style.display="none") ;
-	}
-else if (document.all) {
-	if (this.document.all[id].style.display=="none")
-		(this.document.all[id].style.display="block") ;
-	else
-		(this.document.all[id].style.display="none") ;
-	}
-else if (document.layers) {
-	if (this.document.layers[id].style.display=="none")
-		(this.document.layers[id].style.display="block") ;
-	else
-		(this.document.layers[id].style.display="none") ;
-	}
-}
-
-
-
-
 
 function checkExampleQuestionExampleAnswer(questionID, qType, correctResponse, IDstring)
 {
 	
+	
 	divDisplayHide("exampleQuestionAnswerCorrect"+questionID);
 	divDisplayHide("exampleQuestionAnswerInCorrect"+questionID);
 	
-	var currentOptionID="";
-
-
 	var isCorrect=false; // Assume its false for now
 	
 	if(qType=="reflection" || qType=="reflectionText") // If its reflection ONLY show the correct answer as there is no incorrect answer
@@ -276,7 +153,7 @@ function checkExampleQuestionExampleAnswer(questionID, qType, correctResponse, I
 				}		
 			}
 		}
-		else // Its a checkbox so check all values of checkboxes in the IDstring and compare to the correct response string
+		else if(qType=="check") // Its a checkbox so check all values of checkboxes in the IDstring and compare to the correct response string
 		{
 			//Turn the IDstring into an array and go through the array of values
 			var optionIDArray = IDstring.split(',');
@@ -332,6 +209,18 @@ function checkExampleQuestionExampleAnswer(questionID, qType, correctResponse, I
 			}
 			
 			
+		}
+		else if(qType=="text") // Check the inputted value against possible answers
+		{
+			
+			//Turn the IDstring into an array and see if the input is in the array
+			var optionValueArray = IDstring.split(',');
+			var myResponse = document.getElementById("textBoxID"+questionID).value;
+			myResponse = myResponse.toLowerCase();
+			if(optionValueArray.indexOf(myResponse) > -1)
+			{
+				isCorrect=true;
+			}
 		}
 	}
 	
@@ -392,10 +281,19 @@ function ajaxQuestionResponseUpdate(elementID, questionID, IDStr, qType, current
 	
 }
 
-//function for picking a date, e.g. used in edit quiz page
-jQuery(document).ready(function() {
 
-    jQuery('.MyDate').datepicker({
-        dateFormat : 'dd-mm-yy'
-    });
-});
+
+ // used with the tabs to determind the inital page based on ?tab=1 questystring
+function getParam(name) {
+    var query = location.search.substring(1);
+    if (query.length) {
+        var parts = query.split('&');
+        for (var i = 0; i < parts.length; i++) {
+            var pos = parts[i].indexOf('=');
+            if (parts[i].substring(0,pos) == name) {
+                return parts[i].substring(pos+1);
+            }
+        }
+    }
+    return 1;
+}

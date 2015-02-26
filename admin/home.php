@@ -1,12 +1,12 @@
-<h1>Question Pots</h1>
-
-<a href="javascript:toggleLayerVis('newPotDiv');" class="addIcon">Create a new question pot</a>
+<h2>Question Pots</h2>
+<form action="admin.php?page=ai-quiz-home&action=potCreate" method="post" name="newPotForm">
+<a href="javascript:toggleLayerVis('newPotDiv'); document.newPotForm.potName.focus();" class="button-primary">Create a new question pot</a>
 <div id="newPotDiv" style="display:none; padding-top:5px;">
-<form action="admin.php?page=ai-quiz-home&action=potCreate" method="post">
-<input type="text" name="potName" id="potName" style="width:250px"/>
-<input type="submit" value="Create Question Pot" class="button-primary"/>
-</form>
+<input type="text" name="potName" id="potName" placeholder="Enter Quiz Name"  style="width:250px"/>
+<input type="submit" value="Create Question Pot" class="button-secondary"/>
 </div>
+</form>
+
 <hr/>
 <?php
 // Get the current question pots
@@ -18,16 +18,16 @@ if(isset($_GET['action']))
 	
 	switch ($action) {
 		case "potCreate":
-			$feedback = questionPotCreate();
+			$feedback = qtl_actions::questionPotCreate();
 			break;
 			
 		case "potEdit":
-			$feedback = questionPotEdit();
+			$feedback = qtl_actions::questionPotEdit();
 			break;	
 			
 		case "potDelete":
 			$potID = $_GET['potID'];
-			$feedback = potDelete($potID);
+			$feedback = qtl_actions::potDelete($potID);
 			break;	       
 				
 	}
@@ -36,11 +36,11 @@ if(isset($_GET['action']))
 
 if($feedback)
 {
-	echo '<div id="feedback">'.$feedback.'</div>';
+	echo $feedback;
 }
 
 
-$potRS = getQuestionPots();
+$potRS = qtl_queries::getQuestionPots();
 //$potCount = mysql_num_rows($potRS);
 $potCount = count($potRS);
 
@@ -49,11 +49,11 @@ if($potCount>=1)
 	echo '<div id="quiztable">';
 	foreach ($potRS	as $myPots)
 	{
-		$potName = utils::convertTextFromDB($myPots['potName']);		
+		$potName = qtl_utils::convertTextFromDB($myPots['potName']);		
 		$potID= $myPots['potID'];	
 		
 		// Get the question Count from those pots
-		$questionRS = getQuestionsInPot($potID);
+		$questionRS = qtl_queries::getQuestionsInPot($potID);
 		//$questionCount = mysql_num_rows($questionRS);
 		$questionCount = count($questionRS);
 
@@ -95,8 +95,9 @@ if($potCount>=1)
 }
 else
 {
-	echo '<hr/><span class="greyText">To start creating your questions, firstly create a question \'pot\' by clicking the link above.<br/>Once created, click on the question pot to create your questions';	
-	echo '<br/><br/>For more information and help please read the <a href="admin.php?page=ai-quiz-help">help pages</a></span>';
+	echo '<h4>Welcome to Quiz Tool Lite</h4>';
+	echo '<span class="greyText">All questions you create need to be within a question "pot" e.g. "Maths Questions" or "Difficult Questions"<br/><br/>Create a question pot by clicking the button above.';
+	echo '<hr/>For more information and help please read the <a href="admin.php?page=ai-quiz-help">help pages</a> or visit the <a href="https://wordpress.org/support/plugin/quiz-tool-lite">support forum</a></span>';
 }
 
 

@@ -1,13 +1,8 @@
 <?php
 
+require_once AIQUIZ_PATH.'scripts/tabs.php';
+
 wp_enqueue_media();
-?>
-
-
-<!-- doesnt work unless this is loaded HERE... WHY???? -->
-<!-- <script src="//code.jquery.com/jquery-1.9.1.js"></script> -->
-<?php
-
 
 /// Declare  the vars
 $questionID="";
@@ -33,24 +28,24 @@ if(isset($_GET['action']))
 	switch ($action) {
 		case "questionEdit": 
 			$feedback =  'Question updated';
-			$questionID = questionEdit($questionID);
+			$questionID = qtl_actions::questionEdit($questionID);
 			break;		
 	
 		case "optionUpdate":
 			$feedback =  'Options updated';
-			responseOptionUpdate($questionID);
+			qtl_actions::responseOptionUpdate($questionID);
 			break;		
 			
 			
 		case "optionDelete":
 			$feedback =  'Option deleted';
 			$optionID = $_GET['optionID'];
-			responseOptionDelete($optionID);
+			qtl_actions::responseOptionDelete($optionID);
 			break;	
 			
 		case "responseOrderTypeChange":
 			$newOrderType = $_GET['changeTo'];
-			responseOptionChangeOrderType($questionID, $newOrderType);
+			qtl_actions::responseOptionChangeOrderType($questionID, $newOrderType);
 			break;				
 			
 			
@@ -62,10 +57,10 @@ if(isset($_GET['action']))
 $potID = "";
 
 if($questionID){
-	$questionInfo = getQuestionInfo($questionID);
-	$question = utils::convertTextFromDB($questionInfo['question']);	
-	$incorrectFeedback = utils::convertTextFromDB($questionInfo['incorrectFeedback']);
-	$correctFeedback = utils::convertTextFromDB($questionInfo['correctFeedback']);
+	$questionInfo = qtl_queries::getQuestionInfo($questionID);
+	$question = qtl_utils::convertTextFromDB($questionInfo['question']);	
+	$incorrectFeedback = qtl_utils::convertTextFromDB($questionInfo['incorrectFeedback']);
+	$correctFeedback = qtl_utils::convertTextFromDB($questionInfo['correctFeedback']);
 	$potID = $questionInfo['potID'];
 	$qType = $questionInfo['qType'];
 	$optionOrderType= $questionInfo['optionOrderType'];	
@@ -91,51 +86,33 @@ if($qType=="reflection" || $qType=="reflectionText")
 	$correctFeedbackLabel = 'Text to display after click';
 	$hideIncorrectFeedback=true;
 	$buttonLabel = 'Save';
-	$questionEditFormAction = 'admin.php?page=ai-quiz-question-edit&action=questionEdit&potID='.$potID.'&questionID='.$questionID.'&qType='.$qType.'&tab=question';
+	//$questionEditFormAction = 'admin.php?page=ai-quiz-question-edit&action=questionEdit&potID='.$potID.'&questionID='.$questionID.'&qType='.$qType.'&tab=question';
 }
 elseif($questionID<>"")
 {
-	$correctFeedbackLabel = 'Correct feedback';
+	$correctFeedbackLabel = 'Feedback if correct';
 	$buttonLabel = 'Save';
-	$questionEditFormAction = 'admin.php?page=ai-quiz-question-edit&action=questionEdit&potID='.$potID.'&questionID='.$questionID.'&qType='.$qType.'&tab=question';
+	//$questionEditFormAction = 'admin.php?page=ai-quiz-question-edit&action=questionEdit&potID='.$potID.'&questionID='.$questionID.'&qType='.$qType.'&tab=question';
 	
 }
 else
 {
-	$correctFeedbackLabel = 'Correct feedback';
+	$correctFeedbackLabel = 'Feedback if incorrect';
 	$buttonLabel = 'Save and continue';
-	$questionEditFormAction = 'admin.php?page=ai-quiz-question-edit&action=questionEdit&potID='.$potID.'&questionID='.$questionID.'&qType='.$qType.'&tab=options';
+	//$questionEditFormAction = 'admin.php?page=ai-quiz-question-edit&action=questionEdit&potID='.$potID.'&questionID='.$questionID.'&qType='.$qType.'&tab=options';
 }
 
-$potInfo = getPotInfo($potID);
-$potName = utils::convertTextFromDB($potInfo['potName']);
+$potInfo = qtl_queries::getPotInfo($potID);
+$potName = qtl_utils::convertTextFromDB($potInfo['potName']);
 
-function ilc_admin_tabs( $current = 'question', $potID, $questionID, $qType) {
-	
-	if($qType=="reflection" || $qType=="reflectionText")
-	{
-  	  $tabs = array( 'question' => 'Question & Feedback');
-	}
-	else
-	{
-  	  $tabs = array( 'question' => 'Question & Feedback', 'options' => 'Response Options' );
-	}
-    //echo '<div id="icon-themes" class="icon32"><br></div>';
-    echo '<h3 class="nav-tab-wrapper">';
-    foreach( $tabs as $tab => $name ){
-        $class = ( $tab == $current ) ? ' nav-tab-active' : '';
-        echo "<a class='nav-tab$class' href='?page=ai-quiz-question-edit&potID=$potID&questionID=$questionID&qType=$qType&tab=$tab'>$name</a>";
-    }
-    echo '</h3>';
+?>
+<script>
+function submitForm(tab)
+{
+	document.questionEditForm.action ="admin.php?page=ai-quiz-question-edit&action=questionEdit&potID=<?php echo $potID; ?>&questionID=<?php echo $questionID; ?>&qType=<?php echo $qType; ?>&tab="+tab;
 }
 
-?>
-<a href="admin.php?page=ai-quiz-question-list&potID=<?php echo $potID?>" class="backIcon">Return to <?php echo $potName?> questions</a>
-<?php
-
-if ( isset ( $_GET['tab'] ) ) ilc_admin_tabs($_GET['tab'], $potID, $questionID, $qType); else ilc_admin_tabs('question', $potID, $questionID, $qType);
-
-?>
+</script>
 
 
 
@@ -143,38 +120,57 @@ if ( isset ( $_GET['tab'] ) ) ilc_admin_tabs($_GET['tab'], $potID, $questionID, 
 
 
 <?php
-if ( $_GET['page'] == 'ai-quiz-question-edit' ){
-
-   if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab'];
-   else $tab = 'question';
+if ( $_GET['page'] == 'ai-quiz-question-edit' )
+{
 
    echo '<div class="formDiv">';
-   switch ( $tab ){
-
-      case 'question' :       	
          ?>         
-         	<form action="<?php echo $questionEditFormAction?>" method="post">
-			<h1>Edit Question</h1>
+			<h2>Edit Question</h2>
+            
+			<a href="admin.php?page=ai-quiz-question-list&potID=<?php echo $potID?>" class="backIcon">Return to <?php echo $potName?> questions</a><br/><br/>
+            
+            
 			<?php 
+			$showResponseOptionsTab=true; // by defualt show the tab, but hide if questino ID is blank or qType is reflection 
+			
+			if($qType=="reflection" || $qType=="reflectionText"){$showResponseOptionsTab=false;}
+			
+			
 			if($feedback)
 			{
-				echo '<div id="questionEditFeedback"><div id="feedback">'.$feedback.'</div></div>';
+				echo '<div id="responseOptionFadeDiv"><div class="updated">'.$feedback.'</div></div>';
 				?>
 				<script>
-                jQuery('#questionEditFeedback').fadeIn(3000).delay(1000).fadeTo("slow",0);
-                </script>
-                <?php
+				jQuery('#responseOptionFadeDiv').fadeIn(3000).delay(2000).fadeTo("slow",0);
+				</script>
+				<?php
+			}				
+			
+			echo '<form method="post" name="questionEditForm" id="questionEditForm">';
+
+			
+			echo '<div id="tabs">';
+			echo '<ul>';
+			echo '<li><a href="#questionOverviewTab">Question</a></li>';
+			echo '<li><a href="#feedbackTab">Feedback</a></li>';
+			if($showResponseOptionsTab==true){
+				echo '<li><a href="#responseOptionsTab">Response Options</a></li>';
 			}
+			echo '</ul>';
 			?>
-            
-			<div id="textEditor">    
-			<label for ="question">Question</label>
+            <div id="questionOverviewTab"> <!-- first tab --->
+			<h2><label for ="question">Question Text</label></h2>
 			<?php wp_editor($question, 'question', '', true);	?>
+			<input type="submit" value="<?php echo $buttonLabel;?>" onclick="submitForm(1);" class="button-primary" />            
+            </div>
             
-            
+
+
+            <div id="feedbackTab">
             <!-- Correct Feedback General -->
-			<label for ="correctFeedback"><?php echo $correctFeedbackLabel?></label>
-			<?php wp_editor($correctFeedback, 'correctFeedback', '', true);	?>   
+			<h2><label for ="correctFeedback"><?php echo $correctFeedbackLabel?></label></h2>
+			<?php wp_editor($correctFeedback, 'correctFeedback', '', true);	?>
+            
             
             
             <!-- Incorrect Feedback Overall -->
@@ -182,54 +178,57 @@ if ( $_GET['page'] == 'ai-quiz-question-edit' ){
 			if($hideIncorrectFeedback<>true) // Don't show the incorrect feedback stuff if its refletion
 			{
 			?>
-                <label for ="incorrectFeedback">Incorrect Feedback</label> 
+                <h2><label for ="incorrectFeedback">Incorrect Feedback</label></h2>
                 <?php wp_editor($incorrectFeedback, 'incorrectFeedback', '', true);	?>
             <?php
 			}
 			?>
-			</div>
-			
+            
 			<input type="hidden" value="<?php echo $qType?>" name="qType" id="qType"/>
    			<input type="hidden" value="<?php echo $potID?>" name="potID" /><hr/>
-			<input type="submit" value="<?php echo $buttonLabel?>" class="button-primary" />
+
+			<input type="submit" value="<?php echo $buttonLabel;?>" onclick="submitForm(2);" class="button-primary" />
+
             
+            </div> <!-- End of Feedback tab -->
+            
+			
 
-			</form>
          <?php
-      break;
-      case 'options' :
-
-			if($questionID)
+			echo '</form>'; // End of form
+		 
+			if($showResponseOptionsTab==true)
 			{
-				// Get the response options for this question	
+				// Get the response options for this question
+	            echo '<div id="responseOptionsTab">'; // Second Tab
+												
+				echo '<div id="responseOptionsDiv">';
+				echo '<h2>Possible Answers</h2>';
 				
-				echo '<div id="responseOptionsDiv">';	
-				echo '<h3>Possible Answers and Feedback</h3>';
-
-				
-				if($qType=="radio" || $qType=="check")
+				if($questionID=="")
 				{
-					drawRadioCheckOptionsEditTable($questionID, $qType, $optionOrderType);
+					echo 'Please <b>save</b> this question before entering response options';
+				}
+				elseif($qType=="radio" || $qType=="check")
+				{
+					qtl_draw::drawRadioCheckOptionsEditTable($questionID, $qType, $optionOrderType);
+				}
+				elseif($qType=="text")
+				{
+					qtl_draw::drawTextOptionsEditTable($questionID);
 				}
 				
-				if($feedback)
-				{
-					echo '<div id="responseOptionFadeDiv"><div id="feedback">'.$feedback.'</div></div>';
-					?>
-					<script>
-                    jQuery('#responseOptionFadeDiv').fadeIn(3000).delay(1000).fadeTo("slow",0);
-                    </script>
-                    <?php
-				}				
+
+				
+			
 				
 				echo '</div>';
 			}
-	
-      break;
-
-
-   }
-   echo '</div>';
+			
+			echo '</div>'; // End of tabs div
+			
+			
+   echo '</div>'; // end of form div
 }
 
 ?>

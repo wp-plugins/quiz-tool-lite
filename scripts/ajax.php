@@ -87,8 +87,8 @@ function responseOptionReorder()
 	<?php
 
 	
-	drawRadioCheckOptionsEditTable($questionID, $qType, "ordered");
-	echo '<div id="responseOptionOrderFeedback"><div id="feedback">Options reordered</div></div>';
+	qtl_draw::drawRadioCheckOptionsEditTable($questionID, $qType, "ordered");
+	echo '<div id="responseOptionOrderFeedback"><div class="updated">Options reordered</div></div>';
 	
 	die();
 }
@@ -124,7 +124,7 @@ function responseOptionUpdateViewType()
 	$questionID = $_POST['questionID'];
 	$qType = $_POST['qType'];
 	
-	drawRadioCheckOptionsEditTable($questionID, $qType);
+	qtl_draw::drawRadioCheckOptionsEditTable($questionID, $qType);
 	
 	
 	die();

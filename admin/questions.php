@@ -5,12 +5,12 @@
 
 $feedback="";
 $potID = $_GET['potID'];
-$potInfo = getPotInfo($potID);
+$potInfo = qtl_queries::getPotInfo($potID);
 
-$potName = utils::convertTextFromDB($potInfo['potName']);
+$potName = qtl_utils::convertTextFromDB($potInfo['potName']);
 
 // Create a drop down list of question pots for the copy function
-$potRS = getQuestionPots();
+$potRS = qtl_queries::getQuestionPots();
 //$potCount = mysql_num_rows($potRS);
 $potCount = count($potRS);
 
@@ -26,7 +26,7 @@ else
 	$copyPotStr.= '<select name="copyQuestionPot">';
 	foreach ($potRS	as $myPots)
 	{
-		$copyPotName = utils::convertTextFromDB($myPots['potName']);		
+		$copyPotName = qtl_utils::convertTextFromDB($myPots['potName']);		
 		$tempPotID= $myPots['potID'];
 		$copyPotStr.= '<option value="'.$tempPotID.'"';
 		if($tempPotID==$potID){$copyPotStr.=' selected';}
@@ -44,29 +44,32 @@ if(isset($_GET['action']))
 	switch ($myAction) {
 		case "questionDelete":
 			$questionID=$_GET['questionID'];
-			questionDelete($questionID);
-			$feedback = '<span class="successText">Question Deleted</span><br/>';
+			qtl_actions::questionDelete($questionID);
+			$feedback = '<div class="updated">Question Deleted</div><br/>';
+		break;
+		
 		case "questionCopy":
-			questionCopy();
-			$feedback = '<span class="successText">Question copied succesfully</span><br/>';
+			qtl_actions::questionCopy();
+			$feedback = '<div class="updated">Question copied succesfully</div><br/>';
+		break;			
 	}	
 	
 }
 
 ?>
-<h1><?php echo $potName?></h1>
+<h2><?php echo $potName?></h2>
 <a href="admin.php?page=ai-quiz-home" class="backIcon">Return to all question pots</a>
 <hr/>
 <?php
 if($feedback)
 {
-	echo '<div id="feedback">'.$feedback.'</div><br/>';
+	echo $feedback;
 }
 //echo '<a href="admin.php?page=ai-quiz-question-edit&potID='.$potID.'" class="addIcon">Add a new question</a>';
-echo '<a href="admin.php?page=ai-quiz-questionType&potID='.$potID.'" class="addIcon">Add a new question</a>';
+echo '<a href="admin.php?page=ai-quiz-questionType&potID='.$potID.'" class="button-primary">Add a new question</a>';
 
 // Get the questions in this pot
-$questionsRS = getQuestionsInPot($potID);
+$questionsRS = qtl_queries::getQuestionsInPot($potID);
 
 $questionCount = count($questionsRS);
 
@@ -83,9 +86,9 @@ else
 	foreach ( $questionsRS as $myQuestions ) 
 	{
 		
-		$question = utils::convertTextFromDB($myQuestions['question']);
+		$question = qtl_utils::convertTextFromDB($myQuestions['question']);
 		$question = do_shortcode(wpautop($question));
-		$question = utils::limitWords($question, 100);
+		$question = qtl_utils::limitWords($question, 100);
 		$questionID= $myQuestions['questionID'];
 		
 		echo '<tr>';
