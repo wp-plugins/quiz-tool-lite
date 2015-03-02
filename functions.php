@@ -1,29 +1,6 @@
 <?php
 
 
-function my_admin_init()
-{
-	
-
-		
-}
-add_action('admin_init', 'my_admin_init');
-
-
-function my_admin_footer() {
-	    ?>
-	    <script type="text/javascript">
-	    jQuery(document).ready(function(){
-	        jQuery('.MyDate').datepicker({
-	            dateFormat : 'yy-mm-dd'
-	        });
-	    });
-	    </script>
-	    <?php
-	}
-add_action('admin_footer', 'my_admin_footer');
-
-
 
 
 // Adds the ADD QUESTION option to posts and pages in the editor
