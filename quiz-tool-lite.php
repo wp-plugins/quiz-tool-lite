@@ -3,7 +3,7 @@
 Plugin Name: Quiz Tool Lite
 Plugin URI: https://wordpress.org/plugins/quiz-tool-lite/
 Description: Create questions and quizzes, embed individual questions for formative assessment or deploy entire an quiz
-Version: 2.1
+Version: 2.1.1
 Author: Alex Furr, Lisha Chen Wilson and Simon Ward
 Author URI: https://wordpress.org/plugins/quiz-tool-lite/
 License: GPL

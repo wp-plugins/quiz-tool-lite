@@ -816,8 +816,6 @@ if (!class_exists('qtl_quiz_draw'))
 				// Remove the last comma
 				$correctStr = substr($correctStr,0,-1);
 				$IDStr = substr($IDStr,0,-1);
-				
-				echo 'buttonText='.$buttonText.'<br/>';
 			
 				$questionStr.= '<input type="submit" value="'.$buttonText.'" onclick="';
 				$questionStr.='checkExampleQuestionExampleAnswer('.$questionID.', \''.$qType.'\', \''.$correctStr.'\', \''.$IDStr.'\');';
