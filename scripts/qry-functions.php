@@ -138,7 +138,6 @@ class qtl_queries
 		$table_name = $wpdb->prefix . "AI_Quiz_tblQuizAttempts";		
 		
 		$SQL='Select * FROM '.$table_name.' WHERE username="'.$username.'" AND quizID='.$quizID;	
-		
 		//$rs=mysql_query($SQL);
 		$attemptInfo = $wpdb->get_row($SQL, ARRAY_A);
 		
@@ -175,7 +174,65 @@ class qtl_queries
 		
 		
 	}
-
+	
+	function getAllUserAttemptInfo($username, $quizID)
+	{
+		global $wpdb;
+		$table_name = $wpdb->prefix . "AI_Quiz_tblUserQuizResponses";		
+		
+		$SQL='Select * FROM '.$table_name.' WHERE username="'.$username.'" AND quizID = '.$quizID.' ORDER by userAttemptID ASC';
+		$rs = $wpdb->get_results( $SQL, ARRAY_A );
+		return $rs;
+	}	
+	
+	function getUserAttemptInfo($userAttemptID)
+	{
+		global $wpdb;
+		$table_name = $wpdb->prefix . "AI_Quiz_tblUserQuizResponses";		
+		
+		$SQL='Select * FROM '.$table_name.' WHERE userAttemptID='.$userAttemptID;	
+		$attemptInfo = $wpdb->get_row($SQL, ARRAY_A);		
+		return $attemptInfo;
+	}
+	
+	function getGradeBoundaries($quizID)
+	{
+		global $wpdb;
+		$table_name = $wpdb->prefix . "AI_Quiz_tblGradeBoundaries";		
+		
+		$SQL='Select * FROM '.$table_name.' WHERE quizID="'.$quizID.'" ORDER by minGrade ASC';
+		$rs = $wpdb->get_results( $SQL, ARRAY_A );
+		return $rs;
+	}		
+	
+	function getBoundaryInfo($boundaryID)
+	{
+		global $wpdb;
+		$table_name = $wpdb->prefix . "AI_Quiz_tblGradeBoundaries";		
+		
+		$SQL='Select * FROM '.$table_name.' WHERE boundaryID='.$boundaryID;	
+		$boundaryInfo = $wpdb->get_row($SQL, ARRAY_A);		
+		return $boundaryInfo;
+	}	
+	
+	
+	function getBoundaryFeedback($percentageScore, $quizID)
+	{
+		// Get all the boundaries and stick them in an array	
+		$myBoundaries = qtl_queries::getGradeBoundaries($quizID);
+		$feedback="";
+		foreach($myBoundaries as $boundaryInfo)
+		{		
+			$minGrade = $boundaryInfo['minGrade'];
+			$maxGrade = $boundaryInfo['maxGrade'];			
+			if($percentageScore>=$minGrade && $percentageScore<=$maxGrade)
+			{
+				$feedback = qtl_utils::convertTextFromDB($boundaryInfo['feedback']);
+			}
+		}
+		return $feedback;
+	}
+	
 
 }
 ?>

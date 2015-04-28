@@ -167,23 +167,31 @@ if (!class_exists('qtl_utils'))
 			$hours = floor($temp_remainder / 3600);
 			
 			$temp_remainder = $temp_remainder - ($hours * 3600);
-			$minutes = round($temp_remainder / 60, 0);
+			$minutes = floor($temp_remainder / 60);
 			
+			$seconds = $temp_remainder - ($minutes * 60);
 			if($daysResponse==0)
 			{
 				if($hours==0)
 				{
-					$dateDiff= '< 1 hour';
+					if($minutes==0)
+					{
+						$dateDiff = $secondsSinceResponse.' seconds';
+					}
+					else
+					{
+						$dateDiff= $minutes.' minute(s), '.$seconds.' seconds';
+					}
 				}
 				else
 				{
-					$dateDiff= $hours.' hour(s)';									
+					$dateDiff= $hours.' hour(s), '.$minutes.' minutes, '.$seconds.' seconds';			
 				}
 		
 			}
 			else
 			{
-				$dateDiff=$daysResponse.' day(s)';
+				$dateDiff=$daysResponse.' day(s), '.$hours.' hour, '.$minutes.' minutes, '.$seconds.' seconds';
 			}
 			
 			return $dateDiff;
@@ -251,9 +259,97 @@ if (!class_exists('qtl_utils'))
 			return $url;
 		}	
 		
+		function loadDatatables()
+		{
+			wp_register_script( 'datatables', ( '//cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js' ), false, null, true );
+			wp_enqueue_script( 'datatables' );
+			
+			//dataTables css
+			wp_enqueue_style('datatables-style','//cdn.datatables.net/1.10.5/css/jquery.dataTables.min.css');	
+				
+			global $wp_scripts;
+			// get the jquery ui object
+			$queryui = $wp_scripts->query('jquery-ui-core');
+			 
+			// load the jquery ui theme
+			$url = "https://ajax.googleapis.com/ajax/libs/jqueryui/".$queryui->ver."/themes/smoothness/jquery-ui.css";	
+			wp_enqueue_style('jquery-ui-smoothness', $url, false, null);	
+			
+			wp_register_style( 'QTL_css_custom',  plugins_url('../css/styles.css',__FILE__) );
+			wp_enqueue_style( 'QTL_css_custom' );			
+		}
+		
+		
+		
+		// Uses the colorMeter below
+		function generateRedGreenColourArray($stepCount)
+		{
+			
+			if($stepCount==0)
+			{
+				$colourArray = 	array();
+			}
+			elseif($stepCount==1)
+			{
+				$colourArray = array("#00820B");
+			}
+			else		
+			{
+				$percentStep = 1/($stepCount-1); // Subtract 1 from ttola step count for some reason :( eeek 
+				
+				$colourArray = array();
+				for ($i = 0.0; $i <= 1.0; $i += $percentStep)
+				{
+					$RGB = qtl_utils::colorMeter($i);
+					$colourArray[] = '#'.$RGB;		
+				}
+			}
+			return $colourArray;
+		}
+	
+		// Returns an array of gradient colours based on starting colout and ending colour and steps between red and green
+		function colorMeter($percent, $invert = false)
+		{
+			//$percent is in the range 0.0 <= percent <= 1.0
+			//    integers are assumed to be 0% - 100%
+					 // and are converted to a float 0.0 - 1.0
+			//     0.0 = red, 0.5 = yellow, 1.0 = green
+			//$invert will make the color scale reversed
+			//     0.0 = green, 0.5 = yellow, 1.0 = red 
+			
+			//convert (int)% values to (float)
+			if (is_int($percent)) $percent = $percent * 0.01;
+			
+			$R = min((2.0 * (1.0-$percent)), 1.0) * 210.0;
+			$G = min((2.0 * $percent), 1.0) * 130.0;
+			$B = 11;
+			
+			return (($invert) ? 
+		sprintf("%02X%02X%02X",$G,$R,$B) 
+		: sprintf("%02X%02X%02X",$R,$G,$B)); 
+		} 		
 		
 	
+		
+		function getQTL_IconArray()
+		{
+		
+			// Get the contents of the image dir
+			$iconDir = AIQUIZ_DIR.'images/icons/correct/';
+			
+			$imageArray = array();
+			//path to directory to scan
+			$myIcons = scandir($iconDir);
+			foreach($myIcons as $imageRef)
+			{
+				if($imageRef != "." && $imageRef != "..") 
+				{
+					$imageArray[]= $imageRef;
+				}
+			}	
+			//$imageArray = asort($imageArray);
+			return $imageArray;
+		}	
 	}
-	
 }
 ?>

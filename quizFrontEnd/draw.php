@@ -70,6 +70,7 @@ if (!class_exists('qtl_quiz_draw'))
 			global $wpdb;
 			global $quizOptionsArray;
 			$table_name = $wpdb->prefix . "AI_Quiz_tblQuizAttempts";
+			$table_name_responses = $wpdb->prefix . "AI_Quiz_tblUserQuizResponses";			
 			
 			$allowQuizAttempt = true; // By default allow them to take the quiz
 				
@@ -142,16 +143,7 @@ if (!class_exists('qtl_quiz_draw'))
 			// If they are logged in then we can update the DB
 			if(is_user_logged_in()) // ony get previous results if they are logged in
 			{
-				// Get previous attempts info
-				//$previousAttemptInfo = qtl_queries::getAttemptInfo($currentUsername, $quizID);
-				//foreach ($previousAttemptInfo as $key => $value) 
-				//{
-				//	$$key = $value;
-				//}
-				
-		
-				//$newAttemptCount = ($attemptCount+1);
-				
+
 				$startTest=""; // Check to see if they have clicked to start the test yet ONly applies to max attempts
 				if(isset($_GET['startTest']))
 				{
@@ -168,9 +160,6 @@ if (!class_exists('qtl_quiz_draw'))
 				{	
 					// Check to see if they've done it all all
 					$attemptCheck = qtl_queries::getAttemptInfo($currentUsername, $quizID);
-					//$attemptID = $attemptCheck['attemptID'];
-					//$attemptID = ( is_array($attemptCheck) ) ? $attemptCheck['attemptID'] : '';
-					
 					
 					if($attemptID=="")
 					{
@@ -334,9 +323,27 @@ if (!class_exists('qtl_quiz_draw'))
 			{
 			
 				// Now generate the quiz based on the ruleID if it exists. If it doesnt' exist the function will simple generate ten at random from the generic questions	
-				$questionArray = qtl_quiz_draw::generateQuizQuestions($potQuestionArray, $quizOptionsArray);	
+				$questionArray = qtl_quiz_draw::generateQuizQuestions($potQuestionArray, $quizOptionsArray);
 				
+				$thisUsername = '';
+				if($currentUsername)
+				{
+					$thisUsername = $currentUsername;	
+				}
 				
+				// Log this attempt along with the question order
+				$myFields="INSERT into ".$table_name_responses." (quizID, username, dateStarted, questionArray)  ";
+				$myFields.="VALUES (%u, '%s', '%s', '%s')";	
+		
+		
+				$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
+					$quizID,
+					$thisUsername,
+					date('Y-m-d H:i:s'),
+					serialize($questionArray)
+				));			
+				
+				$userAttemptID = $wpdb->insert_id;	
 				
 				if($currentUsername)
 				{		
@@ -356,6 +363,7 @@ if (!class_exists('qtl_quiz_draw'))
 				
 				// Add the form	
 				$quizStr.= '<form action="?action=markTest" method="post" name="QTL-form" id="QTL-form">';
+				$quizStr.= '<input type="qtl_hidden" value="'.$userAttemptID.'" name="userAttemptID"/>';				
 				
 				$currentQuestionNumber=1;
 				
@@ -365,10 +373,11 @@ if (!class_exists('qtl_quiz_draw'))
 					foreach ($questionArray as $key => $value)
 					{
 						$quizStr.= '<div id="questionDiv">';
-						$questionID = $value;
+						$questionID = $value[0];
+						$optionOrder = $value[1];
 						$quizStr.= '<b class="greyText">Question '.$currentQuestionNumber.'</b><br/>';
 						$quizStr.= '<div id="question">';			
-						$questionStr = qtl_quiz_draw::drawQuestion($questionID);			
+						$questionStr = qtl_quiz_draw::drawQuestion($questionID, $optionOrder, false, false);
 						$quizStr.= do_shortcode($questionStr);
 						$currentQuestionNumber++;
 						$quizStr.= '<br/><br/><hr/></div></div>';
@@ -383,14 +392,14 @@ if (!class_exists('qtl_quiz_draw'))
 				$quizStr.= '<div align="right"><input type="submit" value="Submit my answers"></div>';	
 				
 				
-				// If they are not required to login and are not logged in then store the serialise the questino array and put it in the hidden filed serialised
+				// If they are not required to login and are not logged in then store the serialise the questino array and put it in the qtl_hidden filed serialised
 				if($currentUsername=="")
 				{
-					$quizStr.='<input type="hidden" value="'.$nonLoggedInString.'" name="questionArray">';
+					$quizStr.='<input type="qtl_hidden" value="'.$nonLoggedInString.'" name="questionArray">';
 				}
 				else
 				{
-					$quizStr.='<input type="hidden" value="'.$newAttemptCount.'" name="attemptCount">';
+					$quizStr.='<input type="qtl_hidden" value="'.$newAttemptCount.'" name="attemptCount">';
 				}
 				
 				$quizStr.= '</form>';
@@ -405,21 +414,36 @@ if (!class_exists('qtl_quiz_draw'))
 			
 		}
 		
-		function markTest($quizID)
+		function markTest($quizID, $attemptInfoArray="")
 		{
 			
 			// Set some vars
 			$markedTest ="";
 			$previousHighestScore="";
-		
+			
 			global $wpdb;
 			$table_name = $wpdb->prefix . "AI_Quiz_tblQuizAttempts";
+			$table_name_responses = $wpdb->prefix . "AI_Quiz_tblUserQuizResponses";	
+			
+			
+			if($attemptInfoArray)
+			{
+				$currentUsername = $attemptInfoArray['username'];
+				$userAttemptID = $attemptInfoArray['userAttemptID'];				
+				$questionArray = unserialize($attemptInfoArray['questionArray']);
+				$responseArray = unserialize($attemptInfoArray['responseArray']);
+				$readOnly = true;
+			}
 		
-			$currentUsername = qtl_utils::getCurrentUsername();
+			if($currentUsername=="")
+			{
+				$currentUsername = qtl_utils::getCurrentUsername();
+			}
+			
 			$currentDate = qtl_utils::getCurrentDate();
 			$markTest=true; // Be default allow the test to be marked.	
 			
-			if($currentUsername)
+			if($currentUsername && $readOnly==false)
 			{
 				//$lastAttemptInfo = qtl_queries::getAttemptInfo($currentUsername, $quizID);
 				$DB_previousAttemptInfo = qtl_queries::getAttemptInfo($currentUsername, $quizID);
@@ -460,8 +484,54 @@ if (!class_exists('qtl_quiz_draw'))
 			// Unserialise the quiz options array
 			$quizOptionsArray = unserialize($quizOptionsArray);		
 			$showFeedback = $quizOptionsArray['showFeedback'];
-			$emailUser = $quizOptionsArray['emailUser'];	
-		
+			$emailUser = $quizOptionsArray['emailUser'];
+			$quizFinishMessage = qtl_utils::convertTextFromDB($quizOptionsArray['quizFinishMessage']);
+			$quizFinishMessage = wpautop($quizFinishMessage);
+			
+			global $incorrectText;
+			$incorrectText = $quizOptionsArray['incorrectText'];	
+
+			global $correctText;
+			$correctText = $quizOptionsArray['correctText'];	
+						
+
+			// Override stylesheet for correct / incorrect
+			$feedbackIcon = $quizOptionsArray['feedbackIcon'];
+			if($feedbackIcon==0)
+			{
+				?>
+				<style>
+                .correct, .incorrect
+                {
+                    background-image:"" !important;
+					padding:30px 30px 30px 0px !important;
+					
+                }
+                </style>				
+            <?php
+			}
+			else
+			{
+				$correctIcon = QTL_PLUGIN_URL.'/images/icons/correct/tick'.$feedbackIcon.'.png';
+		        $incorrectIcon = QTL_PLUGIN_URL.'/images/icons/incorrect/cross'.$feedbackIcon.'.png';
+			}
+			?>
+            
+            <style>
+			.correct
+			{
+				background:left no-repeat url(<?php echo $correctIcon; ?>) !important;
+			}
+			.incorrect
+			{				
+				background:left no-repeat url(<?php echo $incorrectIcon; ?>) !important;
+			}
+			</style>
+            
+            <?php
+			
+			
+			//$markTest = true; // Overrider for testing	
 			
 			if($markTest==false)
 			{
@@ -472,79 +542,86 @@ if (!class_exists('qtl_quiz_draw'))
 			
 				// Set the ttoal correct seesion to zero
 				$_SESSION['totalCorrect']=0;	
-				
 				$markedTest= '<div id="theExam">';
-			
-				$markedTest.= '<b>Thank you.</b><br/>Scroll down to check your answers and final score<hr/><br/>';
-			
-				// Set the total marked session var
-				//$_SESSION['totalCorrect']==0;
 				
+				if($quizFinishMessage==""){$quizFinishMessage='<b>Thank you.</b><br/>Scroll down to check your answers and final score<hr/><br/>';}
 				
-				$questionIDstrings = '';
-				foreach ($_POST as $KEY=>$VALUE)
-				{
-					$$KEY=$VALUE;
-					
-					if (strpos($KEY,'_') !== false)
+				if($readOnly==false){$markedTest.= $quizFinishMessage;} // Only show this message if they've done the quiz, not if showing results
+				
+				if(!$responseArray)
+				{			
+				
+					foreach ($_POST as $KEY=>$VALUE)
 					{
-						// This is a check box response. Get the question ID
-						$questionID = substr($KEY, 0, strpos($KEY, "_"));
-						//echo '<br /><br />questionID: ' . $questionID;
+						$$KEY=$VALUE;
+						if (strpos($KEY,'_') !== false)
+						{
+							// This is a check box response. Get the question ID
+							$questionID = substr($KEY, 0, strpos($KEY, "_"));
+							// Now get the values
+							$optionID = substr($KEY, ($pos = strpos($KEY, '_')) !== false ? $pos + 1 : 0);	
+							//echo '<br />optionID: ' . $optionID;
+							
+							// NOw remove 'option' frmo the string to get the checkbox ID
+							$optionID = substr($optionID, 6);
+							//echo '<br />optionID: ' . $optionID . '';
+							
+							//$$questionID.=$optionID.',';
+							$$questionID = ( isset( $$questionID ) ) ? $$questionID . $optionID . ',' : $optionID . ',';
+							//echo '<br />$$questionID: ' . $$questionID;
+							
+						}
 						
-						// Now get the values
-						$optionID = substr($KEY, ($pos = strpos($KEY, '_')) !== false ? $pos + 1 : 0);	
-						//echo '<br />optionID: ' . $optionID;
-						
-						// NOw remove 'option' frmo the string to get the checkbox ID
-						$optionID = substr($optionID, 6);
-						//echo '<br />optionID: ' . $optionID . '';
-						
-						//$$questionID.=$optionID.',';
-						$$questionID = ( isset( $$questionID ) ) ? $$questionID . $optionID . ',' : $optionID . ',';
-						//echo '<br />$$questionID: ' . $$questionID;
-						
+						// Add the textbox response as well
+						if (strpos($KEY,'textBox') !== false)
+						{
+							$questionID = substr($KEY, 9);
+							${'question'.$questionID} = $VALUE;
+						}
 					}
-				}
-				
-				// Get the latest array of question IDs from the DB for this person and attempt
-				if($currentUsername)
-				{
-					$attemptInfo = qtl_queries::getAttemptInfo($currentUsername, $quizID);
-					$questionArray = unserialize($attemptInfo['questionArray']);
-				
 				}
 				else
 				{
-					$questionArray = $_POST['questionArray'];
-					$questionArray=explode(",",$questionArray);
-					
+					foreach($responseArray as $questionID => $response)
+					{
+						${'question'.$questionID} = $response;
+					}
 				}
+				
+				if(isset($_POST['userAttemptID']))
+				{
+					$userAttemptID = $_POST['userAttemptID'];			
+				}
+
+				$getUserAttemptInfo = qtl_queries::getUserAttemptInfo($userAttemptID);
+				$questionArray = unserialize($getUserAttemptInfo['questionArray']);
+				
 				$questionCount = count($questionArray);
 			
+				$submittedAnswersArray = array(); // Create blank array of the submitted answers
 				$currentQuestionNumber=1;
 				if($questionArray)
 				{
 					foreach ($questionArray as $key => $value)
-					{
-						
+					{	
 						$markedTest.= '<div id="questionDiv">';
-						$questionID = $value;
-						// Create the var
-						//${'question'.$questionID}="";
+						$questionID = $value[0];
+						$optionOrder = $value[1];
 				
 						if(isset(${'question'.$questionID}))
 						{
 							$response = ${'question'.$questionID}; // Set the response
+							$submittedAnswersArray[$questionID] = $response;
 						}
 						else
 						{
 							$response="";	
 						}
 						
+						
 						$markedTest.= '<b class="greyText">Question '.$currentQuestionNumber.'</b><br/>';
 						$markedTest.= '<div id="question">';
-						$markedTest.= qtl_quiz_draw::drawMarkedQuestion($questionID, $response, $showFeedback);
+						$markedTest.= qtl_quiz_draw::drawMarkedQuestion($questionID, $optionOrder, $response, $showFeedback);
 						$currentQuestionNumber++;
 						$markedTest.= '</div></div>';
 					}
@@ -553,72 +630,89 @@ if (!class_exists('qtl_quiz_draw'))
 				
 				
 				$markedTest.='<div id="quizResults">';
-				if($questionCount==$_SESSION['totalCorrect'])
-				{
-					$markedTest.= '<h2><span class="successText">Congratulations!</h2></span>';
-					$markedTest.= '<b>You got 100%!</b>';
-					$percentageScore = "100";
-						
-				}
-				else
-				{
-					$markedTest.= 'Total Right = '.$_SESSION['totalCorrect'].'/'.$questionCount;		
-					$percentageScore = round($_SESSION['totalCorrect']/$questionCount,2)*100;
-					$markedTest.= '<h2>You got '.$percentageScore.'% on this attempt</h2>';
-				}
+				$markedTest.= 'Total Right = '.$_SESSION['totalCorrect'].'/'.$questionCount;		
+				$percentageScore = round($_SESSION['totalCorrect']/$questionCount,2)*100;
+				$markedTest.= '<h2>You got '.$percentageScore.'% on this attempt</h2>';
+				
+				// Get the grade boundary for this mark if it exists
+				$boundaryFeedback = qtl_queries::getBoundaryFeedback($percentageScore, $quizID);
+				$markedTest.=$boundaryFeedback;
+				
+				
 				$markedTest.='</div>';
 				
 				$markedTest.= '</div>';// end of exam div
 				
-				// Check to see if we email admins
-				$emailAdminList = $quizOptionsArray['emailAdminList'];		
-				$emailAdminArray = explode(",",$emailAdminList);
-				
-				foreach($emailAdminArray as $userID)
+				if($readOnly==false)
 				{
-					$userData = get_userdata( $userID );
-					$user_email = $userData->user_email;
-		
-					$headers = 'From: DoNotReply' . "\r\n";
-					$subject = 'A Participant has taken the quiz : '.$quizName;
-					$message = "A participant has taken the quiz '".$quizName."'\n\n";
-					$message.= "Date Taken : ".$currentDate."\n";
-					$message.="Score  : ".$_SESSION['totalCorrect']."/".$questionCount." = ".$percentageScore."%\n\n";
-					$message.="This message has been generated automatically";			
-					wp_mail($user_email, $subject, $message, $headers );			
-				}
-				
-				if($currentUsername)
-				{
-					// This score is higher than any previous score so update the DB to reflect this
-					if($percentageScore>$previousHighestScore)
-					{
-						$myFields ="UPDATE ".$table_name." SET ";
-						$myFields.="highestScore=%u ,";
-						$myFields.="highestScoreDate='%s' ";
-						$myFields.="WHERE username ='%s' AND quizID=%u";
-						
-						$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
-							$percentageScore,
-							$currentDate,
-							$currentUsername,
-							$quizID
-						));					
-					} // End if this attempt is higher than previous scores
 					
-					// Finally check to see if they willg et emailed their results or not
-					if($emailUser=="yes")
+	
+					// Update the user results database with the results and date finished and score
+					$myFields ="UPDATE ".$table_name_responses." SET ";
+					$myFields.="dateFinished='%s' ,";
+					$myFields.="responseArray='%s', ";
+					$myFields.="score='%s' ";				
+					$myFields.="WHERE userAttemptID =%u";
+					
+					$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
+						date('Y-m-d H:i:s'),
+						serialize($submittedAnswersArray),
+						$percentageScore,
+						$userAttemptID
+					));					
+			
+					
+					
+					// Check to see if we email admins
+					$emailAdminList = $quizOptionsArray['emailAdminList'];		
+					$emailAdminArray = explode(",",$emailAdminList);
+					
+					foreach($emailAdminArray as $userID)
 					{
-						global $current_user;
-						get_currentuserinfo();
-						$thisEmail = $current_user->user_email;		
-						$subject = "Quiz Results for ".$quizName;
-						$message = "This email is a receipt of your quiz results for '".$quizName."'\n\n";
+						$userData = get_userdata( $userID );
+						$user_email = $userData->user_email;
+			
+						$headers = 'From: DoNotReply' . "\r\n";
+						$subject = 'A Participant has taken the quiz : '.$quizName;
+						$message = "A participant has taken the quiz '".$quizName."'\n\n";
 						$message.= "Date Taken : ".$currentDate."\n";
 						$message.="Score  : ".$_SESSION['totalCorrect']."/".$questionCount." = ".$percentageScore."%\n\n";
-						$message.="This message has been generated automatically";
+						$message.="This message has been generated automatically";			
+						wp_mail($user_email, $subject, $message, $headers );			
+					}
+					
+					if($currentUsername)
+					{
+						// This score is higher than any previous score so update the DB to reflect this
+						if($percentageScore>$previousHighestScore)
+						{
+							$myFields ="UPDATE ".$table_name." SET ";
+							$myFields.="highestScore=%u ,";
+							$myFields.="highestScoreDate='%s' ";
+							$myFields.="WHERE username ='%s' AND quizID=%u";
+							
+							$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
+								$percentageScore,
+								$currentDate,
+								$currentUsername,
+								$quizID
+							));					
+						} // End if this attempt is higher than previous scores
 						
-						wp_mail( $thisEmail, $subject, $message );
+						// Finally check to see if they willg et emailed their results or not
+						if($emailUser=="yes")
+						{
+							global $current_user;
+							get_currentuserinfo();
+							$thisEmail = $current_user->user_email;		
+							$subject = "Quiz Results for ".$quizName;
+							$message = "This email is a receipt of your quiz results for '".$quizName."'\n\n";
+							$message.= "Date Taken : ".$currentDate."\n";
+							$message.="Score  : ".$_SESSION['totalCorrect']."/".$questionCount." = ".$percentageScore."%\n\n";
+							$message.="This message has been generated automatically";
+							
+							wp_mail( $thisEmail, $subject, $message );
+						}
 					}
 				}
 			}
@@ -645,7 +739,21 @@ if (!class_exists('qtl_quiz_draw'))
 					$qType= $questionInfo['qType'];			
 					if($questionID<>"" && $qType<>"reflectionText" && $qType<>"reflection")
 					{
-						$quizQuestionArray[] = $questionID;
+						// Get the responses as well
+						$optionsRS = qtl_queries::getResponseOptions($questionID, $optionOrderType);
+						$optionArray = array();
+						foreach ($optionsRS as $myOptions)
+						{	
+							$optionID= $myOptions['optionID'];
+							$isCorrect= $myOptions['isCorrect'];
+							$optionArray[] = array
+							(
+								"optionID" => $optionID,
+								"isCorrect" => $isCorrect
+							);
+						}						
+						
+						$quizQuestionArray[] = array($questionID, $optionArray);
 					}
 				}
 				
@@ -668,13 +776,28 @@ if (!class_exists('qtl_quiz_draw'))
 						$potID = $key;
 						$qCount = $value;		
 						$questionRS = qtl_queries::getQuestionsInPot($potID, false, "random", $qCount);
-						
 				
 						// NOW go through the RS and add the question IDs to an array		
 						foreach ($questionRS as $myQuestions)
 						{		
 							$questionID = $myQuestions['questionID'];
-							$quizQuestionArray[] = $questionID;
+							$optionOrderType = $myQuestions['optionOrderType'];
+							
+							// Get the responses as well
+							$optionsRS = qtl_queries::getResponseOptions($questionID, $optionOrderType);
+							$optionArray = array();
+							foreach ($optionsRS as $myOptions)
+							{	
+								$optionID= $myOptions['optionID'];
+								$isCorrect= $myOptions['isCorrect'];
+								$optionArray[] = array
+								(
+									"optionID" => $optionID,
+									"isCorrect" => $isCorrect
+								);
+							}
+							
+							$quizQuestionArray[] = array($questionID, $optionArray);
 						}
 					}
 				
@@ -682,19 +805,16 @@ if (!class_exists('qtl_quiz_draw'))
 					shuffle($quizQuestionArray);		
 				}
 			}
-		
-		
-			
+
 			
 			return $quizQuestionArray;
 		}
 		
 		
-		function drawQuestion($questionID, $formative=false, $questionSettingArray=false)
+		function drawQuestion($questionID, $optionOrder="", $formative=false, $questionSettingArray=false)
 		{
 			// Set some defaults
 			$questionStr="";
-			
 			
 			// get the info about that question	
 			$questionInfo = qtl_queries::getQuestionInfo($questionID);
@@ -705,9 +825,7 @@ if (!class_exists('qtl_quiz_draw'))
 			$incorrectFeedback = qtl_utils::convertTextFromDB($questionInfo['incorrectFeedback']);
 			$incorrectFeedback = wpautop($incorrectFeedback);	
 			$optionOrderType = $questionInfo['optionOrderType'];
-			
-			$optionsRS = qtl_queries::getResponseOptions($questionID, $optionOrderType);
-			
+
 			$qType = $questionInfo['qType'];
 			$refectionTextBoxID = 'refectiveTextBoxID'.$questionID;
 			$textBoxID= 'textBoxID'.$questionID;	
@@ -715,6 +833,27 @@ if (!class_exists('qtl_quiz_draw'))
 			
 			$saveResponse=$questionSettingArray['saveResponse']; // Do we want to save this data or not?
 			$buttonText=$questionSettingArray['buttonText']; // The text on the button if a single question
+			$correctText=$questionSettingArray['correctText']; // The correct text
+			$incorrectText=$questionSettingArray['incorrectText']; // The incorrect text
+			$iconset=$questionSettingArray['iconset']; // The incorrect text	
+			
+			$correctIcon = QTL_PLUGIN_URL.'/images/icons/correct/tick'.$iconset.'.png';
+			$incorrectIcon = QTL_PLUGIN_URL.'/images/icons/incorrect/cross'.$iconset.'.png';	
+			
+			?>
+
+            <style>
+			.QTLCorrectStyle<?php echo $questionID; ?>
+			{
+				background:left no-repeat url(<?php echo $correctIcon; ?>) !important;
+			}
+			.QTLIncorrectStyle<?php echo $questionID; ?>
+			{				
+				background:left no-repeat url(<?php echo $incorrectIcon; ?>) !important;
+			}
+			</style>            
+            
+            <?php		
 			
 			if($formative==true)
 			{
@@ -741,14 +880,48 @@ if (!class_exists('qtl_quiz_draw'))
 				// get the response options
 				$questionStr.= '<table width="90%">'.chr(10);
 				
-				foreach ($optionsRS as $myOptions)
-				{		
+				$responseOrder = array();
+				if($optionOrder)
+				{
+					foreach($optionOrder as $optionInfo)
+					{
+						$responseOrder[] = $optionInfo['optionID'];
+					}
+				}
 				
-					$optionValue = qtl_utils::convertTextFromDB($myOptions['optionValue']);
-					
+				
+				// Create the option lookup array				
+				$optionLookupArray = array();
+				$optionsRS = qtl_queries::getResponseOptions($questionID, $optionOrderType);				
+				foreach ($optionsRS as $myOptions)
+				{
+				
+					$optionValue = qtl_utils::convertTextFromDB($myOptions['optionValue']);					
 					$optionID= $myOptions['optionID'];	
 					$responseCorrectFeedback = qtl_utils::convertTextFromDB($myOptions['responseCorrectFeedback']);
 					$responseIncorrectFeedback = qtl_utils::convertTextFromDB($myOptions['responseIncorrectFeedback']);
+
+					$optionLookupArray[$optionID] = array
+					(
+						"optionValue" => $optionValue,
+						"responseCorrectFeedback" => $responseCorrectFeedback,
+						"responseIncorrectFeedback" => $responseIncorrectFeedback
+																
+					);
+					
+					if(!$optionOrder)
+					{
+						$responseOrder[] = $optionID;
+					}
+					
+				}
+				
+				foreach($responseOrder as $optionID)
+				{
+					$optionInfo = $optionLookupArray[$optionID];
+					$optionValue = $optionInfo['optionValue'];
+					$responseCorrectFeedback = $optionInfo['responseCorrectFeedback'];
+					$responseIncorrectFeedback = $optionInfo['responseIncorrectFeedback'];
 					
 					$questionStr.= '<tr>'.chr(10);
 					$questionStr.= '<td width="8" valign="top">';
@@ -765,7 +938,7 @@ if (!class_exists('qtl_quiz_draw'))
 					$questionStr.= '<label for="option'.$optionID.'">&nbsp;&nbsp;&nbsp;&nbsp;'.$optionValue.'</label>';
 					
 					
-					if($formative==true) // Add the hidden divs for correct and incorrect feedback
+					if($formative==true) // Add the qtl_hidden divs for correct and incorrect feedback
 					{
 						$questionStr.= ' <span id="correctFeedback'.$optionID.'" class="successText" style="display:none">'.$responseCorrectFeedback.'</span>';
 						$questionStr.= ' <span id="incorrectFeedback'.$optionID.'" class="failText" style="display:none">'.$responseIncorrectFeedback.'</span>';
@@ -835,7 +1008,7 @@ if (!class_exists('qtl_quiz_draw'))
 			
 		
 				$questionStr.= '<!--QTLfeedbackStart--><div id="mainFeedbackDiv">';		
-				$questionStr.= '<div id="exampleQuestionAnswerCorrect'.$questionID.'" class="hidden">';
+				$questionStr.= '<div id="exampleQuestionAnswerCorrect'.$questionID.'" class="qtl_hidden">';
 				
 				
 				if($qType=="reflection" || $qType=="reflectionText")
@@ -845,7 +1018,7 @@ if (!class_exists('qtl_quiz_draw'))
 				else
 				{
 					$correctFeedbackDivID = "exampleQuestionAnswerCorrect".$questionID;	
-					$questionStr.= '<span class="correct">Correct</span>';	// Don't show 'correct answer if reflection				
+					$questionStr.= '<span class="correct QTLCorrectStyle'.$questionID.'">'.$correctText.'</span>';	// Don't show 'correct answer if reflection
 					//$questionStr.= '<span class="correct" style="color:'.get_option('reflectiveFeedbacktextColour') .';background-color:'.get_option('reflectiveFeedbackBoxColour') .'">Correct</span>';	// Don't show 'correct answer if reflection		
 				}		
 				
@@ -855,8 +1028,8 @@ if (!class_exists('qtl_quiz_draw'))
 				}
 				$questionStr.= '</div>';
 				
-				$questionStr.= '<div id="exampleQuestionAnswerInCorrect'.$questionID.'" class="hidden">';
-				$questionStr.= '<span class="incorrect">Incorrect</span>';
+				$questionStr.= '<div id="exampleQuestionAnswerInCorrect'.$questionID.'" class="qtl_hidden">';
+				$questionStr.= '<span class="incorrect QTLIncorrectStyle'.$questionID.'">'.$incorrectText.'</span>';
 				
 				if($incorrectFeedback)
 				{
@@ -877,8 +1050,10 @@ if (!class_exists('qtl_quiz_draw'))
 			
 		}
 		
-		function drawMarkedQuestion($questionID, $response="", $showFeedback="yes")
+		function drawMarkedQuestion($questionID, $optionOrder, $response="", $showFeedback="yes")
 		{
+			global $correctText;
+			global $incorrectText;
 			
 			// Set some vars
 			$incorrectCheck="";
@@ -894,9 +1069,6 @@ if (!class_exists('qtl_quiz_draw'))
 			$qType = $questionInfo['qType'];
 			$optionOrderType = $questionInfo['optionOrderType'];	
 			
-			
-			
-			
 			if($qType=="check") // If its checkbox turn the values into an array
 			{
 				$responseArray= explode(",", $response);
@@ -907,15 +1079,32 @@ if (!class_exists('qtl_quiz_draw'))
 			// Assume they got it right, then we check for wrong answers later
 			$correctResponse = "";
 			
-			// get the response options
-			$optionsRS = qtl_queries::getResponseOptions($questionID, $optionOrderType);
+			if($qType<>"text")
+			{			
+				// get the response options and put them in alookup array for the actual order
+				$optionArrayLookup = array();
+				$optionsRS = qtl_queries::getResponseOptions($questionID);
+				foreach ($optionsRS as $myOptions)
+				{			
+					$optionValue = qtl_utils::convertTextFromDB($myOptions['optionValue']);
+					$optionID = $myOptions['optionID'];
+					$optionArrayLookup[$optionID] = $optionValue;
+				}
+		
+			}
 		
 			if($qType=="text")
 			{
-				$response = trim(strtolower($_POST['textBoxID'.$questionID]));
+				if(!$response)
+				{
+					$response = trim(strtolower($_POST['textBoxID'.$questionID]));
+				}
 				$markedQuestionStr.='<input type="text" value="'.$response.'" readonly /><br/>';
 				
+				
+				$response = trim(strtolower($response));
 				$possibleAnswerArray = array();
+				$optionsRS = qtl_queries::getResponseOptions($questionID);				
 				foreach ($optionsRS as $myOptions)
 				{
 					$optionValue = strtolower(qtl_utils::convertTextFromDB($myOptions['optionValue']));
@@ -934,14 +1123,15 @@ if (!class_exists('qtl_quiz_draw'))
 				
 				$markedQuestionStr.= '<table width="90%">'.chr(10);	
 				
-					
-				foreach ($optionsRS as $myOptions)
+				foreach ($optionOrder as $optionInfo)
 				{
-					$optionValue = qtl_utils::convertTextFromDB($myOptions['optionValue']);
-					$optionID= $myOptions['optionID'];	
-					$isCorrect = $myOptions['isCorrect'];		
-					$checked = "";
+//					$optionValue = qtl_utils::convertTextFromDB($myOptions['optionValue']);
+//					$optionID= $myOptions['optionID'];
+					$optionID = $optionInfo['optionID'];
+					$isCorrect = $optionInfo['isCorrect'];
+					$optionValue = $optionArrayLookup[$optionID];
 					
+					$checked = "";
 					
 					$markedQuestionStr.= '<tr>'.chr(10);
 					$markedQuestionStr.= '<td width="10">';
@@ -987,7 +1177,7 @@ if (!class_exists('qtl_quiz_draw'))
 			if($correctResponse==true)
 			{
 				$_SESSION['totalCorrect']++;
-				$markedQuestionStr.= '<span class="correct">Correct</span>';
+				$markedQuestionStr.= '<span class="correct">'.$correctText.'</span>';
 				if($correctFeedback && $showFeedback=="yes")
 				{		
 					$markedQuestionStr.= '<div id="correctFeedbackDiv">'.$correctFeedback.'</div>';
@@ -995,7 +1185,7 @@ if (!class_exists('qtl_quiz_draw'))
 			}
 			else
 			{
-				$markedQuestionStr.= '<span class="incorrect">Incorrect</span>';
+				$markedQuestionStr.= '<span class="incorrect">'.$incorrectText.'</span>';
 				if($incorrectFeedback && $showFeedback=="yes")
 				{				
 					$markedQuestionStr.= '<div id="incorrectFeedbackDiv">'.$incorrectFeedback.'</div>';
@@ -1031,27 +1221,39 @@ if (!class_exists('qtl_quiz_draw'))
 				array(
 					'id'   => '#',
 					'savedata'   => '',
-					'button'   => ''
-					
+					'button'   => '',
+					'correctfeedback'   => '',
+					'incorrectfeedback'   => '',
+					'iconset'   => ''					
 				), 
 				$atts
 			);
 			
 			$questionID = (int) $atts['id'];
+			$iconset = (int) $atts['iconset'];			
 			$saveResponse = esc_attr($atts['savedata']);
 			$button = esc_attr($atts['button']);
+			$correctText = esc_attr($atts['correctfeedback']);
+			$incorrectText = esc_attr($atts['incorrectfeedback']);
 			
+			if($iconset==""){$iconset=1;}
+			if($correctText==""){$correctText="Correct";}
+			if($incorrectText==""){$incorrectText="Incorrect";}			
 			if($button==""){$button="Check Answer";} // If button is blank default to "check answer" text
 		
 			$overrideAdminCheck=true; // Allow scripts to be loaded from front end
 			$questionSettingArray = array(
 				'saveResponse'=> $saveResponse,
-				'buttonText'=> $button
+				'buttonText'=> $button,
+				'correctText'=> $correctText,
+				'incorrectText'=> $incorrectText,
+				'iconset'=> $iconset
+				
 			); 
 			
 			qtl_initialise::QTL_loadMyPluginScripts(); // Load up the plugin scripts for the front end (define true to override admin check)
 			
-			$questionStr = qtl_quiz_draw::drawQuestion($questionID, true, $questionSettingArray);
+			$questionStr = qtl_quiz_draw::drawQuestion($questionID, "", true, $questionSettingArray);
 			return do_shortcode($questionStr);
 		}
 		

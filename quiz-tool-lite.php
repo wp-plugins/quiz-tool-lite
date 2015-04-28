@@ -3,7 +3,7 @@
 Plugin Name: Quiz Tool Lite
 Plugin URI: https://wordpress.org/plugins/quiz-tool-lite/
 Description: Create questions and quizzes, embed individual questions for formative assessment or deploy entire an quiz
-Version: 2.1.2
+Version: 2.2
 Author: Alex Furr, Lisha Chen Wilson and Simon Ward
 Author URI: https://wordpress.org/plugins/quiz-tool-lite/
 License: GPL
@@ -15,6 +15,8 @@ define('AIQUIZ_PATH', plugin_dir_path(__FILE__)); # inc /
 define('AIQUIZ_DIR', plugin_dir_path(__FILE__)); # inc /
 define ('AI_Plugin_Path', plugin_basename(__FILE__));
 define('AIQUIZ_ABS_PATH', plugin_dir_url(__FILE__));
+define( 'QTL_PLUGIN_URL', plugins_url('quiz-tool-lite' , dirname( __FILE__ )) );
+
 
 require_once AIQUIZ_PATH.'functions.php'; # All the php functions etc...
 require_once AIQUIZ_PATH.'scripts/qry-functions.php'; # All the DB queries
@@ -127,6 +129,22 @@ class qtl_initialise
 		$menu_slug="ai-quiz-results";
 		$function="drawAIquiz_results";
 		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);	
+
+		$parentSlug="ai-quiz-results";
+		$page_title="User Results";
+		$menu_title="User Results";
+		$menu_slug="ai-user-results";
+		$function="drawAIquiz_user_results";
+		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);	
+
+
+		$parentSlug="ai-user-results";
+		$page_title="Quiz Breakdown";
+		$menu_title="Quiz Breakdown";
+		$menu_slug="ai-quiz_breakdown";
+		$function="drawAIquiz_user_breakdown";
+		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);	
+		
 		
 		$parentSlug="ai-quiz-questionType";
 		$page_title="Pick Question Type";
@@ -155,6 +173,24 @@ class qtl_initialise
 		$menu_slug="ai-quiz-help";
 		$function="drawAIquiz_help";
 		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);	
+		
+		$parentSlug="ai-quiz-quiz-list";
+		$page_title="Grade Boundaries";
+		$menu_title="Grade Boundaries";
+		$menu_slug="ai-quiz-boundaries";
+		$function="drawAIquiz_gradeBoundaries";
+		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);	
+		
+		$parentSlug="ai-quiz-boundaries";
+		$page_title="Edit Grade Boundary";
+		$menu_title="Edit Grade Boundary";
+		$menu_slug="ai-quiz-boundaryEdit";
+		$function="drawAIquiz_boundaryEdit";
+		add_submenu_page($parentSlug, $page_title, $menu_title, $myCapability, $menu_slug, $function);			
+		
+		
+		
+		
 	}
 	
 	// Check if we're on our options page   and only load plugin scripts if so
@@ -181,7 +217,12 @@ class qtl_initialise
 			"quiz-questions_page_ai-quiz-settings",
 			"quiz-questions_page_ai-quiz-help",
 			"ai-quiz-results_uos",
-			"admin_page_ai-quiz-results"
+			"admin_page_ai-quiz-results",
+			"admin_page_ai-user-results",
+			"admin_page_ai-quiz_breakdown",
+			"admin_page_ai-quiz-boundaries",
+			"admin_page_ai-quiz-boundaryEdit"
+			
 			);
 			
 			// Get the screen name

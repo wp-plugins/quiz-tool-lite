@@ -3,10 +3,9 @@
  * Description: Creates database tables used by the quiz
  */
  
-
 //Database table versions
 global $this_qtl_db_version;
-$this_qtl_db_version = "1.6"; // INcrease this each time a DB change is made
+$this_qtl_db_version = "2.0"; // INcrease this each time a DB change is made
 
 // CHeck the DB version of the plugin
 $current_qtl_db_version = get_option( 'qtl-db-version' );
@@ -115,7 +114,6 @@ function AI_Quiz_create_tables()
 	highestScore int,
 	highestScoreDate datetime,
 	lastAttemptMarked int,
-	test5555 int,
 	PRIMARY KEY  (attemptID)
 	);";
 	
@@ -131,8 +129,33 @@ function AI_Quiz_create_tables()
 	questionID int,
 	PRIMARY KEY  (resultID)
 	);";
+	dbDelta($sql);
+	
+	$table_name = $wpdb->prefix . "AI_Quiz_tblUserQuizResponses";
+	$sql = "CREATE TABLE ".$table_name." (
+	userAttemptID int NOT NULL AUTO_INCREMENT,
+	quizID int,
+	username varchar(255),
+	dateStarted datetime,
+	dateFinished datetime,
+	questionArray longtext,
+	responseArray longtext,
+	score int,
+	PRIMARY KEY  (userAttemptID)
+	);";
+	
 	dbDelta($sql);	
 	
+	$table_name = $wpdb->prefix . "AI_Quiz_tblGradeBoundaries";		
+	$sql = "CREATE TABLE ".$table_name." (
+	boundaryID int NOT NULL AUTO_INCREMENT,	
+	quizID int NOT NULL,
+	minGrade int NOT NULL,
+	maxGrade int NOT NULL,
+	feedback longtext,
+	PRIMARY KEY  (boundaryID)
+	);";
+	dbDelta($sql);	
 
 	//Add database table versions to options
 	add_option("AI_Quiz_db_table_version", $AI_Quiz_db_table_version);

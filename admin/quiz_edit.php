@@ -1,3 +1,5 @@
+
+
 <?php
 // include tab startup
 require_once AIQUIZ_PATH.'scripts/tabs.php';
@@ -12,6 +14,8 @@ $startDate  = "";
 $endDate = "";
 $timeLimit="";
 $timeLimitCheck="";
+$correctText = "Correct";
+$incorrectText = "Incorrect";
 
 if(isset($_GET['action']))
 {
@@ -23,7 +27,6 @@ if(isset($_GET['action']))
 		$quizID= qtl_actions::quizEdit();
 	}
 }
-
 
 if(isset($_GET['quizID']))
 {
@@ -55,7 +58,15 @@ if($quizID)
 	$timeAttemptsDay = $quizOptionsArray['timeAttemptsDay'];
 	$startDate = $quizOptionsArray['startDate'];
 	$endDate = $quizOptionsArray['endDate'];
-	$redirectPage = $quizOptionsArray['redirectPage'];
+	$correctText = qtl_utils::convertTextFromDB($quizOptionsArray['correctText']);
+	$incorrectText = qtl_utils::convertTextFromDB($quizOptionsArray['incorrectText']);
+	if($correctText == ""){$correctText = "Correct";}
+	if($incorrectText == ""){$incorrectText = "Incorrect";}	
+
+	$feedbackIcon = $quizOptionsArray['feedbackIcon'];$redirectPage = $quizOptionsArray['redirectPage'];
+	$quizFinishMessage = qtl_utils::convertTextFromDB($quizOptionsArray['quizFinishMessage']);
+	$quizFinishMessage = wpautop($quizFinishMessage);
+	
 	
 	$emailAdminList = $quizOptionsArray['emailAdminList'];
 	$emailAdminArray = explode(",",$emailAdminList);
@@ -82,11 +93,15 @@ if($quizID)
 }
 else
 {
+	
 	$quizOptionsArray['showFeedback']="yes";
 	$quizOptionsArray['emailUser']="no";
 	$quizOptionsArray['questionList']="pot";
 	$quizOptionsArray['customQuestionList']="";
 	$quizOptionsArray['questionListType']='pot';
+	$quizOptionsArray['quizFinishMessage']="";
+	$quizOptionsArray['feedbackIcon']="1";
+	
 	$quizQuestionArray=array();
 }
 
@@ -111,11 +126,12 @@ if($feedback)
     
     <div id="tabs">
     <ul>
-    <li><a href="#quizOverview">Quiz Overview</a></li>
-    <li><a href="#quizOptions">Quiz Options</a></li>
-    <li><a href="#participantOptions">Participant Options</a></li>    
+    <li><a href="#quizOverview">Overview</a></li>
+    <li><a href="#quizOptions">Settings</a></li>
+    <li><a href="#feedbackOptions">Feedback</a></li>
+    <li><a href="#participantOptions">Participants</a></li>
     </ul>
-    <div id="quizOverview">
+    <div id="quizOverview" class="ui-tabs-hide">
         <label for ="quizName">Quiz Name</label>
         <input type="text" name="quizName" id="quizName" value="<?php echo $quizName?>" placeholder="Enter quiz name">
         
@@ -256,7 +272,7 @@ if($feedback)
     
     </div> <!-- End of tab 1 --->
 
-    <div id="quizOptions">
+    <div id="quizOptions" class="ui-tabs-hide">
         <h2>Availability</h2> 
         <table>
         <tr>
@@ -277,7 +293,11 @@ if($feedback)
         </tr>
         </table>
         <h2>Completion Options</h2>
-        Redirect URL after completing the quiz <span class="smallGreyText"> (Optional - leave blank to return to current page)</span><br/>
+        <label for="quizFinishMessage">Message displayed to user after quiz has been submitted</label><br/><br/>
+		<?php wp_editor($quizFinishMessage, 'quizFinishMessage', '', true);	?>
+        
+        <hr/>
+         <label for="redirectPage">Redirect URL after completing the quiz</label><span class="smallGreyText"> (Optional. Leave blank to return to current page)</span><br/>
         <input type="text" id="redirectPage" name="redirectPage" value="<?php echo $redirectPage ?>" size="70" />
         
         <hr/>
@@ -322,17 +342,73 @@ if($feedback)
         </div>
 
     </div> <!-- End of tab 2 -->
-    
-    <div id="participantOptions">
-    
-    	<h2>Feedback</h2>
+
+    <div id="feedbackOptions" class="ui-tabs-hide">
+		<h2>Feedback Options</h2>        
         <input type="radio" name="showFeedback" id="showFeedbackYes"  value="yes"  <?php if ($quizOptionsArray['showFeedback']=='yes'){echo 'checked'; }?>/>
-        <label for="showFeedbackYes">Display feedback to participants</label><br />
+        <label for="showFeedbackYes">Display detailed feedback to participants</label><br />
         <input type="radio" name="showFeedback" id="showFeedbackNo"  value="no" <?php if ($quizOptionsArray['showFeedback']=='no'){echo 'checked'; }?>/>
         <label for="showFeedbackNo">Hide feedback to participants</label><hr />
+
+        <h2>Feedback Text</h2>
+        <label for="correctText">Correct Text</label><br/>
+        <input type="text" name="correctText" id="correctText" value="<?php echo $correctText?>">
+        <hr/>
+		<label for="incorrectText">Incorrect Text</label><br/>
+        <input type="text" name="incorrectText" id="incorrectText" value="<?php echo $incorrectText?>">
         
         
         
+        <h2>Feedback Icons</h2>
+        <h3>Icon set</h3>
+		<?php
+		$iconArray = array();
+		$currentIcon = 'correct';
+		$iconArray = qtl_utils::getQTL_IconArray();
+        $correctIconDir = QTL_PLUGIN_URL.'/images/icons/'.$currentIcon;
+        $incorrectIconDir = QTL_PLUGIN_URL.'/images/icons/incorrect/';	
+		
+		$feedbackIcon = $quizOptionsArray['feedbackIcon'];
+		if($feedbackIcon==""){$feedbackIcon=1;}
+		
+        echo '<table>';
+        $i=1;
+        foreach($iconArray as $myIcon)
+        {
+			$currentIconNo = substr($myIcon, 4, -4);
+			$correctIconRef = $correctIconDir.'/'.$myIcon;
+			$incorrectIconRef = $incorrectIconDir.'/cross'.$currentIconNo.'.png';
+            if($i==1){echo '<tr>';}
+            echo '<td align="center" style="padding:25px">';
+			echo '<label for="icon'.$currentIconNo.'">';
+            echo '<img src="'.$correctIconRef.'">';
+            echo '<img src="'.$incorrectIconRef.'">';
+			echo '</label>';
+			echo '<br/>';
+			echo '<input type="radio" name="feedbackIcon" id="icon'.$currentIconNo.'" value="'.$currentIconNo.'"';
+			if($feedbackIcon==$currentIconNo){echo 'checked';}
+			
+			echo '>';
+            echo '</td>';
+            $i++;
+            if($i>=5){$i=1; echo '</tr>';}
+        }
+		echo '<td align="center" style="padding:25px">';
+		echo '<label for="icon0">No icons</label>';
+		echo '<br/>';
+		echo '<input type="radio" name="feedbackIcon" id="icon0" value="0"';
+		if($feedbackIcon==0){echo 'checked';}			
+		echo '>';
+		echo '</td>';
+		if($i<>1){echo '</tr>';}
+        echo '</table>';
+        ?>    
+       
+    </div>    
+
+    
+    <div id="participantOptions" class="ui-tabs-hide">    
+        <h2>Participant Options</h2>
         <input onclick="toggleLayerVis('loggedInUserOptions')" type="checkbox" name="requireUserLoggedIn" id="requireUserLoggedIn" <?php if ($quizOptionsArray['requireUserLoggedIn']=='on'){echo 'checked'; }?>/>
         <label for="requireUserLoggedIn">Participants must be logged in to take quiz</label>
        
@@ -366,9 +442,7 @@ if($feedback)
         <label for="timeAttemptsDay">Day(s)</label>
         </div>    
     
-    
-    </div>    
-    
+    </div>
     </div>
     
 
@@ -389,7 +463,9 @@ jQuery(document).ready(function() {
     });
 	
 	
-	jQuery("#quizName").focus();	
+	jQuery("#quizName").focus();
+	
+
 	
 	
 });

@@ -47,10 +47,11 @@ class AI_Quiz_importExport
 				$questionType = $questionInfo->qType;
 				$incorrectFeedback = $questionInfo->incorrectFeedback;
 				$correctFeedback = $questionInfo->correctFeedback;
+				$optionOrderType = $questionInfo->optionOrderType;				
 	
 //				echo "QUESTION,".$questionID.",".$questionName.",".$questionType.",".$incorrectFeedback.",".$correctFeedback."\n";
 				
-				$tempQuestionArray = array('QUESTION',''.$questionID.'',''.$questionName.'',''.$questionType.'',''.$incorrectFeedback.'',''.$correctFeedback.'');
+				$tempQuestionArray = array('QUESTION',''.$questionID.'',''.$questionName.'',''.$questionType.'',''.$incorrectFeedback.'',''.$correctFeedback.'',''.$optionOrderType.'');
 				
 				// Add the array to the mast CSV array
 				$CSV_array[] = $tempQuestionArray;
@@ -185,7 +186,7 @@ class AI_Quiz_importExport
 			);
 			
 			// Get the new pot ID
-			$potID=mysql_insert_id();
+			$potID=$wpdb->insert_id;
 		}
 		
 		return $potID;		
@@ -200,6 +201,7 @@ class AI_Quiz_importExport
 		$qType = $data[3];
 		$incorrectFeedback = $data[4];
 		$correctFeedback = $data[5];
+		$optionOrderType = $data[6];		
 		
 		// Check to see if the pot exists or not
 		$questionCheckInfo = qtl_queries::getQuestionInfo($questionID);
@@ -218,11 +220,13 @@ class AI_Quiz_importExport
 					'question' => $question ,
 					'qType' => $qType ,
 					'incorrectFeedback' => $incorrectFeedback ,
-					'correctFeedback' => $correctFeedback																		
+					'correctFeedback' => $correctFeedback,
+					'optionOrderType' => $optionOrderType																			
 				), 
 				array( 
 					'%d',
 					'%d', 
+					'%s',
 					'%s',
 					'%s',
 					'%s',
@@ -240,10 +244,12 @@ class AI_Quiz_importExport
 					'question' => $question,
 					'qType' => $qType,
 					'incorrectFeedback' => $incorrectFeedback,
-					'correctFeedback' => $correctFeedback
+					'correctFeedback' => $correctFeedback,
+					'optionOrderType' => $optionOrderType
 				), 
 				array( 
 					'%d',
+					'%s',
 					'%s',
 					'%s',
 					'%s',
@@ -252,7 +258,7 @@ class AI_Quiz_importExport
 			);
 			
 			// Get the new pot ID
-			$questionID=mysql_insert_id();
+			$questionID=$wpdb->insert_id;
 		}
 		
 		return $questionID;		

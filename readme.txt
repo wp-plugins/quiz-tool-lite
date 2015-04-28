@@ -2,8 +2,8 @@
 Contributors: alexfurr, lcw102, simon.ward
 Tags: academic, assessment, formative, quiz, questions
 Requires at least: 3.0.1
-Tested up to: 4.0
-Stable tag: 2.1.2
+Tested up to: 4.1
+Stable tag: 2.2
 
 A light weight quiz tool aimed at academics wanting to create interactive learning content. Insert a single question or deploy an entire quiz.
 
@@ -26,9 +26,10 @@ It also handles summative assessment if you wish to deploy an entire quiz.
 - Embed a single question on a post or page for formative assessment (no form posting)
 - Create multiple quizzes from your question 'pots' and deploy on a page for recording student scores
 - Adds an 'Insert Question' link to the editor toolbar
-- Uses shortcode
+- Uses shortcodes
 - Export / import questions from one WP site to another
 - Can display participants responses to previously submitted reflective questions on different pages
+- Display scoreboards of quizzes on a page using a shortcode
 
 <br>
 **Quiz Options**
@@ -41,6 +42,7 @@ It also handles summative assessment if you wish to deploy an entire quiz.
 - Optional redirect to abother website once the quiz is completed
 - Email participants an admin once a quiz has been completed
 - Security measures so participants cannot use the browser back button to correct and resubmit
+- Grade Boundaries to present different feedback to users depending on their grade.
 
 <div>
   <a href="https://www.efolio.soton.ac.uk/blog/alexfurr/quiz-tool-lite-demo/">Click here to view some example of the embedded formative questions</a>
@@ -90,8 +92,17 @@ Yes, but results won't be stored in the database
 3. The question pots page
 4. Editing response options
 5. Creating a quiz from question pots
+6. Quiz Boundary example
 
 == Changelog ==
+
+= 2.2 =
+* Added Grade Boundaries functionality so you can display feedback to users based on their score
+* Can now customise the images shown (tick and cross) shown when answers are correct or not
+* View detailed feedback on each users submitted answers for each quiz. Retains full version of their submitted answers for each attempt
+* New shortcode parameters for tick cross options and feedback messages
+* BUG FIX - single question embed now works with bootstrap based themes. Thanks to Gregor (humanbodylab) and brenthays for the help with this
+
 
 = 2.1.2 =
 * Fix to remove redundant date picker code that broke some jquery functions

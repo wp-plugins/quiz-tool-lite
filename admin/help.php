@@ -6,6 +6,8 @@
 <li><a href="#questions">Creating Questions</a></li>
 <li><a href="#feedback">Question feedback</a></li>
 <li><a href="#insertQuestion">Adding questions to a page</a></li>
+<li><a href="#quiz">Creating Quizzes</a></li>
+<li><a href="#insertQuiz">Adding a quiz to a page</a></li>
 <li><a href="#shortcodes">Shortcodes</a></li>
 <li><a href="#showResponse">Showing user responses</a></li>
 <li><a href="#results">Viewing Results</a></li>
@@ -119,6 +121,7 @@ Results from quizzes for logged in users are stored and can be viewed in the 'Re
 <hr/>
 <h2>Adding a quiz to a page</h2>
 Use the 'Insert Wizard' from the editor toolbar in the same way as you add a single question to add the shortcode for displaying a quiz.
+Or you can use a shortcode, as shown below.
 
 
 <a name="shortcodes"></a><br />
@@ -128,12 +131,14 @@ Use the 'Insert Wizard' from the editor toolbar in the same way as you add a sin
 
 <h2>Shortcodes</h2>
 To add a question or a quiz to a page you need to use 'shortcodes'. A shortcode is a simple bit of text that is added between to square brackets e.g. [My Shortcode].<br />
-On the whole you will not need to know anything else about shortcodes to add questions to a page. SImply use the 'Insert question Wizard' (see above) and the shortcode will be generated and added to the page for you.
+On the whole you will not need to know anything else about shortcodes to add questions to a page. Simply use the 'Insert question Wizard' (see above) and the shortcode will be generated and added to the page for you.i
 <br />
-You can choose to add questions manually if you wish, and the shortcode for displaying a question is shown below<br />
+Example shortcodes are shown below<br />
 <br />
 
-<h4>Shortcode Examples</h4>
+
+
+<h4>Standard Shortcode Examples</h4>
 <table style="line-height:50px; text-align:left; border-bottom:1px solid #ccc">
 <tr>
 <th width="350px">Shortcode</th>
@@ -165,6 +170,15 @@ Insert question ID 25 and change the default "Check Answer" button text to "Clic
 </tr>
 
 <tr>
+<td>
+<span class="codeExample">[QTL-Question id=25 correctfeedback="Well done!"]</span>
+</td>
+<td>
+Insert question ID 25 and change the default correct feedback
+</td>
+</tr>
+
+<tr>
 <td><span class="codeExample">[QTL-Response id=25]</span></td>
 <td>Shows the response given to question ID 25 by the current logged in user</td>
 </tr>
@@ -188,7 +202,71 @@ Insert question ID 25 and change the default "Check Answer" button text to "Clic
 
 </table>
 
+<h4>Shortcodes available for the single question [QTL-Question]</h4>
+<table style="line-height:50px; text-align:left; border-bottom:1px solid #ccc">
 
+<tr>
+<td><span class="codeExample">savedata=true</span></td>
+<td>Saves the response to the database so you can display to the user on another page</td>
+</tr>
+
+<tr>
+<td><span class="codeExample">button="Click here"</span></td>
+<td>Changes the default button text of the show answer button</td>
+</tr>
+
+<tr>
+<td><span class="codeExample">correctfeedback="Well done!"</span></td>
+<td>Changes the default correct message to user</td>
+</tr>
+
+<tr>
+<td><span class="codeExample">incorrectfeedback="Thats wrong"</span></td>
+<td>Changes the default incorrect message to user</td>
+</tr>
+
+<tr>
+<td><span class="codeExample">iconset=3</span></td>
+<td>Changes the default icon set. <a href="javascript:toggleLayerVis('iconsets')">View iconsets</a></td>
+</tr>
+</table>
+
+
+
+<div id="iconsets" style="display:none">
+<h3>Available Iconsets</h3>
+<?php
+
+
+$iconArray = array();
+$iconArray = qtl_utils::getQTL_IconArray();
+
+
+$correctIconDir = QTL_PLUGIN_URL.'/images/icons/correct/';
+$incorrectIconDir = QTL_PLUGIN_URL.'/images/icons/incorrect/';
+echo '<table>';
+$i=1;
+foreach($iconArray as $myIcon)
+{
+	$currentIconNo = substr($myIcon, 4, -4);
+	$correctIconRef = $correctIconDir.'/'.$myIcon;
+	$incorrectIconRef = $incorrectIconDir.'/cross'.$currentIconNo.'.png';
+	if($i==1){echo '<tr>';}
+	echo '<td align="center" style="padding:25px">';
+	echo '<img src="'.$correctIconRef.'">';
+	echo '<img src="'.$incorrectIconRef.'"><br/>';
+	echo 'Iconset '.$currentIconNo;
+	if($currentIconNo==1){echo ' (Default)';}
+	echo '</td>';
+	$i++;
+	if($i>=5){$i=1; echo '</tr>';}
+}
+if($i<>1){echo '</tr>';}
+echo '</table>';
+?>  
+
+
+</div>
 
 
 <a name="showResponse"></a><br />

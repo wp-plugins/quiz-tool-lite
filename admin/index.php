@@ -70,4 +70,36 @@ function drawAIquiz_help()
 	require_once AIQUIZ_PATH.'admin/help.php'; # Load admin pages
 	echo '</div>';
 }
+
+function drawAIquiz_user_results()
+{
+	echo '<div id="qtl_content">';
+	require_once AIQUIZ_PATH.'admin/user_results.php'; # Load admin pages
+	echo '</div>';
+}
+
+function drawAIquiz_user_breakdown()
+{
+	echo '<div id="qtl_content">';
+	require_once AIQUIZ_PATH.'admin/quiz_breakdown.php'; # Load admin pages
+	echo '</div>';
+}
+
+function drawAIquiz_gradeBoundaries()
+{
+	echo '<div id="qtl_content">';
+	require_once AIQUIZ_PATH.'admin/grade_boundaries.php'; # Load admin pages
+	echo '</div>';
+}
+
+function drawAIquiz_boundaryEdit()
+{
+	echo '<div id="qtl_content">';
+	require_once AIQUIZ_PATH.'admin/boundary_edit.php'; # Load admin pages
+	echo '</div>';
+}
+
+
+
+
 ?>

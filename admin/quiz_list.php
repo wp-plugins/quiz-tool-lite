@@ -26,7 +26,7 @@ if($quizCount>=1)
 
 	echo '<div id="quiztable">';
 	echo '<table>';
-	echo '<tr><th>Quiz Name</th><th>Short Code</th><th>Participant Count</th><th></th><th></th></tr>';
+	echo '<tr><th>Quiz Name</th><th>Shortcode</th><th>Participant Count</th><th></th><th></th><th></th></tr>';
 	
 		
 	foreach ($quizRS	as $myQuizzes)
@@ -43,6 +43,7 @@ if($quizCount>=1)
 		echo '<td><a href="?page=ai-quiz-quiz-edit&quizID='.$quizID.'">'.$quizName.'</a></td>';
 		echo '<td valign="top"><span class="greyText">[QTL-Quiz id='.$quizID.']</span></td>';
 		echo '<td valign="top">'.$participantCount.' participant(s)</span></td>';
+		echo '<td><a href="?page=ai-quiz-boundaries&quizID='.$quizID.'" class="boundaryIcon">Grade Boundaries</a></td>';
 		echo '<td><a href="?page=ai-quiz-results&quizID='.$quizID.'" class="dataIcon">View results</a></td>';
 		
 	//	echo '<td><a href="admin.php?page=ai-quiz-quiz-list&action=quizDelete&quizID='.$quizID.'" class="deleteIcon">Delete</a></td>';

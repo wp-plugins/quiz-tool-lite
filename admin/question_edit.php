@@ -80,6 +80,9 @@ else
 }
 
 
+$correctFeedbackLabel = 'Correct Feedback';
+
+
 // Setup the basic question lables etc based on question type
 if($qType=="reflection" || $qType=="reflectionText")
 {
@@ -90,14 +93,12 @@ if($qType=="reflection" || $qType=="reflectionText")
 }
 elseif($questionID<>"")
 {
-	$correctFeedbackLabel = 'Feedback if correct';
 	$buttonLabel = 'Save';
 	//$questionEditFormAction = 'admin.php?page=ai-quiz-question-edit&action=questionEdit&potID='.$potID.'&questionID='.$questionID.'&qType='.$qType.'&tab=question';
 	
 }
 else
 {
-	$correctFeedbackLabel = 'Feedback if incorrect';
 	$buttonLabel = 'Save and continue';
 	//$questionEditFormAction = 'admin.php?page=ai-quiz-question-edit&action=questionEdit&potID='.$potID.'&questionID='.$questionID.'&qType='.$qType.'&tab=options';
 }

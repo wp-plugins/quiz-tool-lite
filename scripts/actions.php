@@ -1,4 +1,8 @@
 <?php
+// Enable WP_DEBUG mode
+define('WP_DEBUG', true);
+
+define('WP_DEBUG_DISPLAY', true);
 
 if (!class_exists('qtl_actions'))
 {
@@ -150,21 +154,10 @@ if (!class_exists('qtl_actions'))
 			{
 				
 				
-				$myFields="INSERT into ".$table_name." (qType, question, potID, correctFeedback, incorrectFeedback, creator, createDate) ";
-				$myFields.="VALUES ('%s', '%s', %u, '%s', '%s', '%s', '%s')";	
+				$myFields="INSERT into ".$table_name." (qType, question, potID, correctFeedback, incorrectFeedback, creator, createDate, optionOrderType) ";
+				$myFields.="VALUES ('%s', '%s', %u, '%s', '%s', '%s', '%s', '%s')";	
 		
-			/*	$qry = sprintf($myFields,
-								$qType,
-								mysql_real_escape_string($question),
-								$potID,
-								mysql_real_escape_string($correctFeedback),
-								mysql_real_escape_string($incorrectFeedback),
-								$currentUsername,
-								$myDate
-							);
-				
-				$RunQry=mysql_query($qry);
-			*/	
+
 				$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
 					$qType,
 					$question,
@@ -172,10 +165,11 @@ if (!class_exists('qtl_actions'))
 					$correctFeedback,
 					$incorrectFeedback,
 					$currentUsername,
-					$myDate
+					$myDate,
+					'ordered' // Order manually by default
 				));
 				
-				$questionID=mysql_insert_id();
+				$questionID= $wpdb->insert_id;
 			}
 		
 			return $questionID;
@@ -240,7 +234,11 @@ if (!class_exists('qtl_actions'))
 					"timeLimitCheck",
 					"randomiseQuestions",
 					"customQuestionList",
-					"questionListType"
+					"questionListType",
+					"quizFinishMessage",
+					"feedbackIcon",
+					"correctText",
+					"incorrectText"
 					
 				);
 				
@@ -351,7 +349,7 @@ if (!class_exists('qtl_actions'))
 				));
 			
 				
-				$quizID=mysql_insert_id();
+				$quizID=$wpdb->insert_id;
 			}
 			return $quizID;
 				
@@ -511,7 +509,7 @@ if (!class_exists('qtl_actions'))
 						$myCount
 					));
 					
-					$optionID=mysql_insert_id(); // Get this optionID
+					$optionID=$wpdb->insert_id; // Get this optionID
 							
 				}	
 				
@@ -577,9 +575,10 @@ if (!class_exists('qtl_actions'))
 			$question = $questionInfo['question'];
 			$correctFeedback = $questionInfo['correctFeedback'];	
 			$incorrectFeedback = $questionInfo['incorrectFeedback'];
+			$optionOrderType = $questionInfo['optionOrderType'];			
 			
-			$myFields="INSERT into ".$question_table_name." (qType, question, potID, correctFeedback, incorrectFeedback, creator, createDate) ";
-			$myFields.="VALUES ('%s', '%s', %u, '%s', '%s', '%s', '%s')";	
+			$myFields="INSERT into ".$question_table_name." (qType, question, potID, correctFeedback, incorrectFeedback, creator, createDate, optionOrderType) ";
+			$myFields.="VALUES ('%s', '%s', %u, '%s', '%s', '%s', '%s', '%s')";	
 			
 			$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
 				$qType,
@@ -588,10 +587,11 @@ if (!class_exists('qtl_actions'))
 				$correctFeedback,
 				$incorrectFeedback,
 				$currentUsername,
-				$myDate
+				$myDate,
+				$optionOrderType
 			));
 			
-			$newQuestionID=mysql_insert_id();
+			$newQuestionID=$wpdb->insert_id;
 			
 			// Now add the response options	
 			$optionsRS = qtl_queries::getResponseOptions($questionID);
@@ -677,8 +677,73 @@ if (!class_exists('qtl_actions'))
 			));
 			
 		}
-	
-	
+		
+		
+		function gradeBoundaryEdit()
+		{
+			global $wpdb;
+			$feedback = $_POST['feedback'];
+			$minGrade = $_POST['minGrade'];
+			$maxGrade = $_POST['maxGrade'];
+			$quizID	= $_POST['quizID'];
+			$boundaryID	= $_POST['boundaryID'];			
+			
+			$table_name = $wpdb->prefix . "AI_Quiz_tblGradeBoundaries";		
+			
+			if($minGrade>$maxGrade || $maxGrade<$minGrade)
+			{
+				$feedback = '<div class="error">Sorry! The minimum grade must be smaller than the maximum grade!</div>';	
+			}
+			else
+			{
+			
+				if($boundaryID=="new")
+				{
+					
+					$myFields="INSERT into ".$table_name." (minGrade, maxGrade, quizID, feedback) ";
+					$myFields.="VALUES (%u, %u, %u, '%s')";	
+					
+					$RunQry = $wpdb->query( $wpdb->prepare($myFields,
+						$minGrade,
+						$maxGrade,
+						$quizID,
+						mysql_real_escape_string($feedback)					
+					));
+									
+					$feedback = '<div class="updated">Boundary Created</div>';	
+				}
+				else
+				{
+					
+					//$RunQry=mysql_query($qry);
+					$RunQry = $wpdb->query( $wpdb->prepare( 
+						"UPDATE ".$table_name." SET minGrade=%u, maxGrade=%u, feedback='%s' WHERE boundaryID=%u",
+						$minGrade,
+						$maxGrade,
+						mysql_real_escape_string($feedback),
+						$boundaryID
+					));
+					$feedback = '<div class="updated">Boundary Updated</div>';							
+					
+					
+				}
+			
+			}
+			return $feedback;
+		}
+		
+		function gradeBoundaryDelete($boundaryID)
+		{
+			global $wpdb;
+			$table_name = $wpdb->prefix . "AI_Quiz_tblGradeBoundaries";
+			
+			$RunQry = $wpdb->query( $wpdb->prepare(	'DELETE FROM '.$table_name.' WHERE boundaryID=%u',
+				$boundaryID
+			));
+		
+		}		
+		
+		
 	}
 }
 ?>
