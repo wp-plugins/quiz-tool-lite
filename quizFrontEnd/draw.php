@@ -363,7 +363,7 @@ if (!class_exists('qtl_quiz_draw'))
 				
 				// Add the form	
 				$quizStr.= '<form action="?action=markTest" method="post" name="QTL-form" id="QTL-form">';
-				$quizStr.= '<input type="qtl_hidden" value="'.$userAttemptID.'" name="userAttemptID"/>';				
+				$quizStr.= '<input type="hidden" value="'.$userAttemptID.'" name="userAttemptID"/>';				
 				
 				$currentQuestionNumber=1;
 				
@@ -395,11 +395,11 @@ if (!class_exists('qtl_quiz_draw'))
 				// If they are not required to login and are not logged in then store the serialise the questino array and put it in the qtl_hidden filed serialised
 				if($currentUsername=="")
 				{
-					$quizStr.='<input type="qtl_hidden" value="'.$nonLoggedInString.'" name="questionArray">';
+					$quizStr.='<input type="hidden" value="'.$nonLoggedInString.'" name="questionArray">';
 				}
 				else
 				{
-					$quizStr.='<input type="qtl_hidden" value="'.$newAttemptCount.'" name="attemptCount">';
+					$quizStr.='<input type="hidden" value="'.$newAttemptCount.'" name="attemptCount">';
 				}
 				
 				$quizStr.= '</form>';
@@ -938,7 +938,7 @@ if (!class_exists('qtl_quiz_draw'))
 					$questionStr.= '<label for="option'.$optionID.'">&nbsp;&nbsp;&nbsp;&nbsp;'.$optionValue.'</label>';
 					
 					
-					if($formative==true) // Add the qtl_hidden divs for correct and incorrect feedback
+					if($formative==true) // Add the hidden divs for correct and incorrect feedback
 					{
 						$questionStr.= ' <span id="correctFeedback'.$optionID.'" class="successText" style="display:none">'.$responseCorrectFeedback.'</span>';
 						$questionStr.= ' <span id="incorrectFeedback'.$optionID.'" class="failText" style="display:none">'.$responseIncorrectFeedback.'</span>';
