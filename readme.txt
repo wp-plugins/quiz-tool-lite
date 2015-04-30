@@ -3,7 +3,7 @@ Contributors: alexfurr, lcw102, simon.ward
 Tags: academic, assessment, formative, quiz, questions
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stable tag: 2.2
+Stable tag: 2.2.1
 
 A light weight quiz tool aimed at academics wanting to create interactive learning content. Insert a single question or deploy an entire quiz.
 
@@ -95,6 +95,10 @@ Yes, but results won't be stored in the database
 6. Quiz Boundary example
 
 == Changelog ==
+
+= 2.2.1 =
+* Improved Shortcode handling for stricter servers. Thanks to sakra00 for pointing out the original limitations.
+
 
 = 2.2 =
 * Added Grade Boundaries functionality so you can display feedback to users based on their score

@@ -7,7 +7,7 @@ if (!class_exists('qtl_quiz_draw'))
 	
 	class qtl_quiz_draw
 	{
-		function drawQuizPage($quizID)
+		public function drawQuizPage($quizID)
 		{
 			
 			$action="";
@@ -47,7 +47,7 @@ if (!class_exists('qtl_quiz_draw'))
 			
 		}
 		
-		function getFieldsArray ( $table = '' )
+		public function getFieldsArray ( $table = '' )
 		{
 			return array( 
 				'attemptID' => '',
@@ -64,7 +64,7 @@ if (!class_exists('qtl_quiz_draw'))
 		
 		
 		
-		function drawQuiz($quizID)
+		public function drawQuiz($quizID)
 		{
 			
 			global $wpdb;
@@ -414,7 +414,7 @@ if (!class_exists('qtl_quiz_draw'))
 			
 		}
 		
-		function markTest($quizID, $attemptInfoArray="")
+		public function markTest($quizID, $attemptInfoArray="")
 		{
 			
 			// Set some vars
@@ -722,7 +722,7 @@ if (!class_exists('qtl_quiz_draw'))
 		
 		
 		
-		function generateQuizQuestions($questionArray="", $quizOptionsArray="")
+		public function generateQuizQuestions($questionArray="", $quizOptionsArray="")
 		{
 			
 			if($quizOptionsArray['questionListType']=="custom")
@@ -811,7 +811,7 @@ if (!class_exists('qtl_quiz_draw'))
 		}
 		
 		
-		function drawQuestion($questionID, $optionOrder="", $formative=false, $questionSettingArray=false)
+		public function drawQuestion($questionID, $optionOrder="", $formative=false, $questionSettingArray=false)
 		{
 			// Set some defaults
 			$questionStr="";
@@ -1050,7 +1050,7 @@ if (!class_exists('qtl_quiz_draw'))
 			
 		}
 		
-		function drawMarkedQuestion($questionID, $optionOrder, $response="", $showFeedback="yes")
+		public function drawMarkedQuestion($questionID, $optionOrder, $response="", $showFeedback="yes")
 		{
 			global $correctText;
 			global $incorrectText;
@@ -1201,7 +1201,7 @@ if (!class_exists('qtl_quiz_draw'))
 		
 		
 		
-		function startQuiz($atts)
+		public function startQuiz($atts)
 		{
 			global $overrideAdminCheck; // we need to load the plugin scripts but override the is admin check
 			extract(shortcode_atts(array('id' => '#'), $atts));
@@ -1213,7 +1213,7 @@ if (!class_exists('qtl_quiz_draw'))
 			return $quizStr;
 		}
 		
-		function drawExampleQuestion($atts)
+		public function drawExampleQuestion($atts)
 		{
 			global $overrideAdminCheck; // we need to load the plugin scripts but override the is admin check
 			
@@ -1257,7 +1257,7 @@ if (!class_exists('qtl_quiz_draw'))
 			return do_shortcode($questionStr);
 		}
 		
-		function drawUserResponse($atts)
+		public function drawUserResponse($atts)
 		{
 			
 			$response = "";
@@ -1283,7 +1283,7 @@ if (!class_exists('qtl_quiz_draw'))
 			return $response;
 		}
 		
-		function drawUserScore($atts)
+		public function drawUserScore($atts)
 		{
 			
 			$myScore = "";
@@ -1328,7 +1328,7 @@ if (!class_exists('qtl_quiz_draw'))
 			
 		}
 		
-		function drawLeaderboard($atts)
+		public function drawLeaderboard($atts)
 		{
 			$leaderboardStr = "";
 			$atts = shortcode_atts( 
@@ -1433,7 +1433,7 @@ if (!class_exists('qtl_quiz_draw'))
 		}
 		
 		
-		function showCountdown($countdownMinutes, $countdownSeconds)
+		public function showCountdown($countdownMinutes, $countdownSeconds)
 		{
 			
 			
@@ -1488,8 +1488,6 @@ if (!class_exists('qtl_quiz_draw'))
 			
 			return $str;
 		}
-		
-	
 	}
 }
 ?>

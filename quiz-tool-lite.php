@@ -3,7 +3,7 @@
 Plugin Name: Quiz Tool Lite
 Plugin URI: https://wordpress.org/plugins/quiz-tool-lite/
 Description: Create questions and quizzes, embed individual questions for formative assessment or deploy entire an quiz
-Version: 2.2
+Version: 2.2.1
 Author: Alex Furr, Lisha Chen Wilson and Simon Ward
 Author URI: https://wordpress.org/plugins/quiz-tool-lite/
 License: GPL
@@ -26,19 +26,34 @@ require_once AIQUIZ_PATH.'scripts/utils.php'; # All the useful utils
 require_once AIQUIZ_PATH.'scripts/ajax.php'; #Code for all the ajax calls
 require_once AIQUIZ_PATH.'scripts/actions.php'; # All the actinos on the DB
 require_once AIQUIZ_PATH.'scripts/export-functions.php'; # All the export function
-require_once AIQUIZ_PATH.'scripts/draw.php'; # Any elements that are drawn ont he page relating to AJAX
-require_once AIQUIZ_PATH.'scripts/shortcodes.php'; #Setup the shortcodes for the front end quiz
 require_once AIQUIZ_PATH.'quizFrontEnd/draw.php'; #Code that shows the quiz on the front page
 
 
-$createQTL_menu = new qtl_initialise(); 
+$QTL_frontendHandler = new qtl_quiz_draw(); // Initalise the menu and shortcodes
+$initialiseQTL = new qtl_initialise($QTL_frontendHandler);  // Inistalise the front end shortcode drawing functions
+
 
 class qtl_initialise
 {
-	function __construct()
+	public function __construct($Object)
 	{	
 		add_action( 'admin_menu', array( $this, 'QTL_createAdminMenu' ));
-		add_action( 'admin_head', array( $this, 'QTL_loadMyPluginScripts' ));	
+		add_action( 'admin_head', array( $this, 'QTL_loadMyPluginScripts' ));
+		
+		// Add the shortcodes
+		add_shortcode('QTL-Quiz', array( $Object, 'startQuiz'));
+		add_shortcode('QTL-Question', array( $Object, 'drawExampleQuestion') );
+		add_shortcode('QTL-Response', array( $Object, 'drawUserResponse'));
+		
+		// Shortcode to show results to student
+		add_shortcode('QTL-Score', array( $Object, 'drawUserScore'));
+		
+		// Shortcode to show results to student
+		add_shortcode('QTL-Leaderboard', array( $Object, 'drawLeaderboard'));
+		
+		// Shortcode to show results to student
+		add_shortcode('someShortcode', array( $Object, 'testDraw'));		
+		
 	}	
 		
 	// Add the Admin Menu Items
