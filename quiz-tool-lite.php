@@ -3,7 +3,7 @@
 Plugin Name: Quiz Tool Lite
 Plugin URI: https://wordpress.org/plugins/quiz-tool-lite/
 Description: Create questions and quizzes, embed individual questions for formative assessment or deploy entire an quiz
-Version: 2.2.1
+Version: 2.2.2
 Author: Alex Furr, Lisha Chen Wilson and Simon Ward
 Author URI: https://wordpress.org/plugins/quiz-tool-lite/
 License: GPL
@@ -27,6 +27,7 @@ require_once AIQUIZ_PATH.'scripts/ajax.php'; #Code for all the ajax calls
 require_once AIQUIZ_PATH.'scripts/actions.php'; # All the actinos on the DB
 require_once AIQUIZ_PATH.'scripts/export-functions.php'; # All the export function
 require_once AIQUIZ_PATH.'quizFrontEnd/draw.php'; #Code that shows the quiz on the front page
+require_once AIQUIZ_PATH.'scripts/draw.php'; #Drawing functions for backend
 
 
 $QTL_frontendHandler = new qtl_quiz_draw(); // Initalise the menu and shortcodes
@@ -51,8 +52,6 @@ class qtl_initialise
 		// Shortcode to show results to student
 		add_shortcode('QTL-Leaderboard', array( $Object, 'drawLeaderboard'));
 		
-		// Shortcode to show results to student
-		add_shortcode('someShortcode', array( $Object, 'testDraw'));		
 		
 	}	
 		

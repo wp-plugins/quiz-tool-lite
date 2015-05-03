@@ -3,7 +3,7 @@
 
 if (!class_exists('qtl_quiz_draw'))
 {
-
+	
 	
 	class qtl_quiz_draw
 	{
