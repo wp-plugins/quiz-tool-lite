@@ -1270,14 +1270,27 @@ if (!class_exists('qtl_quiz_draw'))
 			
 			$questionID = (int) $atts['id'];
 			
+			// Get the question type
+			$questionInfo = qtl_queries::getQuestionInfo($questionID);
+			$qType = $questionInfo['qType'];
+			
 			$current_user = wp_get_current_user();
 			$username = $current_user->user_login;
 			
 			if($username)
 			{
-				$responseInfo = qtl_queries::getQuestionResponse($questionID, $username);
-				
+				$responseInfo = qtl_queries::getQuestionResponse($questionID, $username);				
 				$response = qtl_utils::convertTextFromDB($responseInfo['userResponse']);
+				
+				// if its anything other than a reflection type then get the actual value form the options database
+				if($qType=="radio")				
+				{
+					$responseArray = explode(",", $response, 2);
+					$thisOptionID = $responseArray[0];					
+					$optionInfo = qtl_queries::getResponseOptionInfo($thisOptionID);					
+					$response = $optionInfo->optionValue;
+					$response = qtl_utils::convertTextFromDB($response);
+				}
 			}	
 			
 			return $response;
@@ -1289,12 +1302,14 @@ if (!class_exists('qtl_quiz_draw'))
 			$myScore = "";
 			$atts = shortcode_atts( 
 				array(
-					'id'   => '#'
+					'id'   => '#',
+					'showall' => 'false',
 				), 
 				$atts
 			);
 			
 			$quizID = (int) $atts['id'];
+			$showall = $atts['showall'];
 		
 			$current_user = wp_get_current_user();
 			$username = $current_user->user_login;
@@ -1302,27 +1317,103 @@ if (!class_exists('qtl_quiz_draw'))
 			
 			if($username)
 			{
-				
+			
 				// Get previous attempts info
 				$previousAttemptInfo = qtl_queries::getAttemptInfo($username, $quizID);
 				
-		
 				if($previousAttemptInfo)
-				{
-					foreach ($previousAttemptInfo as $key => $value)
+				{				
+				
+					if($showall=="true")
 					{
-						$$key = $value;
+
+				
+						//dataTables js
+						wp_register_script( 'datatables', ( '//cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js' ), false, null, true );
+						wp_enqueue_script( 'datatables' );
+						
+						//dataTables css
+						wp_enqueue_style('datatables-style','//cdn.datatables.net/1.10.5/css/jquery.dataTables.min.css');	
+						
+						global $wp_scripts;
+						// get the jquery ui object
+						$queryui = $wp_scripts->query('jquery-ui-core');
+					 
+						// load the jquery ui theme
+						$url = "https://ajax.googleapis.com/ajax/libs/jqueryui/".$queryui->ver."/themes/smoothness/jquery-ui.css";	
+						wp_enqueue_style('jquery-ui-smoothness', $url, false, null);	
+						
+						wp_register_style( 'QTL_css_custom',  plugins_url('../css/styles.css',__FILE__) );
+						wp_enqueue_style( 'QTL_css_custom' );
+
+
+
+						$myAttempts = qtl_queries::getAllUserAttemptInfo($username, $quizID);
+						
+						$myScore.='<table id="myScores">';
+						$myScore.='<thead><tr><th>Score</th><th>Finish Date</th></thead>';
+						
+						
+						
+						$attemptCount = count($myAttempts);
+						foreach($myAttempts as $attemptInfo)
+						{
+							$score = $attemptInfo['score'];
+							$dateFinished= $attemptInfo['dateFinished'];
+							
+							if($dateFinished)
+							{
+								$myScore.= '<tr>';
+								$myScore.= '<td>'.$score.'</td>';
+								$myScore.= '<td>'.$dateFinished.'</td>';
+								$myScore.= '</tr>';
+							}
+	
+						}
+						$myScore.= '</table>';
+						
+						
+						
+						?>
+						<script>
+                            jQuery(document).ready(function(){	
+                                if (jQuery('#myScores').length>0)
+                                {
+                                    jQuery('#myScores').dataTable({
+                                        "bAutoWidth": true,
+                                        "bJQueryUI": true,
+										"bFilter": false,
+                                        "sPaginationType": "full_numbers",
+                                        "iDisplayLength": 10, // How many numbers by default per page
+										
+
+                                    });
+                                }
+                                
+                            });
+                        </script>	                        
+                        
+                        <?php
+					
 					}
-					if($highestScore==""){$highestScore=0;}
+					else
+					{
+						foreach ($previousAttemptInfo as $key => $value)
+						{
+							$$key = $value;
+						}
+
+						if($highestScore==""){$highestScore=0;}
 			
-					$myScore = '<div style="border:solid 1px #ccc; padding:5px; background:#f1f1f1">You have taken this test <b>'.$attemptCount.'</b> times and achieved a maximum of <b>'.$highestScore.'%</b>.</div><br/>';
-				}
+						$myScore = '<div style="border:solid 1px #ccc; padding:5px; background:#f1f1f1">You have taken this test <b>'.$attemptCount.'</b> times and achieved a maximum of <b>'.$highestScore.'%</b>.</div><br/>';
+					}
+				
+				}	
 				else
 				{
 					$myScore = 'You have not yet attempted this quiz';
 				}
-				
-			}	
+			}
 			
 			return $myScore;
 			

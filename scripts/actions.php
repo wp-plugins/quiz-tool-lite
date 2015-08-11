@@ -482,12 +482,11 @@ if (!class_exists('qtl_actions'))
 			}
 			else
 			{
-				if($optionValue)
+				
+				if($optionValue<>"")
 				{
 					
 					// get the number of options and add 1 so its appended to the end
-					
-					
 					$optionsRS = qtl_queries::getResponseOptions($questionID);
 					$myCount=1;
 				
@@ -496,11 +495,9 @@ if (!class_exists('qtl_actions'))
 						$myCount++;			
 					}
 					
-					
 					$myFields="INSERT into ".$table_name." (optionValue, questionID, responseCorrectFeedback, responseIncorrectFeedback, optionOrder) ";
 					$myFields.="VALUES ('%s', %u, '%s', '%s', %u)";	
 				
-		
 					$RunQry = $wpdb->query( $wpdb->prepare(	$myFields,
 						$optionValue,
 						$questionID,
@@ -511,8 +508,7 @@ if (!class_exists('qtl_actions'))
 					
 					$optionID=$wpdb->insert_id; // Get this optionID
 							
-				}	
-				
+				}
 		
 			
 			}

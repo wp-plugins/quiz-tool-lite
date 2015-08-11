@@ -2,8 +2,8 @@
 Contributors: alexfurr, lcw102, simon.ward
 Tags: academic, assessment, formative, quiz, questions
 Requires at least: 3.0.1
-Tested up to: 4.2.1
-Stable tag: 2.2.2
+Tested up to: 4.2.4
+Stable tag: 2.2.3
 
 A light weight quiz tool aimed at academics wanting to create interactive learning content. Insert a single question or deploy an entire quiz.
 
@@ -95,6 +95,13 @@ Yes, but results won't be stored in the database
 6. Quiz Boundary example
 
 == Changelog ==
+
+= 2.2.3 =
+* Bug fix for allowing "0" (zero) as a response option
+* New shortcode option for showing a students all their scores for a quiz
+* Fix so that a radio button answer for a student can be shown to them (in addition to reflective submissions)
+
+
 
 = 2.2.2 =
 * Essential Bug fix for QUestion and Quiz Edit on the backend

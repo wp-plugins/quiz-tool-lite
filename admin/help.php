@@ -188,8 +188,8 @@ Insert question ID 25 and change the default correct feedback
 </tr>
 <tr>
 <tr>
-<td><span class="codeExample">[QTL-Score id=2]</span></td>
-<td>Shows the number of attempts and maximum score for quiz ID 2 to the current logged in user</td>
+<td valign="top"><span class="codeExample">[QTL-Score id=2]</span></td>
+<td>Shows the number of attempts and maximum score for quiz ID 2 to the current logged in user<br/>Optional - add "showall=true" to the shortcode to view ALL attempt scores</td>
 </tr>
 <tr>
 <td><span class="codeExample">[QTL-Leaderboard id=2]</span></td>

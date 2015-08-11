@@ -3,7 +3,7 @@
 Plugin Name: Quiz Tool Lite
 Plugin URI: https://wordpress.org/plugins/quiz-tool-lite/
 Description: Create questions and quizzes, embed individual questions for formative assessment or deploy entire an quiz
-Version: 2.2.2
+Version: 2.2.3
 Author: Alex Furr, Lisha Chen Wilson and Simon Ward
 Author URI: https://wordpress.org/plugins/quiz-tool-lite/
 License: GPL
@@ -50,8 +50,7 @@ class qtl_initialise
 		add_shortcode('QTL-Score', array( $Object, 'drawUserScore'));
 		
 		// Shortcode to show results to student
-		add_shortcode('QTL-Leaderboard', array( $Object, 'drawLeaderboard'));
-		
+		add_shortcode('QTL-Leaderboard', array( $Object, 'drawLeaderboard'));		
 		
 	}	
 		

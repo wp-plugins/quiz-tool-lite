@@ -140,7 +140,7 @@ if (!class_exists('qtl_draw'))
 				echo '<div id="optionDeleteCheck'.$optionID.'" style="display:none">';
 				echo '<div style="text-align:center">';
 				echo '<h2>Are you sure you want to delete this option?</h2>';		
-				echo '<input type="submit" value="Yes, delete this response" onclick="location.href=\'?page=ai-quiz-question-edit&questionID='.$questionID.'&action=optionDelete&optionID='.$optionID.'&tab=options\'" class="button-primary">';
+				echo '<input type="submit" value="Yes, delete this response" onclick="location.href=\'?page=ai-quiz-question-edit&questionID='.$questionID.'&action=optionDelete&optionID='.$optionID.'&tab=3\'" class="button-primary">';
 				echo '<input type="submit" value="Cancel" onclick="self.parent.tb_remove();return false" class="button-secondary">';	
 				echo '</div>';
 				echo '</div>';
